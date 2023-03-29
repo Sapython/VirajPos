@@ -1,0 +1,38 @@
+
+@keyframes slideLeftIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+section{
+    display: grid;
+    grid-template-rows: 0fr auto 1fr;
+    height: 100vh;
+    gap:11px;
+    animation: slideLeftIn 0.5s forwards;
+    app-info-panel{
+        box-shadow: var(--Viraj-shadow-light);
+        border-bottom-right-radius: var(--Viraj-border-radius);
+        border: var(--Viraj-border-default);
+        border-top: none;
+        border-left: none;
+    }
+    app-menu{
+        border: var(--Viraj-border-default);
+        border-left: none;
+        box-shadow: var(--Viraj-shadow-light);
+        border-top-right-radius: var(--Viraj-border-radius);
+        border-bottom-right-radius: var(--Viraj-border-radius);
+    }
+    app-stock{
+        border: var(--Viraj-border-default);
+        border-left: none;
+        border-bottom: none;
+        box-shadow: var(--Viraj-shadow-light);
+        border-top-right-radius: var(--Viraj-border-radius);
+    }
+}

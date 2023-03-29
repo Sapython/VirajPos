@@ -1,0 +1,48 @@
+<section>
+  <div class="border" (mouseenter)="showKotNo=true" (mouseleave)="showKotNo=false" [ngStyle]="{background:kotNoColors[kotNo].color,padding:showKotNo ? '10px' : '0px'}">
+    <p *ngIf="showKotNo" [ngStyle]="{'color':kotNoColors[kotNo].contrast}">{{kotId}}</p>
+  </div>
+  <div class="main">
+    <span class="veg" [ngClass]="{ non: nonVeg }">
+      <span></span>
+    </span>
+    <div class="info">
+      <p class="name">{{ productName | titlecase }}</p>
+      <p class="price">{{ price | currency : "INR" }}</p>
+    </div>
+    <div class="more">
+      <div class="actions">
+        <select [disabled]="dataProvider.manageKot==true">
+          <option [value]="config.price" *ngFor="let config of variations">
+            {{ config.name }}
+          </option>
+        </select>
+        <div class="quantity">
+          <button [disabled]="(dataProvider.manageKot==true && !editMode)" (click)="quantity = quantity + 1">
+            <mat-icon>add</mat-icon>
+          </button>
+          <input
+          [disabled]="(dataProvider.manageKot==true && !editMode)"
+            type="number"
+            [(ngModel)]="quantity"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          <button (click)="quantity = quantity - 1" [disabled]="quantity <= 1 || (dataProvider.manageKot==true && !editMode)">
+            <mat-icon>remove</mat-icon>
+          </button>
+        </div>
+        <ng-container *ngIf="!showKotNo">
+          <button [disabled]="dataProvider.manageKot==true && !editMode" class="iconButton" (click)="setInfo()">
+            <mat-icon>info</mat-icon>
+          </button>
+          <button [disabled]="dataProvider.manageKot==true && !editMode" class="iconButton" (click)="delete.emit()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-container>
+      </div>
+      <div class="infoStatement" *ngIf="info">
+        <strong>INFO:</strong><span>{{ info }}</span>
+      </div>
+    </div>
+  </div>
+</section>

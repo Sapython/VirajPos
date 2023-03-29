@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "fbms-shreeva-demo": {
+      "hosting": {
+        "Viraj": [
+          "viraj-biller"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "fbms-shreeva-demo"
+  }
+}

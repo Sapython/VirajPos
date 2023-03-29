@@ -1,0 +1,30 @@
+<section>
+  <h2>Add Discount</h2>
+  <form [formGroup]="discountForm" (ngSubmit)="submit()">
+    <!-- TODO name phone reason password -->
+    <div class="mode">
+      <mat-button-toggle-group name="mode" value="Coupon Code" formControlName="mode" aria-label="Font Style" #mode>
+        <mat-button-toggle value="directPercent">Direct Percent</mat-button-toggle>
+        <mat-button-toggle value="directFlat">Direct Flat</mat-button-toggle>
+        <mat-button-toggle value="codeBased">Coupon Code</mat-button-toggle>
+        <!-- <mat-button-toggle value="preSelect">Selectable</mat-button-toggle> -->
+      </mat-button-toggle-group>
+    </div>
+    <mat-form-field appearance="outline" *ngIf="discountForm.value.mode=='directPercent'">
+      <mat-label>Direct Percent</mat-label>
+      <input type="text" matInput formControlName="percent" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" *ngIf="discountForm.value.mode=='directFlat'">
+      <mat-label>Direct Flat</mat-label>
+      <input type="text" matInput formControlName="amount" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" *ngIf="discountForm.value.mode=='codeBased'">
+      <mat-label>Discount Code</mat-label>
+      <input type="text" matInput formControlName="code" />
+    </mat-form-field>
+    <div class="actions">
+      <button mat-stroked-button color="primary" (click)="cancel()" type="button">Cancel</button>
+      <button mat-raised-button color="primary" type="submit">Add Discount</button>
+    </div>
+  </form>
+</section>

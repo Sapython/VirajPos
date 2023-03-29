@@ -1,0 +1,32 @@
+<app-branding></app-branding>
+<section>
+  <h1>Sales Summary</h1>
+  <div class="badges">
+    <span cdkOverlayOrigin #salesTrigger="cdkOverlayOrigin" class="badge sales" (mouseleave)="this.closeSalesPanelSubscription.next(false);" (mouseenter)="isSalesOpen = true">
+      <span>Sales</span>
+      <b>{{ this.dataProvider.totalSales }}</b>
+    </span>
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayPositions]="[{overlayX:'start',overlayY:'top',originX:'end',originY:'bottom'}]"
+      [cdkConnectedOverlayOffsetY]="-40"
+      [cdkConnectedOverlayOrigin]="salesTrigger"
+      [cdkConnectedOverlayOpen]="isSalesOpen"
+    >
+      <app-sales-summary (close)="this.isSalesOpen = false" (mouseleave)="this.closeSalesPanelSubscription.next(false)" (mouseenter)="this.closeSalesPanelSubscription.next(true)"></app-sales-summary>
+    </ng-template>
+    <span class="badge orders" cdkOverlayOrigin #ordersTrigger="cdkOverlayOrigin" (mouseleave)="this.closeOrdersPanelSubscription.next(false);" (mouseenter)="isOpen = true">
+      <span>Orders</span>
+      <b>{{ this.dataProvider.billToken}}</b>
+    </span>
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayPositions]="[{overlayX:'start',overlayY:'top',originX:'end',originY:'bottom'}]"
+      [cdkConnectedOverlayOffsetY]="-40"
+      [cdkConnectedOverlayOrigin]="ordersTrigger"
+      [cdkConnectedOverlayOpen]="isOpen"
+    >
+      <app-order-summary (close)="this.isOpen = false" (mouseleave)="this.closeOrdersPanelSubscription.next(false);" (mouseenter)="this.closeOrdersPanelSubscription.next(true)"></app-order-summary>
+    </ng-template>
+  </div>
+</section>

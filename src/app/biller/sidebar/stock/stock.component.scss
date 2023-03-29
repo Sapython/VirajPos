@@ -1,0 +1,60 @@
+section{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    h3{
+       margin: 0px;
+       margin-bottom: 6px; 
+    }
+    .badges{
+        display: flex;
+        gap:20px;
+        // padding-inline: 20px;
+        justify-content: space-between;
+        div.badge{
+            width: 100%;
+            font-size: var(--Viraj-font-medium);
+            padding: 10px;
+            border:2px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            gap:5px;
+            border-radius: var(--Viraj-border-radius);
+            font-size: var(--Viraj-font-large);
+            color:#E78C31;
+            background: #FFF1E2;
+            border-color: #E78C31;
+            p{
+                margin: 0px;
+                color:black;
+            }
+            span{
+                color:black;
+            }
+            strong{
+                color:#E78C31;
+                font-weight: bold;
+                font-size: var(--Viraj-font-xlarge);
+            }
+        }
+        div.sales{
+            color:#FF5E35;
+            background: #FFF8F8;
+            border-color: #FF5E35;
+            strong{
+                color:#FF5E35;
+            }
+        }
+    }
+    .closeIn{
+        padding: 7px 20px;
+        width: 100%;
+        font-size: var(--Viraj-font-xxlarge);
+        background: var(--Viraj-primary);
+        border-radius: 7px;
+        color: white;
+        box-shadow: 0px 0px 10px 0px rgba(255, 60, 0, 0.2);
+        border: none;
+    }
+}

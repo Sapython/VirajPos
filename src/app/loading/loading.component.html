@@ -1,0 +1,25 @@
+<main>
+    <section *ngIf="!dataProvider.loggedIn">
+        <img src="assets/viraj.png" alt="Viraj">
+        <h1>Viraj Login</h1>
+        <form [formGroup]="loginForm" (ngSubmit)="login()" *ngIf="dataProvider.isAuthStateAvaliable">
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="Email" required>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input matInput formControlName="password" type="password" placeholder="Password" required>
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">Login</button>
+        </form>
+        <div *ngIf="!dataProvider.isAuthStateAvaliable" class="center">
+            <mat-spinner></mat-spinner>
+        </div>
+    </section>
+    <section *ngIf="dataProvider.loggedIn">
+        <img src="assets/viraj.png" alt="Viraj">
+        <h1>Viraj Login</h1>
+        <button mat-flat-button color="primary" routerLink="../biller">Continue To Viraj</button>
+    </section>
+</main>

@@ -1,0 +1,33 @@
+div{
+    border: 2px solid #D7D7D7;
+    width: 100px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+    padding: 10px;
+    border-radius: 7px;
+    p{
+        color: #444444;
+        font-size: var(--Viraj-font-large);
+        margin: 0px;
+    }
+    strong{
+        color:var(--Viraj-primary);
+        font-size: var(--Viraj-font-xlarge);
+    }
+    &:hover{
+        border: 2px solid var(--Viraj-primary);
+        cursor: pointer;
+    }
+}
+div.small{
+    width: 70px;
+    height: auto;
+    p{
+        font-size: var(--Viraj-font-medium);
+    }
+    strong{
+        font-size: var(--Viraj-font-large);
+    }
+}

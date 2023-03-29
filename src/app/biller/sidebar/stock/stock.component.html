@@ -1,0 +1,63 @@
+<section>
+  <h3>Stock Count</h3>
+  <div class="badges">
+    <div
+      class="badge"
+      cdkOverlayOrigin
+      #stockValuationTrigger="cdkOverlayOrigin"
+      (mouseleave)="this.closeStockValuePanelSubscription.next(false)"
+      (mouseenter)="isStockValuationOpen = true"
+    >
+      <p>Stock Valuation</p>
+      <strong>
+        {{ stockValuation | currency : "INR" : true }}
+      </strong>
+    </div>
+    <div
+      class="badge sales"
+      cdkOverlayOrigin
+      #cashCounterTrigger="cdkOverlayOrigin"
+      (mouseleave)="this.cashCounterPanelSubscription.next(false)"
+      (mouseenter)="isCashSummaryOpen = true"
+    >
+      <p>Cash Counter</p>
+      <strong>
+        {{ stockValuation | currency : "INR" : true }}
+      </strong>
+    </div>
+  </div>
+  <app-receiving (click)="openReceiving()"></app-receiving>
+  <app-dispersion (click)="openDispersion()"></app-dispersion>
+  <button (click)="closeIn()" matRipple class="closeIn">Close In</button>
+  <!-- hovers -->
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayPositions]="[
+      { overlayX: 'start', overlayY: 'top', originX: 'end', originY: 'top' }
+    ]"
+    [cdkConnectedOverlayOffsetY]="-40"
+    [cdkConnectedOverlayOrigin]="stockValuationTrigger"
+    [cdkConnectedOverlayOpen]="isStockValuationOpen"
+  >
+    <app-stock-valuation
+      (close)="this.isStockValuationOpen = false"
+      (mouseleave)="this.closeStockValuePanelSubscription.next(false)"
+      (mouseenter)="this.closeStockValuePanelSubscription.next(true)"
+    ></app-stock-valuation>
+  </ng-template>
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayPositions]="[
+      { overlayX: 'start', overlayY: 'center', originX: 'end', originY: 'top' }
+    ]"
+    [cdkConnectedOverlayOffsetY]="-40"
+    [cdkConnectedOverlayOrigin]="cashCounterTrigger"
+    [cdkConnectedOverlayOpen]="isCashSummaryOpen"
+  >
+    <app-cash-counter
+      (close)="this.isCashSummaryOpen = false"
+      (mouseleave)="this.cashCounterPanelSubscription.next(false)"
+      (mouseenter)="this.cashCounterPanelSubscription.next(true)"
+    ></app-cash-counter>
+  </ng-template>
+</section>

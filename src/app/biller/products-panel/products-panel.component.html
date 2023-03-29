@@ -1,0 +1,4 @@
+<section>
+    <app-product-card (click)="selectProduct(item)" [productName]="item.name" [price]="item.price" *ngFor="let item of searchVisible ? this.searchResults : products"></app-product-card>
+    <div></div>
+</section>

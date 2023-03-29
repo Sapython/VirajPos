@@ -1,0 +1,125 @@
+// basic animations slideFromTop, slideFromBottom, slideFromLeft, slideFromRight
+@keyframes slideFromTop {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+@keyframes slideFromBottom {
+    0% {
+        transform: translateY(100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+@keyframes slideFromLeft {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+@keyframes slideFromRight {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+// Path: src/app/biller/biller.component.scss
+
+main{
+    display: grid;
+    grid-template-columns: 1.3fr 3fr 2fr;
+    gap:10px;
+    height: 100vh;
+    overflow-y: hidden;
+    app-sidebar{
+
+    }
+    section{
+    }
+    section.mainPanel{
+        display: grid;
+        grid-template-rows: auto auto auto;
+        height: 100vh;
+        gap:10px;
+        app-search-panel{
+            height: 70px;
+            animation: slideFromTop 0.5s ease-in-out;
+            border: 2px solid #ccc;
+            border-radius: 0px 0px var(--Viraj-border-radius) var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+        }
+        app-products-panel{
+            height: 60vh;
+            border: 2px solid #ccc;
+            border-radius: var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+            padding: 1px;
+            animation: slideFromTop 0.5s ease-in-out;
+        }
+        .smartSection{
+            padding: 1px;
+            border-left: none;
+            border-right: none;
+            display: grid;
+            height: calc( 40vh - 70px);
+            grid-template-columns: 1fr 1fr;
+            border: 2px solid #ccc;
+            border-radius: var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+            animation: slideFromBottom 0.5s ease-in-out;
+            app-recommended{
+                border-right: 2px solid  #ccc;
+            }
+        }
+    }
+    section.action{
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        gap:10px;
+        app-system{
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 0px 0px 0px var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+            animation: slideFromRight 0.5s ease-in-out;
+        }
+        app-active-kot{
+            height: 40vh;
+            border: 2px solid #ccc;
+            border-radius: var(--Viraj-border-radius) 0px 0px var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+            animation: slideFromRight 0.5s ease-in-out;
+            transition: height 0.5s ease-in-out;
+        }
+        app-active-kot.active{
+            height: 10vh;
+        }
+        app-actions{
+            border: 2px solid #ccc;
+            border-radius: var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+            animation: slideFromRight 0.5s ease-in-out;
+            transition: height 0.5s ease-in-out;
+        }
+        app-actions.active{
+            height: 50vh;
+        }
+        app-customer-panel{
+            height: calc(100vh - calc(65vh + 70px));
+            overflow-y: auto;
+            border: 2px solid #ccc;
+            border-radius: var(--Viraj-border-radius);
+            box-shadow: var(--Viraj-shadow-light);
+            animation: slideFromRight 0.5s ease-in-out;
+        }
+    }
+}

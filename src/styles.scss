@@ -1,1 +1,134 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+
+// The warn palette is optional (defaults to red).
+// $Viraj-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$viraj-palette: (
+  50: #fadbd3,
+  100: #fbcabd,
+  200: #fdb19e,
+  300: #fe997f,
+  400: #f87554,
+  500: #fb7250,
+  600: #FF5E35,
+  700: #f85228,
+  800: #fb4619,
+  900: #ff4112,
+  contrast: (
+   50: rgba(black, 0.87),
+   100: rgba(black, 0.87),
+   200: rgba(black, 0.87),
+   300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+ )
+  );
+$Viraj-primary: mat.define-palette($viraj-palette);
+$Viraj-accent: mat.define-palette($viraj-palette, 200, 100, 400);
+$Viraj-theme: mat.define-light-theme(
+  (color: (primary: $Viraj-primary,
+    accent: $Viraj-accent,
+    foreground: $viraj-palette,
+  ))
+);
+
+  // Include theme styles for core and each component used in your app.
+  // Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($Viraj-theme);
+
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --Viraj-primary: #FF5E35;
+  --Viraj-accent: #FFC220;
+  --Viraj-primary-tint: #FF5E35;
+  --Viraj-primary-shade: #FFE1C2;
+  --Viraj-primary-text: #962E40;
+  --Viraj-success: #038943;
+  --Viraj-background: white;
+  --Viraj-font: 'Lato', sans-serif;
+  --Viraj-font-bold: 'Lato', sans-serif;
+  --Viraj-font-regular: 'Lato', sans-serif;
+  --Viraj-font-light: 'Lato', sans-serif;
+  --Viraj-font-small: 12px;
+  --Viraj-font-medium: 14px;
+  --Viraj-font-large: 16px;
+  --Viraj-font-xlarge: 18px;
+  --Viraj-font-xxlarge: 20px;
+  --Viraj-font-xxxlarge: 22px;
+  --Viraj-font-xxxxlarge: 24px;
+  --Viraj-icon-small: 15px;
+  --Viraj-icon-medium: 18px;
+  --Viraj-icon-large: 22px;
+  --Viraj-button-small: 14px;
+  --Viraj-button-medium: 18px;
+  --Viraj-button-medium: 18px;
+  --Viraj-button-medium: 24px;
+  --Viraj-border-default: 2px solid #ccc;
+  --Viraj-border-radius: 8px;
+  --Viraj-border-radius-large: 12px;
+  --Viraj-border-radius-xlarge: 24px;
+  --Viraj-shadow-light: 4px 1px 16px rgba(22, 22, 22, 0.1);
+  --Viraj-shadow-medium: 0px 4px 8px rgba(0, 0, 0, 0.25);
+  --Viraj-shadow-heavy: 0px 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--Viraj-font);
+}
+.button {
+  border: none;
+  padding: 15px;
+  background: white;
+  font-size: var(--Viraj-font-large);
+  font-weight: 600;
+  cursor: pointer;
+}
+button[mat-flat-button],button[mat-raised-button]{
+  color:white !important;
+}
+
+.stroked{
+  border: 2px solid var(--Viraj-primary);
+  border-radius: 8px;
+  padding: 8px 15px;
+  color:var(--Viraj-primary);
+  background: white;
+  font-size: var(--Viraj-font-large);
+  font-weight: 600;
+}
+
+
+.mat-button-toggle-checked {
+  background-color: var(--Viraj-primary);
+  color: #ffffff !important;
+}
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background .mdc-checkbox__checkmark,.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background .mdc-checkbox__mixedmark{
+  color:white !important;
+  border-color:white !important;
+}

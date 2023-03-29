@@ -1,0 +1,58 @@
+<section>
+    <div class="view">
+        <div class="sidebar">
+            <button mat-stroked-button color="primary" (click)="addNewCategory()">Add New Categories</button>
+            <div class="categories">
+                <span>Product List</span>
+                <app-category-card (click)="selectCategory(allProducts);mode='allProducts'" [category]="allProducts"></app-category-card>
+                <span>Your Categories</span>
+                <app-category-card *ngFor="let category of categories" (click)="selectCategory(category);mode='single'" [category]="category"></app-category-card>
+            </div>
+        </div>
+        <div class="main" *ngIf="selectedCategory">
+            <div class="title">
+                <div class="actions">
+                    <h2>{{selectedCategory.name}}</h2>
+                    <span>
+                        <mat-slide-toggle color="primary"></mat-slide-toggle>
+                        <button mat-icon-button color="warn"><mat-icon>delete</mat-icon></button>
+                    </span>
+                </div>
+                <button mat-icon-button><mat-icon>close</mat-icon></button>
+            </div>
+            <div class="filters">
+                <mat-form-field appearance="outline">
+                    <mat-label>Search Item</mat-label>
+                    <input type="text" matInput>
+                </mat-form-field>
+                <div class="pricing">
+                    <p>Pricing</p>
+                    <button mat-stroked-button color="primary">Disable All</button>
+                    <button mat-stroked-button mat-button [matMenuTriggerFor]="menu" color="primary">Add Recipe</button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="addRecipe()">New Dish</button>
+                        <button mat-menu-item>Upload From Excel</button>
+                        <button mat-menu-item (click)="getExcelFormat()">Get Excel Format</button>
+                      </mat-menu>
+                    <mat-slider showTickMarks min="0" [max]="maxPrice" step="50" showTickMarks discrete [displayWith]="formatLabel">
+                        <input matSliderStartThumb>
+                        <input matSliderEndThumb>
+                    </mat-slider>
+                </div>
+            </div>
+            <div class="productList">
+                <p>Total {{selectedCategory.products.length}} Proucts</p>
+                <div class="product" *ngFor="let product of selectedCategory.products">
+                    <p>{{product.name}}</p>
+                    <div class="pricing">
+                        <strong>{{product.price | currency:'INR'}}</strong>
+                        <mat-slide-toggle checked></mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="action">
+        <button mat-flat-button color="primary">Add New Product</button>
+    </div>
+</section>

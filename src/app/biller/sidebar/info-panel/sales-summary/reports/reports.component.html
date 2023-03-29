@@ -1,0 +1,52 @@
+<section>
+    <h2>Reports</h2>
+    <hr>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Bill Wise Report">
+            <table>
+                <tr>
+                    <th>Bill No</th>
+                    <th>Kots</th>
+                    <th>Table</th>
+                    <th>Amount</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                    <th>Time</th>
+                </tr>
+                <tr *ngFor="let bill of bills">
+                    <td>{{bill.id}}</td>
+                    <td>{{joinArray(bill.kots)}}</td>
+                    <td>{{bill.table.name}}</td>
+                    <td>{{bill.billing.subTotal}}</td>
+                    <td>{{bill.billing.discount}}</td>
+                    <td>{{bill.billing.grandTotal}}</td>
+                    <td>{{bill.createdDate.toDate() | date:'short'}}</td>
+                </tr>
+            </table>
+        </mat-tab>
+        <mat-tab label="NC Bill Report">
+            <table>
+                <tr>
+                    <th>Bill No</th>
+                    <th>Kots</th>
+                    <th>Table</th>
+                    <th>Amount</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Reason</th>
+                    <th>Time</th>
+                </tr>
+                <tr *ngFor="let bill of ncBills">
+                    <td>{{bill.id}}</td>
+                    <td>{{joinArray(bill.kots)}}</td>
+                    <td>{{bill.table.name}}</td>
+                    <td>{{bill.billing.subTotal}}</td>
+                    <td>{{bill.nonChargeableDetail?.name}}</td>
+                    <td>{{bill.nonChargeableDetail?.phone}}</td>
+                    <td>{{bill.nonChargeableDetail?.reason}}</td>
+                    <td>{{bill.createdDate.toDate() | date:'short'}}</td>
+                </tr>
+            </table>
+        </mat-tab>
+    </mat-tab-group>
+</section>

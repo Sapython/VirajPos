@@ -1,0 +1,17 @@
+<main>
+    <app-sidebar></app-sidebar>
+    <section class="mainPanel">
+        <app-search-panel></app-search-panel>
+        <app-products-panel></app-products-panel>
+        <section class="smartSection">
+            <app-recommended></app-recommended>
+            <app-emergency></app-emergency>
+        </section>
+    </section>
+    <section class="action">
+        <app-system></app-system>
+        <app-active-kot [ngClass]="{'active':dataProvider.moreActions}"></app-active-kot>
+        <app-actions [ngClass]="{'active':dataProvider.moreActions}"></app-actions>
+        <app-customer-panel></app-customer-panel>
+    </section>
+</main>

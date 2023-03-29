@@ -1,0 +1,15 @@
+<section>
+    <!-- <img src="assets/logo.png" alt="Viraj"> -->
+    <div class="col">
+        <h1>Viraj Systems</h1>
+        <div class="row">
+            <div class="col">
+                <strong><p>Stage &nbsp;&nbsp;<i>{{stageNumber}}</i></p></strong>
+                <p class="version">Version &nbsp;{{version}}</p>
+            </div>
+            <button matRipple (click)="upgrade.emit()">
+                Upgrade
+            </button>
+        </div>
+    </div>    
+</section>

@@ -1,0 +1,11 @@
+<section>
+  <h3>Recommended Panel</h3>
+  <div class="dishes">
+    <app-product-card
+      *ngFor="let item of products"
+      [productName]="item.name"
+      [price]="item.price"
+      [smaller]="true"
+    ></app-product-card>
+  </div>
+</section>

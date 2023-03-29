@@ -1,0 +1,17 @@
+<section>
+    <div id="search" [class]="active ? 'active' :''">
+        <input (input)="searchSubcription.next(search.value)" #search (focus)="active = true" (blur)="active=false" type="search" [placeholder]="dynamicPlaceholder">
+        <button mat-icon-button><mat-icon>search</mat-icon></button>
+    </div>
+    <ng-container>
+        <button class="button active" color="primary" (click)="selectTable()">
+            <mat-icon>table_bar</mat-icon>
+            View Table 
+        </button>
+        <mat-button-toggle-group value="dineIn" color="primary" (change)="switchMode($event)" [(ngModel)]="dataProvider.billingMode" name="fontStyle" aria-label="Font Style">
+            <mat-button-toggle color="primary" value="dineIn">Dine In</mat-button-toggle>
+            <mat-button-toggle color="primary" value="takeaway">Takeaway</mat-button-toggle>
+            <mat-button-toggle color="primary" value="online">Online</mat-button-toggle>
+        </mat-button-toggle-group>
+    </ng-container>
+</section>

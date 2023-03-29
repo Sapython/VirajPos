@@ -1,0 +1,49 @@
+<section>
+  <div class="seeMore" *ngIf="dataProvider.moreActions">
+    <div class="actions">
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="dataProvider.currentBill?.finalizeAndPrintKot()" color="primary">Re Print Bill</button>
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="finalizeBill()" color="primary">Raise Concern</button>
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="cancelBill()" color="primary">Cancel Bill</button>
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="seeMore=!seeMore" color="primary">More</button>
+    </div>
+  </div>
+  <!-- <div class="expand"><button mat-icon-button><mat-icon>expand_less</mat-icon></button></div> -->
+  <div class="main">
+    <div class="details">
+      <span>
+        <p>Order Bill No.</p>
+        <strong>{{dataProvider.currentBill?.id}}</strong>
+      </span>
+      <span>
+        <p>Token No.</p>
+        <strong>{{dataProvider.currentBill?.currentKot?.id}}</strong>
+      </span>
+      <span>
+        <p>Bill Total</p>
+        <strong>{{dataProvider.currentBill?.billing?.grandTotal}}</strong>
+      </span>
+      <span>
+        <p>Table No.</p>
+        <strong>{{dataProvider.currentBill?.table?.name}}</strong>
+      </span>
+      <span>
+        <mat-slide-toggle [disabled]="this.dataProvider.currentBill?.stage!='active'" [(ngModel)]="isNonChargeable" (change)="nonChargeable($event)">Non Chargable</mat-slide-toggle>
+      </span>
+      <button [disabled]="!this.dataProvider.currentBill" mat-stroked-button color="primary" (click)="dataProvider.manageKot=!dataProvider.manageKot">{{dataProvider.manageKot==true ? 'Back' : 'Manage KOT'}}</button>
+    </div>
+    <div class="actions">
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active' && this.dataProvider.currentBill?.editKotMode==null" mat-flat-button (click)="dataProvider.currentBill?.finalizeAndPrintKot()" color="primary">Print KOT</button>
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="finalizeBill()" color="primary">Finalize Bill</button>
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="cancelBill()" color="primary">Cancel Bill</button>
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="addDiscount()" color="primary">Discount</button>
+      <!-- <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="dataProvider.moreActions=!dataProvider.moreActions" color="primary">More</button> -->
+      <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-icon-button (click)="dataProvider.currentBill?.setInstruction()" color="primary"><mat-icon>info</mat-icon></button>
+    </div>
+    <div class="actions" *ngIf="this.dataProvider.currentBill?.stage=='finalized'">
+      <button [disabled]="!this.dataProvider.currentBill" (click)="settleBill()" mat-flat-button color="primary">Settle Bill</button>
+    </div>
+    <div class="actions" *ngIf="this.dataProvider.currentBill?.stage=='cancelled'">
+      <button [disabled]="!this.dataProvider.currentBill" mat-flat-button color="primary">Open Table</button>
+    </div>
+  </div>
+</section>

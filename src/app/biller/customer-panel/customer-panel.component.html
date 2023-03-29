@@ -1,0 +1,26 @@
+<section class="customerInfo">
+    <h4>Customer Info</h4>
+    <form [formGroup]="customerInfoForm">
+        <div>
+            <input type="text" formControlName="name" placeholder="Customer Info">
+            <input type="tel" formControlName="phone" placeholder="Phone Number">
+        </div>
+        <textarea placeholder="Address" formControlName="address"></textarea>
+    </form>
+</section>
+<section class="orders">
+    <p><b>Order Frequency : </b>
+        <span>
+            {{orderFrequency}}%
+            in {{lastMonth}}
+            <ng-container *ngIf="orderFrequency>=0">
+                <mat-icon>arrow_upward</mat-icon>
+            </ng-container>
+            <ng-container *ngIf="orderFrequency<0">
+                <mat-icon>arrow_downward</mat-icon>
+            </ng-container>
+        </span>
+    </p>
+    <p><b>Avg Order Price : </b> <strong>{{averageOrderPrice | currency:'INR'}}</strong></p>
+    <p><b>Last Order : </b> {{wordsToSentence(lastOrderDish)}}</p>
+</section>
