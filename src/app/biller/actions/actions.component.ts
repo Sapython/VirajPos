@@ -5,6 +5,7 @@ import { AddDiscountComponent } from './add-discount/add-discount.component';
 import { CancelComponent } from './cancel/cancel.component';
 import { NonChargeableComponent } from './non-chargeable/non-chargeable.component';
 import { SettleComponent } from './settle/settle.component';
+import { CustomerPanelComponent } from '../customer-panel/customer-panel.component';
 
 @Component({
   selector: 'app-actions',
@@ -76,5 +77,10 @@ export class ActionsComponent {
     } else if(this.dataProvider.currentBill && !event.checked){
       this.dataProvider.currentBill.setAsNormal()
     }
+  }
+
+  addCustomerInfo(){
+    const dialog = this.dialog.open(CustomerPanelComponent)
+    // dialog.afterClosed().subscribe((result)=>{})
   }
 }

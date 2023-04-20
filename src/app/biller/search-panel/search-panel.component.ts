@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { debounce, debounceTime, Subject } from 'rxjs';
+import { debounce, debounceTime, Subject, Subscription } from 'rxjs';
 import Fuse from 'fuse.js';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { TableComponent } from '../table/table.component';
+import { DatabaseService } from 'src/app/services/database.service';
 @Component({
   selector: 'app-search-panel',
   templateUrl: './search-panel.component.html',
@@ -20,24 +21,36 @@ export class SearchPanelComponent implements OnInit {
     "Search any table..."
   ]
   searchResults:any[] = [];
+  billResults:any[] = [];
+  allBills:any[] = [];
   index:number = 0;
   active:boolean = false;
   dynamicPlaceholder:string = this.placeholders[0];
   selectedMode:'dineIn'|'takeAway'|'online' = "dineIn";
   searchSubcription:Subject<string> = new Subject<string>();
   currentSearchTerm:string = "";
+  billListnerActive:boolean = false;
+  billListner:Subscription = Subscription.EMPTY;
   searchInstance = new Fuse(this.dataProvider.products, {
     keys: ['dishName','count'],
   })
-  constructor(public dataProvider:DataProvider,private dialog:Dialog) {
-    // this.searchSubcription.pipe(debounceTime(800)).subscribe((value)=>{
-    //   console.log(value);
-    //   this.fetchAdvancedResults()
-    // })
+  searchVisible:boolean = false;
+  constructor(public dataProvider:DataProvider,private dialog:Dialog,private databaseService:DatabaseService) {
+    this.searchSubcription.pipe(debounceTime(400)).subscribe((value)=>{
+      console.log(value);
+      this.fetchAdvancedResults(value)
+    })
     this.searchSubcription.pipe(debounceTime(200)).subscribe((value)=>{
       console.log(value);
       this.currentSearchTerm = value;
       this.basicSearch(value)
+    })
+  }
+
+  getBills(){
+    this.billListnerActive = true;
+    this.billListner = this.databaseService.getBillsSubscription().subscribe((bills)=>{
+      this.allBills = bills;
     })
   }
 
@@ -64,6 +77,7 @@ export class SearchPanelComponent implements OnInit {
     //   quantity:1,
     // }
     this.searchResults = results.map((result)=>{return {
+      type:'product',
       name: result.item.dishName,
       price: result.item.shopPrice,
       image: result.item.images[0],
@@ -81,8 +95,19 @@ export class SearchPanelComponent implements OnInit {
     }
   }
 
-  fetchAdvancedResults(){
-
+  fetchAdvancedResults(value:string){
+    if (value.startsWith('#')){
+      if (!this.billListnerActive){
+        this.getBills();
+      }
+      if (this.allBills.length > 0){
+        this.billResults.push({
+          type:'bill',
+          
+          billId: this.allBills[0].id,
+        })
+      }
+    }
   }
 
   selectTable(){

@@ -5,6 +5,7 @@ import { KotItemComponent } from './kot-item/kot-item.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
 
 
 
@@ -18,7 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    BaseComponentsModule
   ],
   exports:[
     ActiveKotComponent

@@ -12,7 +12,20 @@ import { UserRecord } from '../structures/user.structure';
   providedIn: 'root'
 })
 export class DataProvider {
-  constructor() { }
+  constructor() {
+    // read viewSettings from localStorage every 2 seconds
+    setInterval(() => {
+      this.smartMode = (localStorage.getItem('viewSettings')?JSON.parse(localStorage.getItem('viewSettings')!):{smartView:false}).smartView;
+    } , 2000);
+    window.addEventListener('resize', () => {
+      this.clientWidth = window.innerWidth;
+      this.clientHeight = window.innerHeight;
+    })
+  }
+
+  // smart vars
+  public chatInnerHtml:Node|undefined;
+  public chatCustomWidget:any;
 
   // constants
   public password:string = '123456';
@@ -40,6 +53,10 @@ export class DataProvider {
   public moreActions:boolean = false;
   public manageKot:boolean = false;
   public totalSales:number = 0;
+  public clientWidth:number = window.innerWidth;
+  public clientHeight:number = window.innerHeight;
+  public smartMode:boolean = (localStorage.getItem('viewSettings')?JSON.parse(localStorage.getItem('viewSettings')!):{smartView:false}).smartView;
+  public touchMode:boolean = (localStorage.getItem('viewSettings')?JSON.parse(localStorage.getItem('viewSettings')!):{touchMode:false}).touchMode;
   
   // triggers
   public closeAllPanel:Subject<boolean> = new Subject<boolean>();
@@ -52,4 +69,5 @@ export class DataProvider {
   public searchResults:Subject<any[]|false> = new Subject<any[]|false>();
   public productsLoaded:Subject<boolean> = new Subject<boolean>();
   public billUpdated:Subject<void> = new Subject<void>();
+
 }

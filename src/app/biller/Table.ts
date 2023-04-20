@@ -36,7 +36,9 @@ export class Table implements TableConstructor {
     this.status = 'available';
     this.tableNo = tableNo;
     this.type = type;
-    this.updated.next();
+    this.updated.pipe(debounceTime(1000)).subscribe(() => {
+      this.databaseService.updateTable(this.toObject());
+    })
   }
 
   removeBill() {

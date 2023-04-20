@@ -11,7 +11,7 @@
                 <mat-label>Password</mat-label>
                 <input matInput formControlName="password" type="password" placeholder="Password" required>
             </mat-form-field>
-            <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">Login</button>
+            <viraj-button color="primary" [disabled]="!loginForm.valid">Login</viraj-button>
         </form>
         <div *ngIf="!dataProvider.isAuthStateAvaliable" class="center">
             <mat-spinner></mat-spinner>
@@ -20,6 +20,6 @@
     <section *ngIf="dataProvider.loggedIn">
         <img src="assets/viraj.png" alt="Viraj">
         <h1>Viraj Login</h1>
-        <button mat-flat-button color="primary" routerLink="../biller">Continue To Viraj</button>
+        <viraj-button mat-flat-button color="primary" routerLink="../biller">Continue To Viraj</viraj-button>
     </section>
 </main>

@@ -35,6 +35,10 @@ import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 import { AlertsAndNotificationsService } from './services/alerts-and-notification/alerts-and-notifications.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { GetDataService } from './services/get-data.service';
+import { BaseComponentsModule } from './base-components/base-components.module';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 const dbConfig: DBConfig = {
   name: 'Viraj',
   version: 1,
@@ -111,7 +115,9 @@ const dbConfig: DBConfig = {
     provideRemoteConfig(() => getRemoteConfig()),
     provideStorage(() => getStorage()),
     NgxIndexedDBModule.forRoot(dbConfig),
-    MatSnackBarModule
+    MatSnackBarModule,
+    BaseComponentsModule,
+    MatButtonToggleModule,
   ],
   providers: [
     DataProvider,
@@ -125,3 +131,4 @@ const dbConfig: DBConfig = {
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+

@@ -44,6 +44,7 @@ import { AddDishComponent } from './edit-menu/add-dish/add-dish.component';
 import { MatSelectModule } from '@angular/material/select';
 import {MatMenuModule} from '@angular/material/menu';
 import { ReportsComponent } from './info-panel/sales-summary/reports/reports.component'; 
+import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { ReportsComponent } from './info-panel/sales-summary/reports/reports.com
     HelpersModule,
     MatStepperModule,
     MatSelectModule,
-    MatMenuModule
+    MatMenuModule,
+    BaseComponentsModule
   ],
   exports:[SidebarComponent]
 })

@@ -4,8 +4,8 @@
         <span>{{currentUser}}</span>
         <span class="uid">#{{currentUserId}}</span>
     </div>
-    <button color="primary" mat-icon-button (click)="lock.emit()"><mat-icon>lock</mat-icon></button>
-    <button color="primary" mat-icon-button (click)="support.emit()"><mat-icon>help</mat-icon></button>
-    <button color="primary" mat-icon-button (click)="openSettings()"><mat-icon>settings</mat-icon></button>
-    <button color="primary" mat-stroked-button (click)="logout.emit()">Logout</button>
+    <viraj-button type="icon" (vclick)="lock.emit()"><i class="ri-lock-fill"></i></viraj-button>
+    <viraj-button type="icon" (vclick)="openChat()"><i class="ri-questionnaire-fill"></i></viraj-button>
+    <viraj-button type="icon" (vclick)="openSettings()"><i class="ri-settings-3-fill"></i></viraj-button>
+    <viraj-button type="outline" (vclick)="logout.emit()">Logout</viraj-button>
 </section>

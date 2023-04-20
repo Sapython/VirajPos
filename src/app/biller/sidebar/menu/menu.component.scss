@@ -1,7 +1,8 @@
 section{
+    height: 100%;
     .categories{
-        height: 33vh;
-        overflow-y: auto;
+        transition: all 0.5s ease-in-out;
+        // overflow-y: auto;
         span{
             position: sticky;
             z-index: 1;
@@ -19,7 +20,13 @@ section{
             }
         }
     }
+    .categoriesExpanded{
+        // height: calc(100vh - 300px);
+    }
     .actions{
+        position: sticky;
+        bottom: 0px;
+        background: white;
         box-shadow: 0px -15px 30px 0px rgba(0,0,0,0.3);
         padding: 10px;
         display: flex;
@@ -56,6 +63,54 @@ section{
             b{
                 color:#FF5E35;
             }
+        }
+    }
+}
+// @media screen and (max-width: 717px) {
+//     section{
+//         .actions{
+//             button{
+//                 padding: 5px 20px;
+//             }
+//         }
+//     }
+// }
+// @media screen and (min-height: 766px) {
+//     section{
+//         .categories{
+//             span{
+//                 // background: purple;
+//             }
+//             height: calc(100vh - 460px);
+//         }
+//     }
+// }
+// @media screen and (min-height:800px) {
+//     section{
+//         .categories{
+//             span{
+//                 // background: yellow;
+//             }
+//             height: calc(100vh - 480px);
+//         }
+//     }
+// }
+// @media screen and (min-height: 900px) {
+//     section{
+//         .categories{
+//             span{
+//                 // background: blue;
+//             }
+//             height: calc(100vh - 600px);
+//         }
+//     }
+// }
+
+@media (max-width: 1300px) {
+    .categories{
+        span{
+            height: 30px !important;
+            padding: 0px 5px !important;
         }
     }
 }

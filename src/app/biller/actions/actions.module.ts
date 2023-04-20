@@ -12,6 +12,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AddDiscountComponent } from './add-discount/add-discount.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NonChargeableComponent } from './non-chargeable/non-chargeable.component';
+import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { NonChargeableComponent } from './non-chargeable/non-chargeable.componen
     MatFormFieldModule,
     MatInputModule,
     MatButtonToggleModule,
+    BaseComponentsModule,
     MatSlideToggleModule,
     MatIconModule
   ],

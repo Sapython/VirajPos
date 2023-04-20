@@ -78,9 +78,9 @@
     </mat-tab>
     <mat-tab label="Printer">
       <h1>Printer Settings</h1>
-      <button mat-button color="primary" type="button" (click)="addConfig()">
-        <mat-icon>add</mat-icon> Add Config
-      </button>
+      <viraj-button (vclick)="addConfig()">
+        <i class="ri-add-fill"></i> Add Config
+      </viraj-button>
       <form (ngSubmit)="setPrinters()">
         <div class="grid">
           <ng-container *ngFor="let config of configs">
@@ -123,6 +123,13 @@
           <h2 *ngIf="configs.length==0">No Configs Found</h2>
         </div>
         <button mat-raised-button type="submit" color="primary">Submit</button>
+      </form>
+    </mat-tab>
+    <mat-tab label="View">
+      <h3>View Settings</h3>
+      <form [formGroup]="viewSettings">
+        <mat-slide-toggle formControlName="smartView">Smart View</mat-slide-toggle>
+        <mat-slide-toggle formControlName="touchMode">Touch Mode</mat-slide-toggle>
       </form>
     </mat-tab>
   </mat-tab-group>

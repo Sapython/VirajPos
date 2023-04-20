@@ -32,8 +32,18 @@ section{
         color:#EA445A;
         background: #FFFAFA;
     }
-    mat-icon{
+    i.ri-arrow-right-s-line{
         color:var(--Viraj-primary);
         font-size: var(--Viraj-font-xxxlarge);
+    }
+}
+@media screen and (max-width: 1370px){
+    section{
+        height: auto;
+        > p{
+            margin: 0px;
+            color:var(--Viraj-primary);
+            font-size: var(--Viraj-font-xlarge);
+        }
     }
 }

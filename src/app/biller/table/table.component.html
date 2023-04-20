@@ -26,7 +26,7 @@
             <button class="editTable">
                 Edit Table
             </button>
-            <button mat-icon-button (click)="this.dialogRef.close()"> <mat-icon>close</mat-icon></button>
+            <viraj-button [minimalPadding]="true" type="icon" (vclick)="this.dialogRef.close()"><i class="ri-close-fill"></i></viraj-button>
         </div>
     </div>
     <h2>Table</h2>
@@ -45,8 +45,8 @@
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
                 <div class="actions" *ngIf="table.status == 'occupied'">
-                    <button color="primary" mat-icon-button (click)="printTable(table,$event)"><mat-icon>print</mat-icon></button>
-                    <button color="primary" mat-icon-button (click)="openTable(table,$event)"><mat-icon>visibility</mat-icon></button>
+                    <viraj-button [minimalPadding]="true" type="icon" (vclick)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
+                    <viraj-button [minimalPadding]="true" type="icon" (vclick)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
                 </div>
             </button>
             <button class="table" [ngClass]="{'active':table.status=='occupied','disabled':table.status!='occupied'}" matRipple [matRippleDisabled]="table.status!='occupied'" *ngFor="let table of this.dataProvider.tokens" (click)="moveKot(table,$event)">
@@ -55,8 +55,8 @@
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
                 <div class="actions" *ngIf="table.status == 'occupied'">
-                    <button color="primary" mat-icon-button (click)="printTable(table,$event)"><mat-icon>print</mat-icon></button>
-                    <button color="primary" mat-icon-button (click)="openTable(table,$event)"><mat-icon>visibility</mat-icon></button>
+                    <viraj-button [minimalPadding]="true" type="icon" (vclick)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
+                    <viraj-button [minimalPadding]="true" type="icon" (vclick)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
                 </div>
             </button>
         </div>
@@ -77,8 +77,8 @@
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
                 <div class="actions" *ngIf="table.status == 'occupied'">
-                    <button color="primary" mat-icon-button (click)="printTable(table,$event)"><mat-icon>print</mat-icon></button>
-                    <button color="primary" mat-icon-button (click)="openTable(table,$event)"><mat-icon>visibility</mat-icon></button>
+                    <viraj-button [minimalPadding]="true" type="icon" (click)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
+                    <viraj-button [minimalPadding]="true" type="icon" (click)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
                 </div>
             </button>
             <button class="table empty">
@@ -93,8 +93,8 @@
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
                 <div class="actions" *ngIf="table.status == 'occupied'">
-                    <button color="primary" mat-icon-button (click)="printTable(table,$event)"><mat-icon>print</mat-icon></button>
-                    <button color="primary" mat-icon-button (click)="openTable(table,$event)"><mat-icon>visibility</mat-icon></button>
+                    <viraj-button [minimalPadding]="true" type="icon" color="primary" (click)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
+                    <viraj-button [minimalPadding]="true" type="icon" color="primary" (click)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
                 </div>
             </button>
             <button class="table empty" (click)="addToken()" >

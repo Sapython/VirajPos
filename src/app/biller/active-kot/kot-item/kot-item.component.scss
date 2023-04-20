@@ -13,12 +13,10 @@ section {
         display: grid;
         align-items: center;
         grid-template-columns: 0.5fr 4fr 3.4fr;
-        padding-inline: 10px;
-        padding-block: 10px;
+        padding: 10px;
         border-left: 5px solid white;
         border-bottom: 1px solid #ccc;
         gap: 10px;
-
         .veg {
             // vegetarian sign
             display: flex;
@@ -64,11 +62,9 @@ section {
             .actions {
                 display: grid;
                 gap: 10px;
-                padding: 0px 10px;
                 margin-bottom: 5px;
                 align-items: center;
                 grid-template-columns: 1fr 1fr 0.7fr 0.7fr;
-
                 select {
                     width: 80px;
                     border: 1px solid #BEBEBE;
@@ -92,22 +88,22 @@ section {
                         font-size: var(--Viraj-font-large);
                     }
 
-                    button {
-                        border: none;
-                        width: 32px;
-                        height: 32px;
-                        background: var(--Viraj-primary);
-                        color: white;
-                        border-radius: 4px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        box-shadow: var(--Viraj-shadow-light);
-                    }
+                    // button {
+                    //     border: none;
+                    //     width: 32px;
+                    //     height: 32px;
+                    //     background: var(--Viraj-primary);
+                    //     color: white;
+                    //     border-radius: 4px;
+                    //     display: flex;
+                    //     justify-content: center;
+                    //     align-items: center;
+                    //     box-shadow: var(--Viraj-shadow-light);
+                    // }
 
-                    button[disabled] {
-                        background: #ccc;
-                    }
+                    // button[disabled] {
+                    //     background: #ccc;
+                    // }
                 }
 
                 .iconButton {
@@ -126,11 +122,47 @@ section {
             .infoStatement {
                 display: flex;
                 gap: 20px;
-
+                font-size: var(--Viraj-font-medium);
                 strong {
                     color: var(--Viraj-success);
                 }
             }
+        }
+    }
+}
+
+@media screen and (max-width:1650px) {
+    .main{
+        grid-template-areas: "veg info info" "veg more more";
+        .veg{
+            grid-area: veg;
+        }
+        .info{
+            grid-area: info;
+            display: grid !important;
+            grid-template-columns: 3fr 1fr;
+        }
+        .more{
+            grid-area: more;
+        }
+    }
+}
+@media screen and (max-width:1300px) {
+    .main{
+        padding: 2px !important;
+    }
+    .actions{
+        select{
+            padding: 3px !important;
+            width: 50px !important;
+        }
+    }
+    .veg{
+        width: 15px !important;
+        height: 15px !important;
+        span{
+            width: 7px !important;
+            height: 7px !important;
         }
     }
 }

@@ -1,25 +1,56 @@
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
+import { AfterViewInit, Component, ElementRef, OnChanges, OnInit } from '@angular/core';
 import { debounceTime, Subject, Subscription } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
-
+import { SalesSummaryComponent } from './sales-summary/sales-summary.component';
+import { OrderSummaryComponent } from './order-summary/order-summary.component';
+declare var Hammer:any;
 @Component({
   selector: 'app-info-panel',
   templateUrl: './info-panel.component.html',
   styleUrls: ['./info-panel.component.scss']
 })
-export class InfoPanelComponent implements OnInit,OnChanges{
+export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
   limitedSale:string = "0";
   isOpen = false;
   isSalesOpen = false;
+  height:number = 0;
   closeOrdersPanelSubscription:Subject<boolean> = new Subject<boolean>();
   closeSalesPanelSubscription:Subject<boolean> = new Subject<boolean>();
-  constructor(public dataProvider:DataProvider) {
+  constructor(public dataProvider:DataProvider,private el:ElementRef,private dialog:Dialog) {
     this.dataProvider.closeAllPanel.subscribe((data)=>{
       this.isOpen = false;
       this.isSalesOpen = false;
     })
+    console.log("this.el.nativeElement",this.el.nativeElement.offsetHeight);
+    this.height = this.el.nativeElement.offsetHeight;
   }
-  ngOnInit(): void {  
+  ngAfterViewInit(): void {
+    console.log("this.el.nativeElement",this.el.nativeElement.offsetHeight);
+    this.height = this.el.nativeElement.offsetHeight;
+    if (this.dataProvider.touchMode){
+      // sales recognizer
+      var mc = new Hammer.Manager(document.getElementById('salesTrigger'));
+      mc.add( new Hammer.Press({ time:500 }) );
+      mc.on("press", (ev:any) => {
+        console.log("press",ev);
+        const dialog = this.dialog.open(SalesSummaryComponent)
+        dialog.componentInstance?.close.subscribe((data)=>{
+          dialog.close();
+        })
+      });
+      var mc = new Hammer.Manager(document.getElementById('ordersTrigger'));
+      mc.add( new Hammer.Press({ time:500 }) );
+      mc.on("press", (ev:any) => {
+        console.log("press",ev);
+        const dialog = this.dialog.open(OrderSummaryComponent)
+        dialog.componentInstance?.close.subscribe((data)=>{
+          dialog.close();
+        })
+      });
+    }
+  }
+  ngOnInit(): void {
     // convert this.dataProvider.sale to string with K if greater than 1000 and L if greater than 100000
     
     // convert this.dataProvider.billToken to string with K if greater than 1000 and L if greater than 100000

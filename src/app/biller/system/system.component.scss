@@ -26,3 +26,16 @@ section{
         }
     }
 }
+@media (max-width: 1370px) {
+    section{
+        gap:5px;
+        padding: 5px;
+        .info{
+            padding: 0px;
+            p{
+                text-overflow: clip;
+                font-size: var(--Viraj-font-large);
+            }
+        }
+    }
+}

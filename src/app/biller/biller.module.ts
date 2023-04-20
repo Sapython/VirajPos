@@ -28,6 +28,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { BaseComponentsModule } from '../base-components/base-components.module';
 
 @NgModule({
   declarations: [
@@ -56,7 +58,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatTabsModule,
     MatOptionModule,
     MatIconModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    BaseComponentsModule
   ]
 })
 export class BillerModule { }

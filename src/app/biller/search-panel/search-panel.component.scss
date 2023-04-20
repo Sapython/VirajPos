@@ -8,10 +8,11 @@ section{
     div#search{
         display: flex;
         justify-content: space-between;
-        width: 250px;
+        max-width: 250px;
+        min-width: 100px;
         border: 2px solid #ccc;
         padding: 0px 10px;
-        border-radius: 10px;
+        border-radius: var(--Viraj-border-radius);
         input{
             border: none;
             width: 100%;
@@ -25,7 +26,7 @@ section{
         border-color: var(--Viraj-primary) !important;
     }
     button.button{
-        height: 50px;
+        height: 100%;
         background-color: #fff;
         border: 2px solid var(--Viraj-primary);
         border-radius: 4px;
@@ -41,5 +42,11 @@ section{
         background-color: var(--Viraj-primary);
         border: 2px solid var(--Viraj-primary);
         color:white;
+    }
+}
+@media (max-width: 1024px) {
+    section{
+        gap:5px;
+        padding: 5px;
     }
 }

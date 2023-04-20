@@ -8,16 +8,16 @@
         <textarea placeholder="Address" formControlName="address"></textarea>
     </form>
 </section>
-<section class="orders">
+<section class="orders" *ngIf="dataProvider.smartMode">
     <p><b>Order Frequency : </b>
         <span>
             {{orderFrequency}}%
             in {{lastMonth}}
             <ng-container *ngIf="orderFrequency>=0">
-                <mat-icon>arrow_upward</mat-icon>
+                <i class="ri-arrow-up-line"></i>
             </ng-container>
             <ng-container *ngIf="orderFrequency<0">
-                <mat-icon>arrow_downward</mat-icon>
+                <i class="ri-arrow-down-line"></i>
             </ng-container>
         </span>
     </p>

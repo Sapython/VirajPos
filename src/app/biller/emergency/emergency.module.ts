@@ -9,6 +9,7 @@ import { ReceiveComponent } from './cards/receive/receive.component';
 import { DisperseComponent } from './cards/disperse/disperse.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
 
 
 
@@ -25,7 +26,8 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     CommonModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    BaseComponentsModule
   ],
   exports:[
     EmergencyComponent

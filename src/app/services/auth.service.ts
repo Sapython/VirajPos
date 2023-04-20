@@ -34,7 +34,7 @@ export class AuthService {
             email: string;
           };
           this.localUserId = localData.userId;
-          console.log('Local login found', localData);
+          // console.log('Local login found', localData);
           this.getUser(localData.userId).then((user) => {
             this.localUserData = user.data() as UserRecord;
             this.dataProvider.currentUser = user.data() as UserRecord;
@@ -46,7 +46,7 @@ export class AuthService {
     );
     onAuthStateChanged(this.auth, (user) => {
       this.dataProvider.isAuthStateAvaliable = true;
-      console.log('this.localUserId', this.localUserId);
+      // console.log('this.localUserId', this.localUserId);
       if (user) {
         if (user.uid == this.localUserId) {
           this.dataProvider.loggedIn = true;
@@ -55,7 +55,7 @@ export class AuthService {
           this.getUser(user.uid).then((userData) => {
             // this.dataProvider.currentUser = user.data() as UserRecord;
             this.dataProvider.loggedIn = true;
-            console.log('User found', userData.data());
+            // console.log('User found', userData.data());
             if (userData.exists() && userData.data()) {
               this.dataProvider.currentUser = userData.data() as UserRecord;
               this.addCurrentUserOnLocal(userData.data() as UserRecord);
@@ -69,7 +69,7 @@ export class AuthService {
             console.log("Getting current user Error",err);
           });
         }
-        console.log('Auth state found', user);
+        // console.log('Auth state found', user);
         // this.checkbusiness('1').then((deviceLoginStatus)=>{
         //   console.log("deviceLoginStatus",deviceLoginStatus);
         //   if (deviceLoginStatus){

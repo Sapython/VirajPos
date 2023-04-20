@@ -1,7 +1,5 @@
 section{
     overflow-y: auto;
-    height: calc(100% - 10px);
-    padding-top: 10px;
     background: white;
     border-radius: var(--Viraj-border-radius) 0px 0px var(--Viraj-border-radius);
     .kotEditOptions{
@@ -59,4 +57,35 @@ section{
     height:auto;
     display: block;
     margin:0 auto;
+}
+
+@media screen and (max-width: 1300px){
+    h2{
+        margin: 10px;
+    }
+    section{
+        border-radius: var(--Viraj-border-radius);
+    }
+    .title{
+        .labels{
+            padding: 5px;
+            width: 100%;
+            overflow-x: scroll;
+            .label{
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                p{
+                    margin: 0px;
+                }
+                span{
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 15px;
+                    background: #ccc;
+                    box-shadow: 0px 0px 20px 0px #00000009;
+                }
+            }
+        }
+    }
 }

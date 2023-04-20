@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'; 
+import { BaseComponentsModule } from '../base-components/base-components.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
-    MatButtonModule,
+    BaseComponentsModule,
     MatProgressSpinnerModule
   ]
 })

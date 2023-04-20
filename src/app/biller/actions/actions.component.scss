@@ -1,3 +1,13 @@
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
 section {
     display: flex;
     flex-direction: column;
@@ -25,9 +35,6 @@ section {
         display: flex;
         flex-direction: column;
         gap: 15px;
-
-        // top: -70px;
-        // position: relative
         .expand {
             width: min-content;
             margin: 0 auto;
@@ -46,18 +53,20 @@ section {
         .details {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-
+            gap:4px;
+            align-items: center;
             span {
+                // border: 1px solid #ccc;
                 display: flex;
                 color: rgb(79, 79, 79);
                 align-items: center;
                 gap: 10px;
-
                 p {
                     margin: 0px;
                 }
 
                 strong {
+                    font-size: var(--Viraj-font-large);
                     color: var(--Viraj-primary);
                     font-weight: 600;
                 }
@@ -65,11 +74,56 @@ section {
         }
 
         .actions {
-            display: flex;
+            display: grid;
+            grid-template-areas: "a a a b b b" "c c d d e e";
             justify-content: space-between;
-
-            button {
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            viraj-button[mat-flat-button] {
                 color: white;
+            }
+            viraj-button:nth-child(1){
+                grid-area: a;
+            }
+            viraj-button:nth-child(2){
+                grid-area: b;
+            }
+            viraj-button:nth-child(3){
+                grid-area: c;
+            }
+            viraj-button:nth-child(4){
+                grid-area: d;
+            }
+            viraj-button:nth-child(5){
+                grid-area: e;
+            }
+        }
+
+        .customer{
+            padding: 7px 20px;
+            width: 100%;
+            margin: 0 auto;
+            font-size: var(--Viraj-font-xxlarge);
+            background: var(--Viraj-primary);
+            border-radius: 7px;
+            color: white;
+            box-shadow: 0px 0px 10px 0px rgba(255, 60, 0, 0.2);
+            border: none;
+            animation: popIn 0.5s cubic-bezier(0.83, 0, 0.17, 1);
+        }
+    }
+}
+
+
+@media screen and (max-width: 1300px) {
+    section {
+        .main{
+            padding: 7px;
+            .details{
+                span{
+                    padding: 4px;
+                }
             }
         }
     }

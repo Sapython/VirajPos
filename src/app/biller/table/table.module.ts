@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogModule } from '@angular/cdk/dialog';
+import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
 
 
 @NgModule({
@@ -18,7 +19,7 @@ import { DialogModule } from '@angular/cdk/dialog';
   imports: [
     CommonModule,
     MatButtonToggleModule,
-    MatButtonModule,
+    BaseComponentsModule,
     MatIconModule,
     MatRippleModule,
     FormsModule,

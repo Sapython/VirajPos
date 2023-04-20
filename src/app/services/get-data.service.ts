@@ -29,8 +29,11 @@ export class GetDataService {
       if (res.docs.length > 0){
         this.dataProvider.tables = res.docs.map((doc)=>{
           let table =  {...doc.data(),id:doc.id} as TableConstructor
-          return new Table(table.id,Number(table.tableNo),table.name,table.maxOccupancy,table.type,this.dataProvider,this.databaseService)
+          let tableClass = new Table(table.id,Number(table.tableNo),table.name,table.maxOccupancy,table.type,this.dataProvider,this.databaseService)
+          tableClass.fromObject(table);
+          return tableClass;
         })
+        console.log("tables ",this.dataProvider.tables);
         // add data to indexedDB
         this.dataProvider.tables.forEach((table)=>{
           this.dbService.getAll('tables').subscribe((res)=>{

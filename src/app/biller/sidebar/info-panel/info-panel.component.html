@@ -2,11 +2,11 @@
 <section>
   <h1>Sales Summary</h1>
   <div class="badges">
-    <span cdkOverlayOrigin #salesTrigger="cdkOverlayOrigin" class="badge sales" (mouseleave)="this.closeSalesPanelSubscription.next(false);" (mouseenter)="isSalesOpen = true">
+    <span cdkOverlayOrigin #salesTrigger="cdkOverlayOrigin" id="salesTrigger" class="badge sales" (mouseleave)="this.closeSalesPanelSubscription.next(false);" (mouseenter)="isSalesOpen = true">
       <span>Sales</span>
       <b>{{ this.dataProvider.totalSales }}</b>
     </span>
-    <ng-template
+    <ng-template *ngIf="!this.dataProvider.touchMode"
       cdkConnectedOverlay
       [cdkConnectedOverlayPositions]="[{overlayX:'start',overlayY:'top',originX:'end',originY:'bottom'}]"
       [cdkConnectedOverlayOffsetY]="-40"
@@ -15,11 +15,11 @@
     >
       <app-sales-summary (close)="this.isSalesOpen = false" (mouseleave)="this.closeSalesPanelSubscription.next(false)" (mouseenter)="this.closeSalesPanelSubscription.next(true)"></app-sales-summary>
     </ng-template>
-    <span class="badge orders" cdkOverlayOrigin #ordersTrigger="cdkOverlayOrigin" (mouseleave)="this.closeOrdersPanelSubscription.next(false);" (mouseenter)="isOpen = true">
+    <span class="badge orders" id="ordersTrigger" cdkOverlayOrigin #ordersTrigger="cdkOverlayOrigin" (mouseleave)="this.closeOrdersPanelSubscription.next(false);" (mouseenter)="isOpen = true">
       <span>Orders</span>
       <b>{{ this.dataProvider.billToken}}</b>
     </span>
-    <ng-template
+    <ng-template *ngIf="!this.dataProvider.touchMode"
       cdkConnectedOverlay
       [cdkConnectedOverlayPositions]="[{overlayX:'start',overlayY:'top',originX:'end',originY:'bottom'}]"
       [cdkConnectedOverlayOffsetY]="-40"

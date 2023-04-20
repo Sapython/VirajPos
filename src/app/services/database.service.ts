@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addDoc, doc, docData, Firestore, setDoc, updateDoc } from '@angular/fire/firestore';
+import { addDoc, collectionData, doc, docData, Firestore, setDoc, updateDoc } from '@angular/fire/firestore';
 import { collection, getDoc, getDocs } from '@firebase/firestore';
 import { TableConstructor } from '../biller/constructors';
 import { DataProvider } from '../provider/data-provider.service';
@@ -75,6 +75,10 @@ export class DatabaseService {
 
   getBills(){
     return getDocs(collection(this.firestore,'business/UTJetLFyQnfthZssQoEh/bills'))
+  }
+
+  getBillsSubscription(){
+    return collectionData(collection(this.firestore,'business/UTJetLFyQnfthZssQoEh/bills'),{idField:'id'})
   }
 
   getTables(){

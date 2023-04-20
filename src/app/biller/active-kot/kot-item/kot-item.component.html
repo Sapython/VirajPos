@@ -3,7 +3,7 @@
     <p *ngIf="showKotNo" [ngStyle]="{'color':kotNoColors[kotNo].contrast}">{{kotId}}</p>
   </div>
   <div class="main">
-    <span class="veg" [ngClass]="{ non: nonVeg }">
+    <span class="veg" *ngIf="!showKotNo" [ngClass]="{ non: nonVeg }">
       <span></span>
     </span>
     <div class="info">
@@ -18,26 +18,26 @@
           </option>
         </select>
         <div class="quantity">
-          <button [disabled]="(dataProvider.manageKot==true && !editMode)" (click)="quantity = quantity + 1">
-            <mat-icon>add</mat-icon>
-          </button>
+          <viraj-button [minimalPadding]="true" iconSize="small" [disabled]="(dataProvider.manageKot==true && !editMode)" (vclick)="quantity = quantity + 1">
+            <i class="ri-add-fill"></i>
+          </viraj-button>
           <input
           [disabled]="(dataProvider.manageKot==true && !editMode)"
             type="number"
             [(ngModel)]="quantity"
             [ngModelOptions]="{ standalone: true }"
           />
-          <button (click)="quantity = quantity - 1" [disabled]="quantity <= 1 || (dataProvider.manageKot==true && !editMode)">
-            <mat-icon>remove</mat-icon>
-          </button>
+          <viraj-button [minimalPadding]="true" iconSize="small" (vclick)="quantity = quantity - 1" [disabled]="quantity <= 1 || (dataProvider.manageKot==true && !editMode)">
+            <i class="ri-subtract-fill"></i>
+          </viraj-button>
         </div>
-        <ng-container *ngIf="!showKotNo">
-          <button [disabled]="dataProvider.manageKot==true && !editMode" class="iconButton" (click)="setInfo()">
-            <mat-icon>info</mat-icon>
-          </button>
-          <button [disabled]="dataProvider.manageKot==true && !editMode" class="iconButton" (click)="delete.emit()">
-            <mat-icon>delete</mat-icon>
-          </button>
+        <ng-container>
+          <viraj-button iconSize="medium" type="icon" [disabled]="dataProvider.manageKot==true && !editMode" class="iconButton" (vclick)="setInfo()">
+            <i class="ri-sticky-note-fill"></i>
+          </viraj-button>
+          <viraj-button iconSize="medium" type="icon" [disabled]="dataProvider.manageKot==true && !editMode" class="iconButton" (vclick)="delete.emit()">
+            <i class="ri-delete-bin-2-line"></i>
+          </viraj-button>
         </ng-container>
       </div>
       <div class="infoStatement" *ngIf="info">

@@ -19,7 +19,7 @@ export class CustomerPanelComponent {
   @Input() averageOrderPrice: number = 300;
   @Input() lastOrderDish: string[] = ["Chicken",'Rice','Salad'];
 
-  constructor(private dataProvider:DataProvider) {
+  constructor(public dataProvider:DataProvider) {
     this.customerInfoForm.valueChanges.pipe(debounceTime(1000)).subscribe((value)=>{
       this.dataProvider.currentBill?.setCustomerInfo(value)
       console.log("value",this.dataProvider.currentBill?.customerInfo);

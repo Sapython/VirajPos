@@ -3,11 +3,15 @@ import { Subscription } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { Product } from '../constructors';
 import { Kot } from '../Kot';
-
+import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
 @Component({
   selector: 'app-active-kot',
   templateUrl: './active-kot.component.html',
   styleUrls: ['./active-kot.component.scss'],
+  animations: [
+    fadeInOnEnterAnimation(),
+    fadeOutOnLeaveAnimation(),
+  ],
 })
 export class ActiveKotComponent implements OnChanges {
   kots: Kot[] = [];

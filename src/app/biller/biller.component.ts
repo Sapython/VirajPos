@@ -2,6 +2,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { DataProvider } from '../provider/data-provider.service';
 import { TableComponent } from './table/table.component';
+import { CustomerPanelComponent } from './customer-panel/customer-panel.component';
 
 @Component({
   selector: 'app-biller',
@@ -17,4 +18,5 @@ export class BillerComponent {
       alert("Bill Updated")
     })
   }
+
 }

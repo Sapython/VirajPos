@@ -9,28 +9,28 @@
         </div>
     </div>
 </div>
-<section #kotListElement [ngStyle]="{height:'calc(100% - '+(title.clientHeight + 10)+'px)'}">
+<section #kotListElement>
     <ng-container *ngIf="allKot.length > 0 && dataProvider.manageKot">
         <ng-container *ngFor="let kot of allKot;let i = index;">
             <div class="kotEditOptions" [ngStyle]="{borderLeftColor:kotNoColors[i].color}">
-                <span>KOT: {{kot.id}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><mat-icon>schedule</mat-icon>&nbsp;&nbsp;{{kot.totalTimeTaken}}</strong></span>
+                <span>KOT: {{kot.id}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><i class="ri-time-line"></i>&nbsp;&nbsp;{{kot.totalTimeTaken}}</strong></span>
                 <span *ngIf="!kot.editMode">
-                    <button mat-icon-button (click)="printKot(kot)"><mat-icon>print</mat-icon></button>
-                    <button mat-icon-button (click)="deleteKot(kot)"><mat-icon>delete</mat-icon></button>
-                    <button *ngIf="kot.totalTimeTakenNumber <= 60" mat-icon-button (click)="editKot(kot)"><mat-icon>edit</mat-icon></button>
+                    <viraj-button type="icon" (vclick)="printKot(kot)"><i class="ri-printer-fill"></i></viraj-button>
+                    <viraj-button type="icon" (vclick)="deleteKot(kot)"><i class="ri-delete-bin-fill"></i></viraj-button>
+                    <viraj-button *ngIf="kot.totalTimeTakenNumber <= 60" type="icon" (click)="editKot(kot)"><i class="ri-pencil-fill"></i></viraj-button>
                 </span>
                 <span *ngIf="kot.editMode">
-                    <button color="primary" mat-flat-button (click)="saveEditedKot(kot)"><mat-icon>save</mat-icon>Save</button>
+                    <viraj-button (vclick)="saveEditedKot(kot)"><i class="ri-save-fill"></i>Save</viraj-button>
                 </span>
             </div>
-            <app-kot-item [kotId]="kot.id" [kotNo]="i" [editMode]="kot.editMode" [quantity]="item.quantity" [productName]="item.name" [nonVeg]="false" [price]="item.price" *ngFor="let item of kot.products"></app-kot-item>
+            <app-kot-item [@fadeInOnEnter] [@fadeOutOnLeave] [kotId]="kot.id" [kotNo]="i" [editMode]="kot.editMode" [quantity]="item.quantity" [productName]="item.name" [nonVeg]="false" [price]="item.price" *ngFor="let item of kot.products"></app-kot-item>
         </ng-container>
     </ng-container>
     <ng-container *ngIf="kots.length > 0 && !dataProvider.manageKot && this.dataProvider.currentBill?.editKotMode == null">
-        <app-kot-item [kotId]="kots[0].id" (delete)="delete(item)" [kotNo]="activeKotIndex" [info]="item.instruction || null" [quantity]="item.quantity" [productName]="item.name" [nonVeg]="false" [price]="item.price" *ngFor="let item of kots[0].products;let i = index;"></app-kot-item>
+        <app-kot-item [@fadeInOnEnter] [@fadeOutOnLeave] [kotId]="kots[0].id" (delete)="delete(item)" [kotNo]="activeKotIndex" [info]="item.instruction || null" [quantity]="item.quantity" [productName]="item.name" [nonVeg]="false" [price]="item.price" *ngFor="let item of kots[0].products;let i = index;"></app-kot-item>
     </ng-container>
     <ng-container *ngIf="!dataProvider.manageKot && this.dataProvider.currentBill?.editKotMode != null">
-        <app-kot-item [kotId]="this.dataProvider.currentBill?.editKotMode?.kot?.id || ''" (delete)="delete(item)" [kotNo]="this.dataProvider.currentBill?.editKotMode?.kotIndex || 0" [quantity]="item.quantity" [productName]="item.name" [nonVeg]="false" [price]="item.price" *ngFor="let item of this.dataProvider.currentBill?.editKotMode?.newKot;let i = index;"></app-kot-item>
+        <app-kot-item [@fadeInOnEnter] [@fadeOutOnLeave] [kotId]="this.dataProvider.currentBill?.editKotMode?.kot?.id || ''" (delete)="delete(item)" [kotNo]="this.dataProvider.currentBill?.editKotMode?.kotIndex || 0" [quantity]="item.quantity" [productName]="item.name" [nonVeg]="false" [price]="item.price" *ngFor="let item of this.dataProvider.currentBill?.editKotMode?.newKot;let i = index;"></app-kot-item>
     </ng-container>
     <img class="noItem" src="assets/noItems.svg" alt="No Items" *ngIf="showImage">
 </section>

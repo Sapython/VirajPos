@@ -21,11 +21,11 @@ div.category{
         margin:0px;
     }
     p.name{
-        font-size: var(--Viraj-font-large);
+        font-size: var(--Viraj-font-medium);
         font-weight: 400;
     }
     p.average{
-        font-size: var(--Viraj-font-large);
+        font-size: var(--Viraj-font-medium);
         font-weight: 400;
     }
     span{
@@ -43,5 +43,13 @@ div.category{
         display: flex;
         gap:10px;
         align-items: center;
+    }
+}
+@media (max-width: 1300px) {
+    div.category{
+        padding: 0px 5px;
+    }
+    div.category{
+        height: 34px;
     }
 }

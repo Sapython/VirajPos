@@ -9,7 +9,10 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { slideLeftRoRight, slider } from './route-animations';
 import { GetDataService } from './services/get-data.service';
+import { DataProvider } from './provider/data-provider.service';
 declare var pywebview:any;
+declare var jivo_api:any;
+declare var jivo_config:any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -20,6 +23,7 @@ declare var pywebview:any;
 })
 export class AppComponent implements OnInit {
   title = 'Viraj';
+  test:number[] = [1,2,3,4,5,6,7,8,9,10]
   availableVoices: SpeechSynthesisVoice[] = [];
   selectedVoice: SpeechSynthesisVoice | undefined;
   speechSynthesis: SpeechSynthesis | undefined;
@@ -27,9 +31,36 @@ export class AppComponent implements OnInit {
   volume: number = 1;
   rate: number = 0.8;
   pitch: number = 1;
-  constructor(private getDataService:GetDataService){
+
+  constructor(private dataProvider:DataProvider,private dataService: GetDataService){
     console.log("pywebview",window);
-    
+    window.addEventListener('load',(data)=>{
+      console.log(document.querySelector("jdiv[class*='main_']"));
+      let chatFinderInterval = setInterval(()=>{
+        let element = document.getElementById('jcont')
+        if(element){
+          let response = jivo_api.setCustomData([
+            {
+              title:"User",
+              content:this.dataProvider.currentUser?.userId,
+              user:{
+                name:this.dataProvider.currentUser?.name,
+                email:this.dataProvider.currentUser?.email,
+                image:this.dataProvider.currentUser?.image,
+                business:this.dataProvider.currentUser?.business,
+                device:this.dataProvider.currentDevice
+              },
+            }
+          ]);
+          console.log("chat response",response);
+          clearInterval(chatFinderInterval)
+        }
+      },500)
+    })
+  }
+
+  hideChatWindow(){
+    console.log(document.querySelector('jdiv'));
   }
   ngOnInit() {
     this.speechSynthesis = window.speechSynthesis;

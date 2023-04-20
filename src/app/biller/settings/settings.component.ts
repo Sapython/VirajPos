@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
+import { AlertsAndNotificationsService } from 'src/app/services/alerts-and-notification/alerts-and-notifications.service';
 import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
@@ -26,6 +27,10 @@ export class SettingsComponent {
     deviceName: new FormControl('',[Validators.required]),
     port: new FormControl('',[Validators.required]),
   })
+  viewSettings:FormGroup = new FormGroup({
+    smartView: new FormControl(false),
+    touchMode: new FormControl(false),
+  });
   configs:any[] = []
   printers:string[] = [
     'printer1',
@@ -33,7 +38,12 @@ export class SettingsComponent {
     'printer3'
   ]
   categories:any[] = []
-  constructor(private indexedDb:NgxIndexedDBService,private databaseService:DatabaseService) { }
+  constructor(private indexedDb:NgxIndexedDBService,private alertify:AlertsAndNotificationsService) {
+    this.viewSettings.patchValue(localStorage.getItem('viewSettings')?JSON.parse(localStorage.getItem('viewSettings')!):{})
+    this.viewSettings.valueChanges.pipe(debounceTime(1000)).subscribe((data)=>{
+      localStorage.setItem('viewSettings',JSON.stringify(data))
+    })
+  }
   cancelSettings(){
     this.cancel.emit()
   }
@@ -45,7 +55,7 @@ export class SettingsComponent {
     })
     let settings:any =JSON.parse(localStorage.getItem('printerSettings') || '{}');
     if (!settings['port']){
-      alert('Please set printer settings first')
+      this.alertify.presentToast("Please set printer settings first")
       return
     }
     fetch('http://192.168.29.125:'+settings['port']+'/getPrinters',{method:'GET'}).then(res=>res.json()).then(res=>{
@@ -128,4 +138,6 @@ export class SettingsComponent {
     }
     console.log("item",item);
   }
+
+
 }
