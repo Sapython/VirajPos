@@ -14,13 +14,15 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProductCostingComponent } from './product-costing/product-costing.component';
 import Fuse from 'fuse.js';
 import { AddMenuComponent } from './add-menu/add-menu.component';
+import { PrintingService } from 'src/app/services/printing.service';
 @Component({
   selector: 'app-edit-menu',
   templateUrl: './edit-menu.component.html',
   styleUrls: ['./edit-menu.component.scss']
 })
-export class EditMenuComponent {
+export class EditMenuComponent implements OnInit {
   public recommended:Category[] = []
+  printers:string[] = [];
   // allProducts:Category = {
   //   name: "All Products",
   //   id: "all",
@@ -51,7 +53,7 @@ export class EditMenuComponent {
   // modeConfigs:ModeConfig[] = []
 
   currentType:'recommended'|'root'|'view'|'all' = 'all';
-  constructor(private dialog:Dialog,public dataProvider:DataProvider,private databaseService:DatabaseService,private alertify:AlertsAndNotificationsService,private dialogRef:DialogRef){
+  constructor(private dialog:Dialog,public dataProvider:DataProvider,private databaseService:DatabaseService,private alertify:AlertsAndNotificationsService,private dialogRef:DialogRef,private printingService:PrintingService){
     // this.searchSubject.pipe(debounceTime(500)).subscribe((searchString)=>{
     //   if (searchString){
     //     let res = this.fuseInstance.search(searchString);
@@ -74,6 +76,10 @@ export class EditMenuComponent {
         this.dataProvider.loading = false;
       })
     })
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.printers = await this.printingService.getPrinters()
   }
 
   // addNewCategory(){

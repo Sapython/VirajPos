@@ -10,6 +10,7 @@ import { RouterOutlet } from '@angular/router';
 import { slideLeftRoRight, slider } from './route-animations';
 import { GetDataService } from './services/get-data.service';
 import { DataProvider } from './provider/data-provider.service';
+import { PrintingService } from './services/printing.service';
 declare var pywebview:any;
 declare var jivo_api:any;
 declare var jivo_config:any;
@@ -32,8 +33,8 @@ export class AppComponent implements OnInit {
   rate: number = 0.8;
   pitch: number = 1;
 
-  constructor(public dataProvider:DataProvider,private dataService: GetDataService){
-    console.log("pywebview",window);
+  constructor(public dataProvider:DataProvider,private dataService: GetDataService,private printingService:PrintingService){
+    console.log("pywebview",window,this.printingService.getPrinters());
     window.addEventListener('load',(data)=>{
       console.log(document.querySelector("jdiv[class*='main_']"));
       let chatFinderInterval = setInterval(()=>{

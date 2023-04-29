@@ -1,6 +1,6 @@
 {
   "name": "viraj",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,6 +8,7 @@
     "prebuild": "npm --no-git-tag-version version patch",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "sysbuild": "npm run prebuild && ng build",
     "deploy": "npm run build && firebase deploy --only hosting"
   },
   "private": true,

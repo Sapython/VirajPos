@@ -116,6 +116,9 @@
                   [(ngModel)]="mode.selectedCategory.printer"
                   (selectionChange)="mode.updatePrinter(mode.selectedCategory)"
                   name="printer">
+                  <mat-option [value]="printer" *ngFor="let printer of printers">
+                    {{printer}}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
