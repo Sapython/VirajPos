@@ -4,6 +4,7 @@ import { BillConstructor, TableConstructor, UserConstructor } from './constructo
 import { Bill } from "./Bill";
 import { DatabaseService } from '../services/database.service';
 import { debounceTime, Subject } from 'rxjs';
+import { PrintingService } from '../services/printing.service';
 
 
 export class Table implements TableConstructor {
@@ -27,6 +28,7 @@ export class Table implements TableConstructor {
     type: 'table' | 'room' | 'token' | 'online',
     private dataProvider: DataProvider,
     public databaseService: DatabaseService,
+    private printingService:PrintingService
   ) {
     this.id = id;
     this.occupiedStart = Timestamp.now();
@@ -80,7 +82,7 @@ export class Table implements TableConstructor {
     this.updated.next();
   }
 
-  static async fromObject(object: TableConstructor,dataProvider:DataProvider,databaseService:DatabaseService) {
+  static async fromObject(object: TableConstructor,dataProvider:DataProvider,databaseService:DatabaseService,printingService:PrintingService) {
     // if(typeof object.bill == 'string'){
     //   let bill = await this.databaseService.getBill(object.bill)
     //   if (bill.exists()){
@@ -104,7 +106,8 @@ export class Table implements TableConstructor {
       object.maxOccupancy,
       object.type,
       dataProvider,
-      databaseService
+      databaseService,
+      printingService
     );
     console.log("object.bill",object.bill);
     if(typeof object.bill == 'string'){
@@ -114,7 +117,7 @@ export class Table implements TableConstructor {
         let billData = bill.data() as BillConstructor;
         console.log("billData ",billData);
         instance.id = object.id;
-        instance.bill = Bill.fromObject(billData, instance, dataProvider, databaseService);
+        instance.bill = Bill.fromObject(billData, instance, dataProvider, databaseService,printingService);
         instance.maxOccupancy = object.maxOccupancy;
         instance.billPrice = object.billPrice;
         instance.name = object.name;
@@ -202,7 +205,8 @@ export class Table implements TableConstructor {
           user,
           this.dataProvider.currentMenu?.selectedMenu,
           this.dataProvider,
-          this.databaseService
+          this.databaseService,
+          this.printingService
         );
         this.occupiedStart = Timestamp.now();
         this.status = 'occupied';

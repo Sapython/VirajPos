@@ -41,16 +41,7 @@ export class AddDiscountComponent {
   submit(){
     console.log(this.discountForm.value);
     if (this.discountForm.value.mode == 'codeBased'){
-      let discount:Discount = {
-        type:'percentage',
-        id:Math.random().toString(36).substr(2, 9),
-        name:this.discountForm.value.code,
-        value:this.discountForm.value.percent,
-        totalAppliedDiscount:0,
-        accessLevels:['admin'],
-        creationDate:Timestamp.now(),
-      }
-      this.dialogRef.close({discount,discounted:true})
+      this.dialogRef.close({discount:this.discountForm.value.selectDiscount,discounted:true})
     } else if (this.discountForm.value.mode == 'directPercent'){
       let discount:Discount = {
         type:'percentage',

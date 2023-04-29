@@ -7,6 +7,7 @@ import { DatabaseService } from 'src/app/services/database.service';
 import { Product, TableConstructor } from '../constructors';
 import { Kot } from '../Kot';
 import { Table } from '../Table';
+import { PrintingService } from 'src/app/services/printing.service';
 
 @Component({
   selector: 'app-table',
@@ -28,7 +29,8 @@ export class TableComponent implements OnInit {
     public dialogRef: DialogRef,
     public dataProvider: DataProvider,
     private database: DatabaseService,
-    private alertify: AlertsAndNotificationsService
+    private alertify: AlertsAndNotificationsService,
+    private printingService:PrintingService
   ) {}
   ngOnInit(): void {
     console.log('this.dataProvider.tables ', this.dataProvider.tables);
@@ -93,7 +95,8 @@ export class TableComponent implements OnInit {
       '1',
       'token',
       this.dataProvider,
-      this.database
+      this.database,
+      this.printingService
     );
     this.dataProvider.tokens.push(table);
   }
@@ -111,7 +114,8 @@ export class TableComponent implements OnInit {
       '1',
       'online',
       this.dataProvider,
-      this.database
+      this.database,
+      this.printingService
     );
     this.dataProvider.onlineTokens.push(table);
   }

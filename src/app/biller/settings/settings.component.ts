@@ -203,16 +203,20 @@ export class SettingsComponent {
     dialog.closed.subscribe((data:any)=>{
       console.log("data",data);
       if (data){
-        if(data.menu.length === 0){
-          data.menu = null;
+        if(data.menus.length === 0){
+          data.menus = null;
         }
+        console.log("adding",data);
         this.databaseService.addDiscount(data as Discount).then((res)=>{
           console.log("res",res);
+          this.getDiscounts();
           this.alertify.presentToast("Discount added successfully")
         }).catch((err)=>{
           console.log("err",err);
           this.alertify.presentToast("Error adding discount")
         })
+      } else {
+        console.log("no data",data);
       }
     })
   }

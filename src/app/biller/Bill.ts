@@ -16,6 +16,7 @@ import { Print, PrintConstructor } from './Print';
 import { Kot } from './Kot';
 import { splittedBill } from './actions/split-bill/split-bill.component';
 import { Discount } from './settings/settings.component';
+import { PrintingService } from '../services/printing.service';
 const taxes:Tax[] = [
   {
     id: 'tax1',
@@ -92,6 +93,7 @@ export class Bill implements BillConstructor {
     menu:Menu,
     private dataProvider: DataProvider,
     private databaseService: DatabaseService,
+    private printingService:PrintingService,
     billNo?: string
   ) {
     // this.updated.pipe(debounceTime(100)).subscribe(() => {
@@ -130,6 +132,22 @@ export class Bill implements BillConstructor {
     this.updated.next();
   }
 
+  get allProducts(){
+    // return all products from all kots and merge with their quantity
+    let products:Product[] = []
+    this.kots.forEach((kot) => {
+      kot.products.forEach((product) => {
+        let index = products.findIndex((item) => item.id === product.id)
+        if(index !== -1){
+          products[index].quantity += product.quantity;
+        } else {
+          products.push(product);
+        }
+      })
+    })
+    return products;
+  }
+
   addKot(kot: Kot) {
     this.kots.push(kot);
     this.tokens.push(this.dataProvider.kotToken.toString());
@@ -154,54 +172,6 @@ export class Bill implements BillConstructor {
   }
 
   addProduct(product: Product) {
-    // if (this.stage !== 'active') {
-    //   alert('This bill is already finalized.');
-    //   return;
-    // }
-    // const kotIndex = this.kots.findIndex((kot) => kot.stage === 'active');
-    // if (kotIndex === -1) {
-    //   let kot = new Kot(this.dataProvider.kotToken.toString(),product)
-    //   // this.kots.push({
-    //   //   id: this.dataProvider.kotToken.toString(),
-    //   //   createdDate: Timestamp.now(),
-    //   //   products: [product],
-    //   //   stage: 'active',
-    //   //   selected: false,
-    //   //   allSelected: false,
-    //   //   editMode: false,
-    //   //   someSelected: false,
-    //     // selectAll: function (event: any) {
-    //     //   const value = event.checked;
-    //     //   this.products.forEach((item) => (item.selected = value));
-    //     // },
-    //     // checkAll: function () {
-    //     //   this.allSelected = this.products.every((item) => item.selected);
-    //     //   this.someSelected =
-    //     //     this.products.some((item) => item.selected) && !this.allSelected;
-    //     // },
-    //     // toObject: function () {
-    //     //   return {
-    //     //     id: this.id,
-    //     //     createdDate: this.createdDate,
-    //     //     products: this.products,
-    //     //     stage: this.stage,
-    //     //     selected: this.selected,
-    //     //     allSelected: this.allSelected,
-    //     //     editMode: this.editMode,
-    //     //     someSelected: this.someSelected,
-    //     //   };
-    //     // },
-    //   // });
-    //   this.kots.push(kot)
-    //   this.dataProvider.kotToken++;
-    //   this.databaseService.addKitchenToken();
-    // } else {
-    //   // if the item exists in the kot, increase the quantity by 1 else add the item to the kot
-    //   this.kots[kotIndex].products.find((item) => item.id === product.id)
-    //     ? this.kots[kotIndex].products.find((item) => item.id === product.id)!
-    //         .quantity++
-    //     : this.kots[kotIndex].products.push(product);
-    // }
     if(this.stage !== 'active'){
       alert('This bill is already finalized.');
       return;
@@ -400,10 +370,7 @@ export class Bill implements BillConstructor {
         kot.products = this.editKotMode.newKot;
         kot.stage = 'finalized';
       }
-      // cancelled kot
-      // this.printKot({...this.editKotMode.kot,products:this.editKotMode.previousKot} as Kot,true);
-      // edited kot
-      // this.printKot({...this.editKotMode.kot,products:this.editKotMode.newKot} as Kot);
+      
       this.dataProvider.kotViewVisible = true;
     } else {
       let activeKot = this.kots.find(
@@ -417,19 +384,18 @@ export class Bill implements BillConstructor {
         if (this.kots.length > 1){
           if (this.nonChargeableDetail) {
             // running nonchargeable kot
-            // this.printKot(activeKot); 
-            
+            this.printKot(activeKot,'runningNonChargeable'); 
           } else {
             // running chargeable kot
-            // this.printKot(activeKot);
+            this.printKot(activeKot,'runningChargeable');
           }
         } else {
           if (this.nonChargeableDetail) {
             // first nonchargeable kot
-            // this.printKot(activeKot);
+            this.printKot(activeKot,'firstNonChargeable');
           } else {
             // first chargeable kot
-            // this.printKot(activeKot);
+            this.printKot(activeKot,'firstChargeable');
           }
         }
         this.dataProvider.kotViewVisible = true;
@@ -441,6 +407,7 @@ export class Bill implements BillConstructor {
 
   addDiscount(discount: Discount) {
     this.billing.discount = [discount];
+    console.log("this.billing.discount",this.billing.discount,discount);
     this.billing.grandTotal = this.billing.subTotal;
     this.billing.discount.forEach((discount) => {
       if (discount.type === 'percentage') {
@@ -499,138 +466,118 @@ export class Bill implements BillConstructor {
   }
 
   printBill(){
-    let kotObjects:any[] = []
-    this.kots.forEach((kot)=>{
-      kotObjects.push(kot.toObject())
-    })
-    // merge all products of kots into one array and add quani
-    let allProducts:any[] = []
-    kotObjects.forEach((kot)=>{
-      kot.products.forEach((product:any)=>{
-        let index = allProducts.findIndex((res)=>res.id === product.id)
-        if (index === -1){
-          allProducts.push(product)
-        } else {
-          allProducts[index].quantity += product.quantity
-        }
-      })
-    })
-    let totalQuantity = allProducts.reduce((acc,cur)=>{
-      return acc + cur.quantity
-    },0)
-    let settings:any =JSON.parse(localStorage.getItem('printerSettings') || '');
-    if (!settings['port']){
-      alert('Please set printer settings first')
-      return
-    }
-    let discounts = this.billing.discount.map((res)=>{
-      return {
-        title:res.name,
-        discountValue:res.value,
-        discountType:res.type,
-        appliedDiscountValue:res.totalAppliedDiscount,
-      }
-    })
-    const data = {
-      "printer":localStorage.getItem('billPrinter'),
-      "currentProject":settings,
-      "isNonChargeable":this.nonChargeableDetail?true:false,
-      "complimentaryName":this.nonChargeableDetail?.name || '',
-      "customerInfoForm":this.customerInfo,
-      "kotsToken":this.kots.map((res)=>res.id).join(','),
-      "currentTable":this.table.tableNo,
-      "allProducts":allProducts,
-      "selectDiscounts":discounts,
-      "specialInstructions":this.instruction || false,
-      "totalQuantity":totalQuantity,
-      "tableNo":this.table.tableNo,
-      "totalTaxAmount":this.billing.totalTax,
-      "taxableValue":this.billing.subTotal,
-      "date": (new Date()).toLocaleDateString('en-GB'),
-      "time": (new Date()).toLocaleTimeString('en-GB'),
-      "cgst":(this.billing.taxes[0].amount).toFixed(2),
-      "sgst":(this.billing.taxes[1].amount).toFixed(2),
-      "grandTotal":(this.billing.grandTotal).toFixed(2),
-      "paymentMethod":this.billingMode,
-      "id":this.id,
-      "billNo":this.nonChargeableDetail ? "NC-" + this.id : this.id,
-    }
-    console.log("Data",data);
-    fetch('http://192.168.29.125:'+settings['port']+'/printBill',{
-        method:'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then((res) => {
-        console.log("Contente",res)
-      }).catch((err) => {
-        console.log("Error",err)
-        alert("Error occurred while printing bill")
-      })
+    // let kotObjects:any[] = []
+    // this.kots.forEach((kot)=>{
+    //   kotObjects.push(kot.toObject())
+    // })
+    // // merge all products of kots into one array and add quani
+    // let allProducts:any[] = []
+    // kotObjects.forEach((kot)=>{
+    //   kot.products.forEach((product:any)=>{
+    //     let index = allProducts.findIndex((res)=>res.id === product.id)
+    //     if (index === -1){
+    //       allProducts.push(product)
+    //     } else {
+    //       allProducts[index].quantity += product.quantity
+    //     }
+    //   })
+    // })
+    // let totalQuantity = allProducts.reduce((acc,cur)=>{
+    //   return acc + cur.quantity
+    // },0)
+    // let settings:any =JSON.parse(localStorage.getItem('printerSettings') || '');
+    // if (!settings['port']){
+    //   alert('Please set printer settings first')
+    //   return
+    // }
+    // let discounts = this.billing.discount.map((res)=>{
+    //   return {
+    //     title:res.name,
+    //     discountValue:res.value,
+    //     discountType:res.type,
+    //     appliedDiscountValue:res.totalAppliedDiscount,
+    //   }
+    // })
+    this.printingService.printBill(this);
+    // const data = {
+    //   "printer":localStorage.getItem('billPrinter'),
+    //   "currentProject":settings,
+    //   "isNonChargeable":this.nonChargeableDetail?true:false,
+    //   "complimentaryName":this.nonChargeableDetail?.name || '',
+    //   "customerInfoForm":this.customerInfo,
+    //   "kotsToken":this.kots.map((res)=>res.id).join(','),
+    //   "currentTable":this.table.tableNo,
+    //   "allProducts":allProducts,
+    //   "selectDiscounts":discounts,
+    //   "specialInstructions":this.instruction || false,
+    //   "totalQuantity":totalQuantity,
+    //   "tableNo":this.table.tableNo,
+    //   "totalTaxAmount":this.billing.totalTax,
+    //   "taxableValue":this.billing.subTotal,
+    //   "date": (new Date()).toLocaleDateString('en-GB'),
+    //   "time": (new Date()).toLocaleTimeString('en-GB'),
+    //   "cgst":(this.billing.taxes[0].amount).toFixed(2),
+    //   "sgst":(this.billing.taxes[1].amount).toFixed(2),
+    //   "grandTotal":(this.billing.grandTotal).toFixed(2),
+    //   "paymentMethod":this.billingMode,
+    //   "id":this.id,
+    //   "billNo":this.nonChargeableDetail ? "NC-" + this.id : this.id,
+    // }
+    // console.log("Data",data);
+    // fetch('http://192.168.29.125:'+settings['port']+'/printBill',{
+    //     method:'POST',
+    //     body: JSON.stringify(data),
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     }
+    //   }).then((res) => {
+    //     console.log("Contente",res)
+    //   }).catch((err) => {
+    //     console.log("Error",err)
+    //     alert("Error occurred while printing bill")
+    //   })
+    
   }
 
-  printKot(kot:Kot,mode:"normal"|"running"|"cancelledMade"|"cancelledUnmade"|"modifiedUnmade"|"nonChargeable"|"nonChargeableRunning"){
-    let products = kot.products.map((product)=>{
-      return {
-        name:product.name,
-        quantity:product.quantity,
-        instruction:product.instruction,
-      }
-    })
-    let settings:any =JSON.parse(localStorage.getItem('printerSettings') || '');
-    if (!settings['port']){
-      alert('Please set printer settings first')
-      return
-    }
-    let data ={
-      'id':kot.id,
-      'businessDetails': this.dataProvider.currentBusiness,
-      "table": this.table.tableNo,
-      'billNo': this.id,
-      "orderNo":this.orderNo,
-      "date":(new Date()).toLocaleDateString('en-GB'),
-      "time":(new Date()).toLocaleTimeString('en-GB'),
-      "mode":"firstChargeable",
-      "products":[
-          {
-              "id":"1",
-              "name":"Item 1",
-              "instruction":"",
-              "quantity":2,
-          },
-          {
-              "id":"1",
-              "name":"Item 2",
-              "instruction":"spicy",
-              "quantity":2,
-          },
-          {
-              "id":"1",
-              "name":"Item 3",
-              "instruction":"",
-              "quantity":2,
-          },
-          {
-              "id":"1",
-              "name":"Item 4",
-              "instruction":"",
-              "quantity":2,
-          },
-      ]
-    }
-    console.log(data)
-      fetch('http://192.168.29.125:'+settings['port']+'/printKot',{
-        method:'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then((res) => {
-        console.log("Contente",res)
-      }).catch((err) => {
-        console.log("Error",err)
-      })
+  printKot(kot:Kot,mode:'cancelledKot'|'editedKot'|'runningNonChargeable'|'runningChargeable'|'firstNonChargeable'|'firstChargeable'|'online'|'bill'|'reprintBill'){
+    // let products = kot.products.map((product)=>{
+    //   return {
+    //     name:product.name,
+    //     quantity:product.quantity,
+    //     instruction:product.instruction,
+    //   }
+    // })
+    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo,kot.products,this.id)
+    // let data ={
+    //   'id':kot.id,
+    //   'businessDetails': this.dataProvider.currentBusiness,
+    //   "table": this.table.tableNo,
+    //   'billNo': this.id,
+    //   "orderNo":this.orderNo,
+    //   "date":(new Date()).toLocaleDateString('en-GB'),
+    //   "time":(new Date()).toLocaleTimeString('en-GB'),
+    //   "mode":"firstChargeable",
+    //   "products":[
+    //       {
+    //           "id":"1",
+    //           "name":"Item 4",
+    //           "instruction":"",
+    //           "quantity":2,
+    //       },
+    //   ]
+    // }
+    // console.log(data)
+    //   fetch('http://192.168.29.125:'+settings['port']+'/printKot',{
+    //     method:'POST',
+    //     body: JSON.stringify(data),
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     }
+    //   }).then((res) => {
+    //     console.log("Contente",res)
+    //   }).catch((err) => {
+    //     console.log("Error",err)
+    //   })
   }
 
   settle(
@@ -766,7 +713,7 @@ export class Bill implements BillConstructor {
     };
   }
 
-  static fromObject(object: BillConstructor,table:Table,dataprovider:DataProvider,databaseService:DatabaseService): Bill {
+  static fromObject(object: BillConstructor,table:Table,dataprovider:DataProvider,databaseService:DatabaseService,printService:PrintingService): Bill {
     // this.id = object.id;
     // this.tokens = object.tokens;
     // this.createdDate = object.createdDate;
@@ -795,7 +742,8 @@ export class Bill implements BillConstructor {
         object.user,
         dataprovider.currentMenu?.selectedMenu,
         dataprovider,
-        databaseService
+        databaseService,
+        printService
       );
       instance.tokens = object.tokens;
       instance.createdDate = object.createdDate;

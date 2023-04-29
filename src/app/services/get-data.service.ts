@@ -6,13 +6,14 @@ import { TableConstructor } from '../biller/constructors';
 import { Table } from "../biller/Table";
 import { DataProvider } from '../provider/data-provider.service';
 import { DatabaseService } from './database.service';
+import { PrintingService } from './printing.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GetDataService {
 
-  constructor(private dataProvider:DataProvider,private firestore:Firestore,private dbService:NgxIndexedDBService,private databaseService:DatabaseService) {
+  constructor(private dataProvider:DataProvider,private firestore:Firestore,private dbService:NgxIndexedDBService,private databaseService:DatabaseService,private printingService:PrintingService) {
     // dbService.getAll('tables').subscribe((res:any)=>{
     //   if (res.length > 0){
     //     this.dataProvider.tables = res;
@@ -33,7 +34,7 @@ export class GetDataService {
           let table =  {...doc.data(),id:doc.id} as TableConstructor
           // let tableClass = new Table(table.id,Number(table.tableNo),table.name,table.maxOccupancy,table.type,this.dataProvider,this.databaseService)
           // tableClass.fromObject(table);
-          return await Table.fromObject(table,this.dataProvider,this.databaseService);
+          return await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService);
         })
         console.log("tables ",tables);
         // add data to indexedDB
@@ -76,7 +77,7 @@ export class GetDataService {
         let table =  {...doc.data(),id:doc.id} as TableConstructor
         // let tableClass = new Table(table.id,Number(table.tableNo),table.name,table.maxOccupancy,'token',this.dataProvider,this.databaseService)
         // tableClass.fromObject(table);
-        return await Table.fromObject(table,this.dataProvider,this.databaseService);
+        return await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService);
       })
       let formedTable = await Promise.all(tables);
       formedTable.sort((a,b)=>{
@@ -90,7 +91,7 @@ export class GetDataService {
     getDocs(collection(this.firestore,'business/'+this.dataProvider.businessId+'/onlineTokens')).then(async (res)=>{
       let tables = res.docs.map(async (doc)=>{
         let table =  {...doc.data(),id:doc.id} as TableConstructor
-        let tableClass = await Table.fromObject(table,this.dataProvider,this.databaseService)
+        let tableClass = await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService)
         console.log("ONLINE TABLE",tableClass);
         return tableClass;
       })

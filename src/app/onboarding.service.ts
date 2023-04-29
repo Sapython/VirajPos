@@ -5,11 +5,12 @@ import { BusinessRecord } from './structures/user.structure';
 import { AlertsAndNotificationsService } from './services/alerts-and-notification/alerts-and-notifications.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { ModeConfig } from './biller/sidebar/edit-menu/edit-menu.component';
-import { DatabaseService } from './services/database.service';
+import { DatabaseService, Menu  } from './services/database.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { TableConstructor } from './biller/constructors';
 import { Table } from './biller/Table';
 import { Discount } from './biller/settings/settings.component';
+import { PrintingService } from './services/printing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class OnboardingService {
   stage:'noUser'|'userExists'|'multipleBusiness'|'businessError'|'onboardingStep1'|'onboardingStep2'|'onboardingStep3'|'virajReady'|'virajGettingReady'|'errorOccured' = 'noUser';
   loadingSteps:Subject<string> = new Subject<string>();
 
-  constructor(private dataProvider:DataProvider,private firestore:Firestore,private alertify:AlertsAndNotificationsService,private databaseService:DatabaseService,private dialog:Dialog) {
+  constructor(private dataProvider:DataProvider,private firestore:Firestore,private alertify:AlertsAndNotificationsService,private databaseService:DatabaseService,private dialog:Dialog,private printingService:PrintingService) {
     this.loadingSteps.next('Checking User');
     this.loadingSteps.subscribe((step)=>{
       console.log(step);
@@ -67,6 +68,7 @@ export class OnboardingService {
   startViraj(business:BusinessRecord){
     firstValueFrom(this.dataProvider.settingsChanged).then(async (setting)=>{
       console.log(setting);
+      this.dataProvider.businessId = business.businessId;
       this.loadingSteps.next('Loading Settings');
       if(setting.modes.filter((mode:boolean)=>mode).length >= 1){
         this.loadingSteps.next('Checking available modes');
@@ -96,6 +98,11 @@ export class OnboardingService {
             this.loadingSteps.next('Found Dine In Menu');
           }
           let discountRes = await this.databaseService.getDiscounts();
+          let menus = await this.databaseService.getMenus();
+          this.dataProvider.allMenus = [];
+          menus.docs.forEach((menu)=>{
+            this.dataProvider.allMenus.push({...menu.data(),id:menu.id} as Menu);
+          })
           this.dataProvider.discounts = [];
           discountRes.docs.forEach((discount)=>{
             this.dataProvider.discounts.push({...discount.data(),id:discount.id} as Discount);
@@ -160,7 +167,7 @@ export class OnboardingService {
         let table =  {...doc.data(),id:doc.id} as TableConstructor
         // let tableClass = new Table(table.id,Number(table.tableNo),table.name,table.maxOccupancy,table.type,this.dataProvider,this.databaseService)
         // tableClass.fromObject(table);
-        return await Table.fromObject(table,this.dataProvider,this.databaseService);
+        return await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService);
       })
       console.log("tables ",tables);
       // add data to indexedDB
@@ -200,7 +207,7 @@ export class OnboardingService {
       let table =  {...doc.data(),id:doc.id} as TableConstructor
       // let tableClass = new Table(table.id,Number(table.tableNo),table.name,table.maxOccupancy,'token',this.dataProvider,this.databaseService)
       // tableClass.fromObject(table);
-      return await Table.fromObject(table,this.dataProvider,this.databaseService);
+      return await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService);
     })
     let formedTable = await Promise.all(tables);
     formedTable.sort((a,b)=>{
@@ -213,7 +220,7 @@ export class OnboardingService {
     let res = await getDocs(collection(this.firestore,'business/'+this.dataProvider.businessId+'/onlineTokens'))
     let tables = res.docs.map(async (doc)=>{
       let table =  {...doc.data(),id:doc.id} as TableConstructor
-      let tableClass = await Table.fromObject(table,this.dataProvider,this.databaseService)
+      let tableClass = await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService)
       console.log("ONLINE TABLE",tableClass);
       return tableClass;
     })

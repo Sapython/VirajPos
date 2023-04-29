@@ -1,5 +1,4 @@
 <section>
-  {{this.dataProvider.menus.length}}
   <mat-tab-group>
     <ng-container *ngFor="let mode of this.dataProvider.menus">
       <mat-tab [label]="mode.name" *ngIf="mode.active">
@@ -110,12 +109,15 @@
               </ng-container>
             </div>
             <div class="printerSettings" *ngIf="mode.currentType == 'root'">
-              <mat-form-field>
+              <mat-form-field appearance="outline">
                 <mat-label>Select Printer</mat-label>
                 <mat-select
                   [(ngModel)]="mode.selectedCategory.printer"
                   (selectionChange)="mode.updatePrinter(mode.selectedCategory)"
                   name="printer">
+                  <mat-option>
+                    Select
+                  </mat-option>
                   <mat-option [value]="printer" *ngFor="let printer of printers">
                     {{printer}}
                   </mat-option>

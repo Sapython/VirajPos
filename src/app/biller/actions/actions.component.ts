@@ -103,7 +103,7 @@ export class ActionsComponent {
   addDiscount(){
     const dialog = this.dialog.open(AddDiscountComponent)
     dialog.afterClosed().subscribe((result:any)=>{
-      if(this.dataProvider.currentBill && result.discounted){
+      if(this.dataProvider.currentBill && result?.discounted){
         this.dataProvider.currentBill.addDiscount(result.discount)
       }
     })

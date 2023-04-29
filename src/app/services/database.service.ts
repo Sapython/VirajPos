@@ -702,7 +702,7 @@ export class DatabaseService {
     )
   }
 
-  updateProductMenu(product:Product,menu:Menu){
+  updateProductMenu(product:any,menu:Menu){
     return setDoc(
       doc(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/' + menu.id + '/products/' + product.id),
       product,
@@ -746,6 +746,15 @@ export class DatabaseService {
   }
 
   setPrinter(menu:Menu,category:Category){
+    console.log('setPrinter',category);
+    // update every product in this category with the new printer
+    category.products.forEach((product:any)=>{
+      this.updateProductMenu({category:{
+        id:category.id,
+        name:category.name,
+        printer:category.printer
+      },id:product.id},menu);
+    })
     return setDoc(
       doc(
         this.firestore,

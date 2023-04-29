@@ -417,6 +417,9 @@ export class LoadingComponent {
 
   setDefaultAccount(business:UserBusiness){
     localStorage.setItem('businessId',business.businessId);
-    window.location.reload();
+    let url = window.location.href.split('/')
+    url.pop()
+    url.push('index.html')
+    window.location.href = url.join('/') 
   }
 }

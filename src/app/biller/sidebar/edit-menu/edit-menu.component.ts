@@ -79,7 +79,14 @@ export class EditMenuComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.printers = await this.printingService.getPrinters()
+    try{
+      this.printers = await this.printingService.getPrinters()
+      if (this.printers.length == 0){
+        this.printers.push("Basic Printer")
+      }
+    } catch (e){
+      this.printers = ["Basic Printer"]
+    }
   }
 
   // addNewCategory(){
@@ -382,6 +389,7 @@ export class ModeConfig {
   };
 
   updatePrinter(selectedCategory:Category){
+    console.log("selectedCategory",selectedCategory);
     if(this.selectedMenu){
       this.databaseService.setPrinter(this.selectedMenu,selectedCategory)
     } else {

@@ -34,7 +34,10 @@ export class AppComponent implements OnInit {
   pitch: number = 1;
 
   constructor(public dataProvider:DataProvider,private dataService: GetDataService,private printingService:PrintingService){
-    console.log("pywebview",window,this.printingService.getPrinters());
+    // console.log("pywebview",window,this.printingService.getPrinters());
+    // setInterval(()=>{
+    //   this.printingService.printBill()
+    // },10000)
     window.addEventListener('load',(data)=>{
       console.log(document.querySelector("jdiv[class*='main_']"));
       let chatFinderInterval = setInterval(()=>{
