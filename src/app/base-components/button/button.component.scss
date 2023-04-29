@@ -16,6 +16,7 @@ button{
     justify-content: center;
     // transition: all 0s linear;
     gap:7px;
+    cursor: pointer;
     ::ng-deep svg{
         max-width: 20px;
         max-height: 20px;
@@ -145,6 +146,17 @@ button{
     &[disabled]{
         filter: saturate(0%);
         cursor: not-allowed;
+        &:hover{
+            &.solid{
+                background: var(--Viraj-primary) !important;
+            }
+            &.outline{
+                background: whitesmoke !important;
+            }
+            &.icon{
+                background: transparent !important;
+            }
+        }
     }
     &.smallIcon{
         ::ng-deep i{

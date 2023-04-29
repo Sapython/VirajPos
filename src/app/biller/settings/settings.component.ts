@@ -1,10 +1,15 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, EventEmitter, Output } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { debounceTime, firstValueFrom } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { AlertsAndNotificationsService } from 'src/app/services/alerts-and-notification/alerts-and-notifications.service';
 import { DatabaseService } from 'src/app/services/database.service';
+import { environment } from 'src/environments/environment';
+import { AddDiscountComponent } from './add-discount/add-discount.component';
+declare var window:any;
 
 @Component({
   selector: 'app-settings',
@@ -12,11 +17,15 @@ import { DatabaseService } from 'src/app/services/database.service';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent {
+  // global vars
+  version:string = environment.appVersion;
+  serverVersion:string = window.pywebview || 'N/A';
+  account:string = this.dataProvider.currentFirebaseUser?.uid || 'N/A';
+  discounts:Discount[] = []
   @Output() cancel = new EventEmitter();
   @Output() save = new EventEmitter();
+  activeTab:'printer'|'account'|'view'|'about'|'config'|'discount' = 'config'
   settingsForm:FormGroup = new FormGroup({
-    kotPrinter: new FormControl('',[Validators.required]),
-    billPrinter: new FormControl('',[Validators.required]),
     projectName: new FormControl('',[Validators.required]),
     phoneNumber: new FormControl('',[Validators.required]),
     address: new FormControl('',[Validators.required]),
@@ -25,20 +34,30 @@ export class SettingsComponent {
     counterNo: new FormControl('',[Validators.required]),
     cashierName: new FormControl('',[Validators.required]),
     deviceName: new FormControl('',[Validators.required]),
-    port: new FormControl('',[Validators.required]),
+    cgst:new FormControl('',[Validators.required]),
+    sgst:new FormControl('',[Validators.required]),
   })
+  loadingDiscount:boolean = false;
   viewSettings:FormGroup = new FormGroup({
     smartView: new FormControl(false),
     touchMode: new FormControl(false),
   });
+  modes:[boolean,boolean,boolean] = this.dataProvider.activeModes
   configs:any[] = []
   printers:string[] = [
     'printer1',
     'printer2',
     'printer3'
   ]
+  accounts:Account[] = []
   categories:any[] = []
-  constructor(private indexedDb:NgxIndexedDBService,private alertify:AlertsAndNotificationsService) {
+
+  get twoModeDeactived():boolean{
+    // return true when any two modes are false from all modes
+    return this.modes.filter((mode)=>!mode).length >= 2
+  }
+
+  constructor(private indexedDb:NgxIndexedDBService,private alertify:AlertsAndNotificationsService,public dataProvider:DataProvider,private databaseService:DatabaseService,private dialog:Dialog) {
     this.viewSettings.patchValue(localStorage.getItem('viewSettings')?JSON.parse(localStorage.getItem('viewSettings')!):{})
     this.viewSettings.valueChanges.pipe(debounceTime(1000)).subscribe((data)=>{
       localStorage.setItem('viewSettings',JSON.stringify(data))
@@ -47,8 +66,28 @@ export class SettingsComponent {
   cancelSettings(){
     this.cancel.emit()
   }
+  getMappedMenu(menus?:string[]){
+    if(!menus) return []
+    return this.dataProvider.allMenus.filter((menu)=>menus.includes(menu.id!))
+  }
+
+  getDiscounts(){
+    this.loadingDiscount = true;
+    this.databaseService.getDiscounts().then((res:any)=>{
+      this.discounts = []
+      res.forEach((data:any)=>{
+        this.discounts.push({...data.data(),id:data.id})
+      })
+    }).catch((err:any)=>{
+      console.log(err)
+      this.alertify.presentToast("Error while fetching discounts")
+    }).finally(()=>{
+      this.loadingDiscount = false;
+    })
+  }
   
   ngOnInit(): void {
+    this.getDiscounts();
     this.indexedDb.getAll('categories').subscribe((data)=>{
       this.categories = data.map((cat:any)=> {return {...cat,selected:false,indeterminate:false,products:cat.products.map((product:any)=>{return JSON.parse(JSON.stringify({name:product.name,id:product.id,selected:false}))})}});
       console.log("category data",this.categories);
@@ -77,8 +116,28 @@ export class SettingsComponent {
     // })
   }
 
+  addAccount(){
+
+  }
+
   setPrinters(){
     
+  }
+
+  updateMode(){
+    this.databaseService.updateMode(this.modes)
+  }
+
+  smartModeToggle(value:boolean){
+    localStorage.setItem('viewSettings',JSON.stringify({"smartView":value,"touchMode":this.dataProvider.touchMode}))
+    this.dataProvider.smartMode = value
+    console.log(localStorage.getItem('viewSettings'));
+  }
+
+  touchModeToggle(value:boolean){
+    localStorage.setItem('viewSettings',JSON.stringify({"touchMode":value,"smartView":this.dataProvider.smartMode}))
+    this.dataProvider.touchMode = value
+    console.log(localStorage.getItem('viewSettings'));
   }
 
   saveSettings(){
@@ -139,5 +198,45 @@ export class SettingsComponent {
     console.log("item",item);
   }
 
+  addDiscount(){
+    const dialog = this.dialog.open(AddDiscountComponent)
+    dialog.closed.subscribe((data:any)=>{
+      console.log("data",data);
+      if (data){
+        if(data.menu.length === 0){
+          data.menu = null;
+        }
+        this.databaseService.addDiscount(data as Discount).then((res)=>{
+          console.log("res",res);
+          this.alertify.presentToast("Discount added successfully")
+        }).catch((err)=>{
+          console.log("err",err);
+          this.alertify.presentToast("Error adding discount")
+        })
+      }
+    })
+  }
 
+}
+
+export interface Account{
+  name:string,
+  phoneNumber:string,
+  email:string,
+  role:'admin'|'cashier'|'manager',
+  creationDate:Timestamp
+}
+
+export interface Discount{
+  id?:string,
+  name:string,
+  type:'percentage'|'amount',
+  value:number,
+  totalAppliedDiscount:number,
+  creationDate:Timestamp,
+  minimumAmount?:number,
+  minimumProducts?:number,
+  maximumDiscount?:number,
+  menus?:string[],
+  accessLevels:string[],
 }

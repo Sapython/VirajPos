@@ -3,14 +3,14 @@ import { Subscription } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { Product } from '../constructors';
 import { Kot } from '../Kot';
-import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
+import { fadeInLeftOnEnterAnimation, fadeInOnEnterAnimation, fadeInRightOnEnterAnimation, fadeOutLeftOnLeaveAnimation, fadeOutOnLeaveAnimation, fadeOutRightOnLeaveAnimation, slideInLeftOnEnterAnimation, slideOutRightOnLeaveAnimation, zoomInOnEnterAnimation, zoomOutOnLeaveAnimation } from 'angular-animations';
 @Component({
   selector: 'app-active-kot',
   templateUrl: './active-kot.component.html',
   styleUrls: ['./active-kot.component.scss'],
   animations: [
-    fadeInOnEnterAnimation(),
-    fadeOutOnLeaveAnimation(),
+    zoomInOnEnterAnimation({duration:300}),
+    zoomOutOnLeaveAnimation({duration:300}),
   ],
 })
 export class ActiveKotComponent implements OnChanges {
@@ -19,17 +19,18 @@ export class ActiveKotComponent implements OnChanges {
   labels: { color: { color: string; contrast: string }; name: string }[] = [];
   activeKotIndex: number = 0;
   activeKotSubscription: Subscription = Subscription.EMPTY;
-  kotNoColors: { color: string; contrast: string }[] = [
-    { color: '#4dc9f6', contrast: '#000000' },
-    { color: '#f67019', contrast: '#000000' },
-    { color: '#f53794', contrast: '#000000' },
-    { color: '#537bc4', contrast: '#000000' },
-    { color: '#acc236', contrast: '#000000' },
-    { color: '#166a8f', contrast: '#000000' },
-    { color: '#00a950', contrast: '#000000' },
-    { color: '#58595b', contrast: '#000000' },
-    { color: '#8549ba', contrast: '#000000' },
+  kotNoColors:{color:string,contrast:string}[] =[
+    {color:'#4dc9f6',contrast:'#000'},
+    {color:'#f67019',contrast: '#fff'},
+    {color:'#f53794',contrast: '#fff'},
+    {color:'#537bc4',contrast: '#fff'},
+    {color:'#acc236',contrast: '#fff'},
+    {color:'#166a8f',contrast: '#fff'},
+    {color:'#00a950',contrast: '#fff'},
+    {color:'#58595b',contrast: '#fff'},
+    {color:'#8549ba',contrast: '#fff'},
   ];
+  actionSheetExpanded: boolean = false;
   constructor(public dataProvider: DataProvider) {
     this.dataProvider.billAssigned.subscribe(() => {
       this.generateLabels();
@@ -63,6 +64,9 @@ export class ActiveKotComponent implements OnChanges {
           });
       }
     });
+    this.dataProvider.manageKotChanged.subscribe((state: boolean) => {
+      this.allKot = this.dataProvider.currentBill?.kots || [];
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -105,9 +109,12 @@ export class ActiveKotComponent implements OnChanges {
           }
         } else if (this.kots.length>0 && this.kots[0].products.length > 0) {
           return false;
+        } else if (this.dataProvider.manageKot && this.allKot.reduce((acc, curr) => acc + curr.products.length,0) > 0){
+          return false;
         }
       }
     }
     return true;
+
   }
 }

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { DataProvider } from 'src/app/provider/data-provider.service';
+import { Product } from '../../constructors';
 
 @Component({
   selector: 'app-kot-item',
@@ -15,7 +16,8 @@ export class KotItemComponent implements OnChanges {
   @Input() kotNo: number = 0;
   @Input() kotId: string = '';
   @Input() info: string|null = null;
-  @Input() variations: Config[] = [{ name: 'Half', price: 50},{ name: 'Full', price: 100}];
+  @Input() variations: Config[] = [];
+  @Input() product:Product|undefined;
   @Output() delete: EventEmitter<any> = new EventEmitter();
   showKotNo:boolean = false;
   constructor(public dataProvider:DataProvider){}
@@ -33,7 +35,6 @@ export class KotItemComponent implements OnChanges {
   
   ngOnChanges(changes: SimpleChanges): void {
     console.log("quantity",this.quantity);
-    
     //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
     //Add '${implements OnChanges}' to the class.
     console.log(changes);

@@ -1,14 +1,28 @@
-<section class="customerInfo">
+<section class="customerInfo" [ngClass]="{'pad':padding}">
     <h4>Customer Info</h4>
     <form [formGroup]="customerInfoForm">
         <div>
-            <input type="text" formControlName="name" placeholder="Customer Info">
-            <input type="tel" formControlName="phone" placeholder="Phone Number">
+            <input [disabled]="this.dataProvider.currentBill?.stage!='active'" type="text" formControlName="name" placeholder="Customer Info">
+            <input [disabled]="this.dataProvider.currentBill?.stage!='active'" type="tel" formControlName="phone" placeholder="Phone Number">
+            <input *ngIf="this.dataProvider.currentBill?.mode=='online'" [disabled]="this.dataProvider.currentBill?.stage!='active'" type="text" formControlName="deliveryName" placeholder="Agent Name">
+            <input *ngIf="this.dataProvider.currentBill?.mode=='online'" [disabled]="this.dataProvider.currentBill?.stage!='active'" type="tel" formControlName="deliveryPhone" placeholder="Agent Phone">
+            <!-- <mat-form-field appearance="outline" >
+                <mat-label>Customer Name</mat-label>
+                <input matInput type="text" formControlName="name" placeholder="Customer Info">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Customer Name</mat-label>
+                <input matInput type="tel" formControlName="phone" placeholder="Phone Number">
+            </mat-form-field> -->
         </div>
-        <textarea placeholder="Address" formControlName="address"></textarea>
+        <!-- <mat-form-field appearance="outline">
+            <mat-label>Customer Name</mat-label>
+            <textarea matInput placeholder="Address" formControlName="address"></textarea>
+        </mat-form-field> -->
+        <textarea matInput placeholder="Address" formControlName="address"></textarea>
     </form>
 </section>
-<section class="orders" *ngIf="dataProvider.smartMode">
+<section class="orders" *ngIf="dataProvider.smartMode" [ngClass]="{'pad':padding}">
     <p><b>Order Frequency : </b>
         <span>
             {{orderFrequency}}%

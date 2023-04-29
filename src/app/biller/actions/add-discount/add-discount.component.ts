@@ -2,7 +2,10 @@ import { DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs';
-import { Discount } from '../../constructors';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Discount } from '../../settings/settings.component';
+import { Timestamp } from '@angular/fire/firestore';
+import { DataProvider } from 'src/app/provider/data-provider.service';
 
 @Component({
   selector: 'app-add-discount',
@@ -14,19 +17,27 @@ export class AddDiscountComponent {
   discountForm:FormGroup = new FormGroup({
     mode:new FormControl('directPercent'),
     percent:new FormControl(0),
-    code:new FormControl(''),
+    selectDiscount:new FormControl(''),
     amount:new FormControl(0)
   });
-  constructor(private dialogRef:DialogRef) {
-    this.discountForm.get('code')?.valueChanges.pipe(debounceTime(600)).subscribe((value)=>{
-      // this.mode = value;
-      if (value === 'DISCOUNT20'){
-        this.discountForm.get('percent')?.setValue(20);
-      } else {
-        this.discountForm.get('percent')?.setValue(0);
-      }
-    })
+  discounts:Discount[] = []
+  constructor(private dialogRef:MatDialogRef<AddDiscountComponent>,public dataProvider:DataProvider) {
+    // this.discountForm.get('code')?.valueChanges.pipe(debounceTime(600)).subscribe((value)=>{
+    //   // this.mode = value;
+    //   if (value === 'DISCOUNT20'){
+    //     this.discountForm.get('percent')?.setValue(20);
+    //   } else {
+    //     this.discountForm.get('percent')?.setValue(0);
+    //   }
+    // })
   }
+
+  // isValidDiscount(discount:Discount){
+  //   discount.accessLevels.includes((this.dataProvider.currentBusiness!.users || []).find((a)=>{
+  //     a.email == this.dataProvider.currentUser?.email
+  //   }))
+  // }
+
   submit(){
     console.log(this.discountForm.value);
     if (this.discountForm.value.mode == 'codeBased'){
@@ -35,7 +46,9 @@ export class AddDiscountComponent {
         id:Math.random().toString(36).substr(2, 9),
         name:this.discountForm.value.code,
         value:this.discountForm.value.percent,
-        totalAppliedDiscount:0
+        totalAppliedDiscount:0,
+        accessLevels:['admin'],
+        creationDate:Timestamp.now(),
       }
       this.dialogRef.close({discount,discounted:true})
     } else if (this.discountForm.value.mode == 'directPercent'){
@@ -44,16 +57,20 @@ export class AddDiscountComponent {
         id:Math.random().toString(36).substr(2, 9),
         name:'Direct Discount',
         value:this.discountForm.value.percent,
-        totalAppliedDiscount:0
+        totalAppliedDiscount:0,
+        accessLevels:['admin'],
+        creationDate:Timestamp.now(),
       }
       this.dialogRef.close({discount,discounted:true})
     } else if (this.discountForm.value.mode == 'directFlat'){
       let discount:Discount = {
-        type:'flat',
+        type:'amount',
         id:Math.random().toString(36).substr(2, 9),
         name:'Direct Discount',
         value:this.discountForm.value.amount,
-        totalAppliedDiscount:0
+        totalAppliedDiscount:0,
+        accessLevels:['admin'],
+        creationDate:Timestamp.now(),
       }
       this.dialogRef.close({discount,discounted:true})
     } else {

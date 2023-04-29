@@ -1,29 +1,40 @@
 <section>
-    <div class="categories" [ngClass]="{'categoriesExpanded':!dataProvider.smartMode}">
-        <span><strong>Menu</strong>&nbsp;&nbsp;&nbsp; Viraj Categories</span>
-        <app-category-card (click)="openCategory(category)" *ngFor="let category of recommended" [category]="category"></app-category-card>
+    <div class="categories">
+        <span><strong>Menu</strong>&nbsp;&nbsp;&nbsp; Viraj Categories {{(this.dataProvider.currentMenu?.recommendedCategories || []).length}}</span>
+        <ng-container *ngFor="let category of this.dataProvider.currentMenu?.recommendedCategories">
+            <app-category-card (click)="openCategory(category)" *ngIf="category.enabled" [category]="category"></app-category-card>
+        </ng-container>
         <span>Your Categories</span>
-        <app-category-card (click)="openCategory(category)" *ngFor="let category of categories" [category]="category"></app-category-card>
+        <ng-container *ngFor="let category of this.dataProvider.currentMenu?.viewCategories">
+            <app-category-card (click)="openCategory(category)" *ngIf="category.enabled" [category]="category"></app-category-card>
+        </ng-container>
+        <span>Main Categories</span>
+        <ng-container *ngFor="let category of this.dataProvider.currentMenu?.mainCategories">
+            <app-category-card (click)="openCategory(category)" *ngIf="category.enabled" [category]="category"></app-category-card>
+        </ng-container>
+        
         <!-- <app-category-card (click)="openCategory(category)" *ngFor="let category of categories" [category]="category"></app-category-card>
         <app-category-card (click)="openCategory(category)" *ngFor="let category of categories" [category]="category"></app-category-card> -->
     </div>
-    <div class="actions" *ngIf="dataProvider.smartMode">
+    <div class="actions">
         <viraj-button type="outline" (vclick)="editMenu()">
             <ng-container >Edit Menu</ng-container>
             <!-- <mat-icon *ngIf="dataProvider.clientHeight < 717" color="primary">edit</mat-icon> -->
         </viraj-button> 
-        <span class="badge sales" id="stockConsumptionTrigger" cdkOverlayOrigin #stockConsumptionTrigger="cdkOverlayOrigin" (mouseleave)="this.closeStockListPanelSubscription.next(false);" (mouseenter)="isStockListOpen = true">
-            <p>Stock Cons.</p>
-            <b class="cost">{{stockConsumption | currency:'INR'}}</b>
-        </span>
-        <ng-template
-            *ngIf="!this.dataProvider.touchMode"
-            cdkConnectedOverlay
-            [cdkConnectedOverlayOffsetY]="-40"
-            [cdkConnectedOverlayOrigin]="stockConsumptionTrigger"
-            [cdkConnectedOverlayOpen]="isStockListOpen"
-        >
-            <app-stock-list (close)="this.isStockListOpen = false" (mouseleave)="this.closeStockListPanelSubscription.next(false)" (mouseenter)="this.closeStockListPanelSubscription.next(true)"></app-stock-list>
-        </ng-template>
+        <ng-container *ngIf="this.dataProvider.smartMode">
+            <span class="badge sales" id="stockConsumptionTrigger" cdkOverlayOrigin #stockConsumptionTrigger="cdkOverlayOrigin" (mouseleave)="this.closeStockListPanelSubscription.next(false);" (mouseenter)="isStockListOpen = true">
+                <p>Stock Cons.</p>
+                <b class="cost">{{stockConsumption | currency:'INR'}}</b>
+            </span>
+            <ng-template
+                *ngIf="!this.dataProvider.touchMode"
+                cdkConnectedOverlay
+                [cdkConnectedOverlayOffsetY]="-40"
+                [cdkConnectedOverlayOrigin]="stockConsumptionTrigger"
+                [cdkConnectedOverlayOpen]="isStockListOpen"
+            >
+                <app-stock-list (close)="this.isStockListOpen = false" (mouseleave)="this.closeStockListPanelSubscription.next(false)" (mouseenter)="this.closeStockListPanelSubscription.next(true)"></app-stock-list>
+            </ng-template>
+        </ng-container>
     </div>
 </section>

@@ -10,6 +10,7 @@ import { CustomerPanelComponent } from './customer-panel/customer-panel.componen
   styleUrls: ['./biller.component.scss']
 })
 export class BillerComponent {
+  expanded:boolean = true;
   constructor(private dialog:Dialog,public dataProvider:DataProvider){
     this.dataProvider.openTableView.subscribe((open)=>{
       dialog.open(TableComponent)

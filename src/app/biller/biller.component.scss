@@ -140,9 +140,6 @@ main{
             animation: slideFromRight 0.5s ease-in-out;
             transition: height 0.5s ease-in-out;
         }
-        app-actions.active{
-            height: auto;
-        }
         app-customer-panel{
             // height: calc(100vh - calc(65vh + 70px));
             padding-bottom: 20px;

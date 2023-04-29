@@ -26,6 +26,11 @@
 </li>
 <button (click)="test.push(2)">add</button> -->
 <!-- <h1>Tatte</h1> -->
+<div class="overlay" *ngIf="dataProvider.loading">
+  <!-- <mat-progress-spinner color="primary"></mat-progress-spinner> -->
+  <mat-spinner diameter="70" mode="indeterminate">
+  </mat-spinner>
+</div>
 <main [@routeAnimations]="prepareRoute(outlet)">
   <router-outlet #outlet="outlet"></router-outlet>
 </main>

@@ -6,13 +6,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
+import { MergedProductsPipe } from './merged-products.pipe';
 
 
 
 @NgModule({
   declarations: [
     ActiveKotComponent,
-    KotItemComponent
+    KotItemComponent,
+    MergedProductsPipe
   ],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ import { BaseComponentsModule } from 'src/app/base-components/base-components.mo
     BaseComponentsModule
   ],
   exports:[
-    ActiveKotComponent
+    ActiveKotComponent,
+    KotItemComponent
   ]
 })
 export class ActiveKotModule { }

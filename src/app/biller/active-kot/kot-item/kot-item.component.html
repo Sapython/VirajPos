@@ -1,33 +1,35 @@
-<section>
-  <div class="border" (mouseenter)="showKotNo=true" (mouseleave)="showKotNo=false" [ngStyle]="{background:kotNoColors[kotNo].color,padding:showKotNo ? '10px' : '0px'}">
-    <p *ngIf="showKotNo" [ngStyle]="{'color':kotNoColors[kotNo].contrast}">{{kotId}}</p>
+<section *ngIf="product">
+  <div class="border" (mouseenter)="showKotNo=true" (mouseleave)="showKotNo=false" [ngStyle]="{background:this.kotNoColors[kotNo % this.kotNoColors.length].color,padding:showKotNo ? '10px' : '0px'}">
+    <p *ngIf="showKotNo" [ngStyle]="{'color':this.kotNoColors[kotNo % this.kotNoColors.length].contrast}">{{kotId}}</p>
   </div>
   <div class="main">
     <span class="veg" *ngIf="!showKotNo" [ngClass]="{ non: nonVeg }">
       <span></span>
     </span>
+    <div *ngIf="showKotNo"></div>
     <div class="info">
       <p class="name">{{ productName | titlecase }}</p>
       <p class="price">{{ price | currency : "INR" }}</p>
     </div>
     <div class="more">
       <div class="actions">
-        <select [disabled]="dataProvider.manageKot==true">
+        <select [disabled]="dataProvider.manageKot==true" *ngIf="variations.length > 0">
           <option [value]="config.price" *ngFor="let config of variations">
             {{ config.name }}
           </option>
         </select>
         <div class="quantity">
-          <viraj-button [minimalPadding]="true" iconSize="small" [disabled]="(dataProvider.manageKot==true && !editMode)" (vclick)="quantity = quantity + 1">
+          <viraj-button [minimalPadding]="true" iconSize="small" [disabled]="(dataProvider.manageKot==true && !editMode)" (vclick)="product.quantity = product.quantity + 1;this.dataProvider.currentBill?.calculateBill()">
             <i class="ri-add-fill"></i>
           </viraj-button>
           <input
           [disabled]="(dataProvider.manageKot==true && !editMode)"
             type="number"
-            [(ngModel)]="quantity"
+            [(ngModel)]="product.quantity"
+            (change)="this.dataProvider.currentBill?.calculateBill()"
             [ngModelOptions]="{ standalone: true }"
           />
-          <viraj-button [minimalPadding]="true" iconSize="small" (vclick)="quantity = quantity - 1" [disabled]="quantity <= 1 || (dataProvider.manageKot==true && !editMode)">
+          <viraj-button [minimalPadding]="true" iconSize="small" (vclick)="product.quantity = product.quantity - 1;this.dataProvider.currentBill?.calculateBill()" [disabled]="quantity <= 1 || (dataProvider.manageKot==true && !editMode)">
             <i class="ri-subtract-fill"></i>
           </viraj-button>
         </div>

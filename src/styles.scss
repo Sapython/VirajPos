@@ -250,3 +250,29 @@ i[class^="ri-"]{
 // 	height: 215px;
 // 	background-image: url(/jivosite/images/jivo_widget_online.png);
 // }
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  thead{
+      position: sticky;
+      top: 0;
+      background: white;
+      tr{
+          padding: 15px;
+          border: 1px solid #ddd;
+          background: white;
+          th{
+              padding: 10px;
+              border: 1px solid #ddd;
+          }
+      }
+  }
+  tbody{
+      tr{
+          td{
+              padding: 10px;
+              border: 1px solid #ddd;
+          }
+      }
+  }
+}

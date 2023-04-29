@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { DIALOG_DATA } from '@angular/cdk/dialog';
+import { Component, Inject, Input } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 
@@ -10,20 +11,46 @@ import { DataProvider } from 'src/app/provider/data-provider.service';
 })
 export class CustomerPanelComponent {
   customerInfoForm:FormGroup = new FormGroup({
-    name: new FormControl(''),
-    phone: new FormControl(''),
-    address: new FormControl(''),
+    name: new FormControl(this.dataProvider.currentBill?.customerInfo.name,[this.dataProvider.currentBill?.mode=='takeaway' ? Validators.required : Validators.nullValidator]),
+    phone: new FormControl(this.dataProvider.currentBill?.customerInfo.phone,[this.dataProvider.currentBill?.mode=='takeaway' ? Validators.required : Validators.nullValidator]),
+    address: new FormControl(this.dataProvider.currentBill?.customerInfo.address,[this.dataProvider.currentBill?.mode=='takeaway' ? Validators.required : Validators.nullValidator]),
   });
+  @Input() padding: boolean = true;
   @Input() orderFrequency: number = 0;
   @Input() lastMonth: string = "Jan";
   @Input() averageOrderPrice: number = 300;
   @Input() lastOrderDish: string[] = ["Chicken",'Rice','Salad'];
 
   constructor(public dataProvider:DataProvider) {
+    if(this.dataProvider.currentBill){
+      this.customerInfoForm.enable();
+    } else {
+      this.customerInfoForm.disable();
+    }
     this.customerInfoForm.valueChanges.pipe(debounceTime(1000)).subscribe((value)=>{
-      this.dataProvider.currentBill?.setCustomerInfo(value)
-      console.log("value",this.dataProvider.currentBill?.customerInfo);
-      
+      if (value.name || value.phone || value.address) {
+        this.dataProvider.currentBill?.setCustomerInfo(value)
+        console.log("value",this.dataProvider.currentBill?.customerInfo);
+      }
+    })
+    this.dataProvider.billAssigned.subscribe(()=>{
+      if(this.dataProvider.currentBill){
+        if (this.dataProvider.currentBill.mode == 'online') {
+          this.customerInfoForm.addControl('deliveryName', new FormControl(this.dataProvider.currentBill?.customerInfo.deliveryName, [Validators.required]));
+          this.customerInfoForm.addControl('deliveryPhone', new FormControl(this.dataProvider.currentBill?.customerInfo.deliveryPhone, [Validators.required]));
+        }
+        // set values
+        this.customerInfoForm.patchValue({
+          name: this.dataProvider.currentBill?.customerInfo.name,
+          phone: this.dataProvider.currentBill?.customerInfo.phone,
+          address: this.dataProvider.currentBill?.customerInfo.address,
+          deliveryName: this.dataProvider.currentBill?.customerInfo.deliveryName,
+          deliveryPhone: this.dataProvider.currentBill?.customerInfo.deliveryPhone,
+        })
+        this.customerInfoForm.enable();
+      } else {
+        this.customerInfoForm.disable();
+      }
     })
   }
 

@@ -26,7 +26,7 @@ export class SearchPanelComponent implements OnInit {
   index:number = 0;
   active:boolean = false;
   dynamicPlaceholder:string = this.placeholders[0];
-  selectedMode:'dineIn'|'takeAway'|'online' = "dineIn";
+  selectedMode:'dine'|'takeAway'|'online' = "dine";
   searchSubcription:Subject<string> = new Subject<string>();
   currentSearchTerm:string = "";
   billListnerActive:boolean = false;
@@ -63,7 +63,7 @@ export class SearchPanelComponent implements OnInit {
 
   basicSearch(value:string){
     this.searchInstance = new Fuse(this.dataProvider.products, {
-      keys: ['dishName','count'],
+      keys: ['name','count'],
     })
     let results = this.searchInstance.search(value)
     console.log("results",results);
@@ -76,18 +76,7 @@ export class SearchPanelComponent implements OnInit {
     //   id:doc.id,
     //   quantity:1,
     // }
-    this.searchResults = results.map((result)=>{return {
-      type:'product',
-      name: result.item.dishName,
-      price: result.item.shopPrice,
-      image: result.item.images[0],
-      ingredients:[],
-      categories: result.item.categories,
-      id:result.item.id,
-      quantity:1,
-      count:result.item.count,
-      ...result.item
-    }})
+    this.searchResults = results.map((result)=>{return result.item})
     if (value){
       this.dataProvider.searchResults.next(this.searchResults);
     } else {
@@ -117,5 +106,37 @@ export class SearchPanelComponent implements OnInit {
   switchMode(mode:any){
     console.log("mode",mode);
     this.dataProvider.billingMode = mode.value;
+    if (mode.value == 'dine'){
+      console.log("this.dataProvider.dineInMenu",this.dataProvider.dineInMenu);
+      if(!this.dataProvider.dineInMenu){
+        alert("No dine-in menu found");
+        return;
+      }
+      this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
+        return menu.selectedMenu?.id == this.dataProvider.dineInMenu?.id
+      });
+      console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
+    } else if (mode.value == 'takeaway'){
+      console.log("this.dataProvider.takeawayMenu",this.dataProvider.takeawayMenu);
+      if(!this.dataProvider.takeawayMenu){
+        alert("No takeaway menu found");
+        return;
+      }
+      this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
+        return menu.selectedMenu?.id == this.dataProvider.takeawayMenu?.id
+      });
+      console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
+      
+    } else if (mode.value == 'online'){
+      console.log("this.dataProvider.onlineMenu",this.dataProvider.onlineMenu);
+      if(!this.dataProvider.onlineMenu){
+        alert("No online menu found");
+        return;
+      }
+      this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
+        return menu.selectedMenu?.id == this.dataProvider.onlineMenu?.id
+      });
+      console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
+    }
   }
 }

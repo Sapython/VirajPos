@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { BillerRoutingModule } from './biller-routing.module';
 import { BillerComponent } from './biller.component';
-import { SidebarModule } from './sidebar/sidebar.module';
 import { SearchPanelComponent } from './search-panel/search-panel.component';
 import { SearchPanelModule } from './search-panel/search-panel.module';
 import { ProductsPanelComponent } from './products-panel/products-panel.component';
@@ -15,7 +14,6 @@ import { CustomerPanelComponent } from './customer-panel/customer-panel.componen
 import { SystemModule } from './system/system.module';
 import { ActiveKotModule } from './active-kot/active-kot.module';
 import { ActionsModule } from './actions/actions.module';
-import { CustomerPanelModule } from './customer-panel/customer-panel.module';
 import { LockedComponent } from './locked/locked.component';
 import { MatButtonModule } from '@angular/material/button';
 import { TableModule } from './table/table.module';
@@ -30,12 +28,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BaseComponentsModule } from '../base-components/base-components.module';
+import { SidebarModule } from './sidebar/sidebar.module';
+import { MatDialogModule } from '@angular/material/dialog';
+import { AddDiscountComponent } from './settings/add-discount/add-discount.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
     BillerComponent,
     LockedComponent,
     SettingsComponent,
+    CustomerPanelComponent,
+    AddDiscountComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +51,6 @@ import { BaseComponentsModule } from '../base-components/base-components.module'
     SystemModule,
     ActiveKotModule,
     ActionsModule,
-    CustomerPanelModule,
     MatButtonModule,
     TableModule,
     MatFormFieldModule,
@@ -60,7 +63,9 @@ import { BaseComponentsModule } from '../base-components/base-components.module'
     MatIconModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    BaseComponentsModule
+    BaseComponentsModule,
+    MatDialogModule,
+    MatProgressSpinnerModule
   ]
 })
 export class BillerModule { }

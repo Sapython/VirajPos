@@ -14,14 +14,14 @@
                 {{dataProvider.clientWidth < 1500 ? 'Table' : 'View Table '}}
             </ng-container>
         </viraj-button>
-        <mat-button-toggle-group value="dineIn" color="primary" (change)="switchMode($event)" [(ngModel)]="dataProvider.billingMode" name="fontStyle" aria-label="Font Style">
-            <mat-button-toggle color="primary" value="dineIn">
+        <mat-button-toggle-group value="dine" color="primary" (change)="switchMode($event)" [(ngModel)]="dataProvider.billingMode" name="fontStyle" aria-label="Font Style">
+            <mat-button-toggle color="primary" value="dine" *ngIf="this.dataProvider.activeModes[0]">
                 <ng-container>Dine In</ng-container>
             </mat-button-toggle>
-            <mat-button-toggle color="primary" value="takeaway">
+            <mat-button-toggle color="primary" value="takeaway" *ngIf="this.dataProvider.activeModes[1]">
                 <ng-container>Takeaway</ng-container>
             </mat-button-toggle>
-            <mat-button-toggle color="primary" value="online">
+            <mat-button-toggle color="primary" value="online" *ngIf="this.dataProvider.activeModes[2]">
                 <ng-container>Online</ng-container>
             </mat-button-toggle>
         </mat-button-toggle-group>

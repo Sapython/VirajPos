@@ -1,6 +1,8 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { DataProvider } from 'src/app/provider/data-provider.service';
 
 @Component({
   selector: 'app-cancel',
@@ -9,16 +11,22 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class CancelComponent {
   cancelForm:FormGroup = new FormGroup({
+    customer: new FormControl('',Validators.required),
     reason: new FormControl('',Validators.required),
-    phone: new FormControl('',Validators.required)
+    phone: new FormControl('',Validators.required),
+    password: new FormControl('',Validators.required),
   })
-  constructor(private dialogRef:DialogRef){}
+  constructor(private dialogRef:MatDialogRef<CancelComponent>,private dataProvider:DataProvider){}
 
   close(){
     this.dialogRef.close()
   }
 
   cancelBill(){
+    if(this.cancelForm.value.password !== this.dataProvider.password){
+      alert('Invalid password')
+      return;
+    }
     this.dialogRef.close(this.cancelForm.value)
   }
 }

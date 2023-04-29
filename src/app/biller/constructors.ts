@@ -1,10 +1,13 @@
 import { Timestamp } from '@angular/fire/firestore';
 import { Bill } from './Bill';
 import { Kot } from './Kot';
+import { Discount } from './settings/settings.component';
 
 export interface BillConstructor {
   id: string;
   tokens: string[];
+  billNo?: string;
+  orderNo: string;
   createdDate: Timestamp;
   stage: 'active' | 'finalized' | 'settled' | 'cancelled';
   cancelledReason?: {
@@ -28,7 +31,7 @@ export interface BillConstructor {
   mode: 'dine' | 'takeaway' | 'online';
   device: DeviceConstructor;
   user: UserConstructor;
-  kots: Kot[];
+  kots: KotConstructor[];
   table: TableConstructor;
   billing: Billing;
   nonChargeableDetail?: {
@@ -55,14 +58,6 @@ export interface Billing {
   grandTotal: number;
 }
 
-export interface Discount {
-  id: string;
-  name: string;
-  type: 'percentage' | 'flat';
-  value: number;
-  totalAppliedDiscount: number;
-}
-
 export interface KotConstructor {
   id: string;
   createdDate: Timestamp;
@@ -83,11 +78,17 @@ export interface Product {
   price: number;
   type: 'veg' | 'non-veg';
   tags: string[];
+  images: string[];
+  category:{id:string,name:string};
   quantity: number;
+  createdDate: Timestamp;
   variants: Variant[];
+  sales?:number;
   selected: boolean;
   transferred?:string;
   instruction?: string;
+  visible:boolean;
+  updated?:boolean;
 }
 
 interface Variant {
@@ -104,6 +105,8 @@ export interface CustomerInfo {
   name?: string;
   phone?: string;
   address?: string;
+  deliveryName?: string;
+  deliveryPhone?: string;
 }
 
 export type Tax = {
@@ -125,7 +128,7 @@ export type TableConstructor = {
   occupiedStart: Timestamp;
   billPrice: number;
   status: 'available' | 'occupied';
-  type: 'table' | 'room' | 'token';
+  type: 'table' | 'room' | 'token' | 'online';
 };
 
 

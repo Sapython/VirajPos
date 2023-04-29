@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { debounceTime, firstValueFrom, Subject } from 'rxjs';
-import { Category } from 'src/app/structures/general.structure';
+import { Category, RootCategory, ViewCategory } from 'src/app/structures/general.structure';
 import { OptionComponent } from './option/option.component';
 import { Dialog } from '@angular/cdk/dialog'
 import { EditMenuComponent } from '../edit-menu/edit-menu.component';
@@ -17,63 +17,11 @@ declare var Hammer:any;
 export class MenuComponent implements OnInit,AfterViewInit {
   closeStockListPanelSubscription:Subject<boolean> = new Subject<boolean>();
   isStockListOpen = false;
-  public recommended:Category[] = [
-    {
-      name: "Recommended",
-      id: "recommended",
-      products: [
-        {
-          name: "Burger",
-          price: 100,
-          id: "1",
-          selected: false,
-          tags: [],
-          type:'veg',
-          variants: [],
-          quantity:1,
-        }
-      ],
-      averagePrice: 0
-    },
-    {
-      name: "Most Selling",
-      id: "recommended",
-      products: [
-        {
-          name: "Burger",
-          price: 100,
-          id: "1",
-          selected: false,
-          tags: [],
-          type:'veg',
-          variants: [],
-          quantity:1,
-        }
-      ],
-      averagePrice: 0
-    },
-    {
-      name: "New Dishes",
-      id: "recommended",
-      products: [
-        {
-          name: "Burger",
-          price: 100,
-          id: "1",
-          selected: false,
-          tags: [],
-          type:'veg',
-          variants: [],
-          quantity:1,
-        }
-      ],
-      averagePrice: 0
-    },
-  ]
+  
+  public recommended:Category[] = []
+  public rootCategories:Category[] = []
 
   public products:any[] = []
-
-  public categories:Category[] = []
 
   currentCategory:Category|undefined = undefined;
   currentEvent:any = undefined;
@@ -86,6 +34,25 @@ export class MenuComponent implements OnInit,AfterViewInit {
 
   ngOnInit(): void {
     this.getDineInProducts();
+    this.recommended = this.dataProvider.recommendedCategories.map(recommendedCategory => {
+      return {
+        name:recommendedCategory.name,
+        id:recommendedCategory.id,
+        products:this.dataProvider.products.filter(product => recommendedCategory.products.includes(product.id)),
+        averagePrice:0,
+        enabled:recommendedCategory.enabled
+      }
+    });
+    console.log("this.dataProvider.rootCategories",this.dataProvider.rootCategories);
+    this.rootCategories = this.dataProvider.rootCategories.map(rootCategory => {
+      return {
+        name:rootCategory.name,
+        id:rootCategory.id,
+        products:this.dataProvider.products.filter(product => rootCategory.id == product.category.id),
+        averagePrice:0,
+        enabled:rootCategory.enabled
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -105,116 +72,76 @@ export class MenuComponent implements OnInit,AfterViewInit {
 
   getDineInProducts() {
     this.products = []
-    this.categories = []
-    // this.dataProvider.pageSetting.blur = true;
-    // get categories from indexedDB
-    firstValueFrom(this.indexedDb.getAll('categories')).then((data:any)=>{
-      // console.log("category data",data);
-      if (data.length > 0){
-        // console.log("category data success",data);
-        this.categories = data;
-      }
-    }).catch((err)=>{
-      // console.log("category data error",err);
-    });
-    if (this.dataProvider.products.length > 0){
-      this.dataProvider.products.forEach((data: any) => {
-        this.products.push(
-          {
-            ...data,
-            id:data.id,
-            quantity:1,
-          }
-        );
-        this.categories.push(data.category);
-      });
-      // console.log("categories",this.categories);
-      let filteredCat: any[] = [];
-      this.categories.forEach((item, index) => {
-        let found = false;
-        // console.log(item)
-        if (item){
-          filteredCat.forEach((item2) => {
-            if (item2.id == item.id) {
-              found = true;
-            }
-          });
-          if (!found) {
-            filteredCat.push(item);
-          }
-        } else {
-          // console.log("No Category",index, this.products[index].id)
-        }
-      });
-
-      // console.log("filtered categories",filteredCat);
-      this.categories = filteredCat;
-      // map categories to products
-      this.categories.forEach((category,index) => {
-        category.products = [];
-        this.products.forEach((product) => {
-          if (product.category?.id == category.id) {
-            category.products.push(product);
-          }
-        });
-        // calculate average price
-        let total = 0;
-        category.products.forEach((product) => {
-          total += product.price;
-        })
-        category.averagePrice = total / category.products.length;
-      });
-      // console.log("Storing categories to indexedDB");
-      // store to indexedDB
-      this.storeCategoriesIndexedDb()
-    }
+    this.dataProvider.categories = []
     this.dataProvider.productsLoaded.subscribe((data)=>{
       // console.log("Loaded",data);
       if (data){
-        this.dataProvider.products.forEach((data: any) => {
-          this.products.push(
-            {
-              ...data,
-              id:data.id,
-              quantity:1,
-            }
-          );
-          this.categories.push(data.category);
-        });
-        console.log("categories",this.categories);
-        let filteredCat: any[] = [];
-        this.categories.forEach((item, index) => {
-          let found = false;
-          // console.log(item)
-          if (item){
-            filteredCat.forEach((item2) => {
-              if (item2.name == item.name) {
-                found = true;
-              }
-            });
-            if (!found) {
-              filteredCat.push(item);
-            }
-          } else {
-            // console.log("No Category",index, this.products[index]?.id)
-          }
-        });
-        this.categories = filteredCat;
-        // map categories to products
-        this.categories.forEach((category,index) => {
-          category.products = [];
-          this.products.forEach((product) => {
-            if (product.category?.id == category.id) {
-              category.products.push(product);
-            }
+        this.dataProvider.categories = []
+        this.dataProvider.viewCategories.forEach((category:ViewCategory)=>{
+          let products = this.dataProvider.products.filter((product)=> category.products.includes(product.id) );
+          console.log("products",products);
+          this.dataProvider.categories.push({
+            id:category.id,
+            name:category.name,
+            products:products,
+            averagePrice: (products.reduce((a, b) => a + b.price, 0) / products.length),
+            enabled:category.enabled
           });
-          // calculate average price
-          let total = 0;
-          category.products.forEach((product) => {
-            total += product.price;
-          })
-          category.averagePrice = total / category.products.length;
-        });
+        })
+        console.log("Sagadi",this.dataProvider.categories,this.dataProvider.products);
+        // let allCategories:Category[] = []
+        // this.dataProvider.products.forEach((data: any) => {
+        //   this.products.push(
+        //     {
+        //       ...data,
+        //       id:data.id,
+        //       quantity:1,
+        //     }
+        //   );
+        //   // console.log("data.category",data.category);
+        //   if (data.category){
+        //     allCategories.push(JSON.parse(JSON.stringify(data.category)));
+        //   }
+        //   console.log("categories",allCategories);
+        // });
+        // let filteredCat: any[] = [];
+        // allCategories.forEach((item, index) => {
+        //   let found = false;
+        //   // console.log(item)
+        //   if (item){
+        //     filteredCat.forEach((item2) => {
+        //       if (item2.name == item.name) {
+        //         found = true;
+        //       }
+        //     });
+        //     if (!found) {
+        //       filteredCat.push(item);
+        //     }
+        //   } else {
+        //     // console.log("No Category",index, this.products[index]?.id)
+        //   }
+        // });
+        // this.dataProvider.categories = filteredCat;
+        // // // map categories to products
+        // this.dataProvider.categories.forEach((category,index) => {
+        //   category.products = [];
+        //   console.log("Sagadi",category,this.products,this.dataProvider.products);
+        //   this.products.forEach((product) => {
+        //     if (product.category?.id == category.id) {
+        //       console.log("Sagadi",product,category.products);
+        //       category.products.push(product);
+        //     }
+        //   });
+        //   // calculate average price
+        //   let total = 0;
+        //   category.products.forEach((product) => {
+        //     total += product.price;
+        //   })
+        //   category.averagePrice = total / category.products.length;
+        // });
+        // this.dataProvider.categories.forEach((category)=>{
+        //   this.databaseService.addCategory({name:category.name,id:category.id,averagePrice:category.averagePrice},category.id)
+        // })
         // console.log("Storing categories to indexedDB");
         // store to indexedDB
        this.storeCategoriesIndexedDb()
@@ -225,21 +152,28 @@ export class MenuComponent implements OnInit,AfterViewInit {
   storeCategoriesIndexedDb(){
     this.indexedDb.getAll('categories').subscribe((data)=>{
       if (data.length == 0){
-        this.categories.forEach((category)=>{
-          this.indexedDb.add('categories',category).subscribe((res)=>{
-            // console.log("Category added successfully",res)
-          },(err)=>{
-            // console.log("Adding category ",err)
-          })
+        this.dataProvider.categories.forEach((category)=>{
+          this.indexedDb.add('categories',category)
         })
       } else {
         if (data.length > 0) {
-          this.categories.forEach((category)=>{
-            firstValueFrom(this.indexedDb.update('categories',category)).then((res)=>{
-              // console.log("Category updated successfully",res)
-            }).catch((err)=>{
-              // console.log("Adding category ",err)
-            })
+          this.dataProvider.categories.forEach((category)=>{
+            firstValueFrom(this.indexedDb.update('categories',category))
+          })
+        }
+      }
+    },(err)=>{
+      console.log("Serious error occured while storing categories",err)
+    })
+    this.indexedDb.getAll('recommendedCategories').subscribe((data)=>{
+      if (data.length == 0){
+        this.dataProvider.recommendedCategories.forEach((category)=>{
+          this.indexedDb.add('recommendedCategories',category)
+        })
+      } else {
+        if (data.length > 0) {
+          this.dataProvider.recommendedCategories.forEach((category)=>{
+            firstValueFrom(this.indexedDb.update('recommendedCategories',category))
           })
         }
       }

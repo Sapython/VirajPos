@@ -19,10 +19,97 @@ section{
             }
         }
     }
+    div.quickKotView{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap:10px;
+        padding: 15px;
+        .kotCard{
+            display: flex;
+            flex-direction: column;
+            background: whitesmoke;
+            border-radius: 7px;
+            box-shadow: 0px 1px 20px rgba(0,0,0,0.1);
+            .heading{
+                display: flex;
+                padding: 10px;
+                background: white;
+                box-shadow: 0px 1px 20px rgba(0,0,0,0.1);
+                justify-content: space-between;
+                align-items: center;
+                border-top-right-radius: 7px;
+                border-top-left-radius: 7px;
+                p{
+                    margin: 0px;
+                }
+                span{
+                    display: flex;
+                    align-items: center;
+                    font-size: var(--Viraj-font-medium);
+                    i{
+                        font-size: var(--Viraj-icon-small);
+                    }
+                }
+            }
+            .items{
+                display: flex;
+                flex-direction: column;
+                .item{
+                    padding: 5px;
+                    display: grid;
+                    grid-template-columns: 4fr 1fr 1.5fr;
+                    gap: 10px;
+                    background: white;
+                    border-bottom: 1px solid #aaa;
+                    p{
+                        margin: 0px;
+                    }
+                    p:nth-child(1){
+                        color:var(--Viraj-primary);
+                    }
+                    p:nth-child(2){
+                        color:var(--Viraj-success);
+                    }
+                    p:nth-child(3){
+                        color:var(--Viraj-success);
+                    }
+                }
+                .item:last-child{
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+    div.allProducts{
+        .item{
+            display: flex;
+            padding: 10px;
+            border-bottom: 2px solid #eee;
+            gap:10px;
+            justify-content: space-between;
+            p{
+                margin: 0px;
+            }
+            p:nth-child(1){
+                color:var(--Viraj-primary);
+            }
+            p:nth-child(2){
+                color:var(--Viraj-success);
+            }
+            p:nth-child(3){
+                color:var(--Viraj-success);
+            }
+        }
+    }
 }
 .title{
     display: flex;
-    gap:10px;
+    position: sticky;
+    top: 0px;
+    box-sizing: border-box;
+    background: white;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.1);
     h2{
         padding: 0px 20px;
     }
@@ -49,9 +136,7 @@ section{
         }
     }
 }
-.kotEditOptions{
 
-}
 .noItem{
     width: 200px;
     height:auto;
@@ -59,6 +144,19 @@ section{
     margin:0 auto;
 }
 
+
+.expandable{
+    position: relative;
+    top: 100%;
+    transform: translateY(-100%);
+    &.closed{
+        height: 20px;
+    }
+    &.opened{
+        height: auto;
+        max-height: 90%;
+    }
+}
 @media screen and (max-width: 1300px){
     h2{
         margin: 10px;

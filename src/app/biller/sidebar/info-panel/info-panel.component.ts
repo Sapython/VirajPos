@@ -4,6 +4,7 @@ import { debounceTime, Subject, Subscription } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { SalesSummaryComponent } from './sales-summary/sales-summary.component';
 import { OrderSummaryComponent } from './order-summary/order-summary.component';
+import { UpgradeComponent } from './upgrade/upgrade.component';
 declare var Hammer:any;
 @Component({
   selector: 'app-info-panel',
@@ -25,6 +26,7 @@ export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
     console.log("this.el.nativeElement",this.el.nativeElement.offsetHeight);
     this.height = this.el.nativeElement.offsetHeight;
   }
+
   ngAfterViewInit(): void {
     console.log("this.el.nativeElement",this.el.nativeElement.offsetHeight);
     this.height = this.el.nativeElement.offsetHeight;
@@ -50,6 +52,7 @@ export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
       });
     }
   }
+
   ngOnInit(): void {
     // convert this.dataProvider.sale to string with K if greater than 1000 and L if greater than 100000
     
@@ -72,6 +75,7 @@ export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
       this.isSalesOpen = data;
     })
   }
+
   ngOnChanges(): void {
     if (this.dataProvider.sale > 1000 && this.dataProvider.sale < 100000) {
       this.limitedSale = "₹"+(this.dataProvider.sale / 1000).toFixed(2) + "K";
@@ -82,4 +86,10 @@ export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
     }
   }
 
+  openUpgrade(){
+    const dialog = this.dialog.open(UpgradeComponent)
+    dialog.closed.subscribe((data)=>{
+      dialog.close();
+    })
+  }
 }

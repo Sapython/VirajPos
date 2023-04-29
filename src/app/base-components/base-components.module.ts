@@ -6,6 +6,7 @@ import { SlideToggleComponent } from './slide-toggle/slide-toggle.component';
 import { MatRippleModule } from '@angular/material/core';
 import { SlideButtonComponent } from './slide-toggle/slide-button/slide-button.component';
 import { SlideButtonDirective } from './slide-toggle/slide-button.directive';
+import { RoundOffPipe } from './round-off.pipe';
 
 
 
@@ -15,7 +16,8 @@ import { SlideButtonDirective } from './slide-toggle/slide-button.directive';
     IconButtonComponent,
     SlideToggleComponent,
     SlideButtonComponent,
-    SlideButtonDirective
+    SlideButtonDirective,
+    RoundOffPipe
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,8 @@ import { SlideButtonDirective } from './slide-toggle/slide-button.directive';
     ButtonComponent,
     IconButtonComponent,
     SlideToggleComponent,
-    SlideButtonDirective
+    SlideButtonDirective,
+    RoundOffPipe
   ]
 })
 export class BaseComponentsModule { }

@@ -1,7 +1,7 @@
 import { Timestamp } from '@angular/fire/firestore';
 import { KotConstructor, Product } from './constructors';
 
-export class Kot implements KotConstructor {
+export class Kot {
   id: string;
   createdDate: Timestamp;
   stage: 'active' | 'finalized' | 'cancelled' | 'edit';
@@ -12,17 +12,29 @@ export class Kot implements KotConstructor {
   totalTimeTaken: string;
   totalTimeTakenNumber: number;
   someSelected: boolean;
-  constructor(id: string, product: Product) {
+  constructor(id: string, product: Product,kotObject?:KotConstructor) {
     this.id = id;
     this.createdDate = Timestamp.now();
     this.stage = 'active';
-    this.products = [product];
-    this.editMode = false;
-    this.selected = false;
-    this.totalTimeTakenNumber = 0;
-    this.totalTimeTaken = '0h 0m 0s';
-    this.allSelected = false;
-    this.someSelected = false;
+    if(kotObject){
+      this.products = kotObject.products;
+      this.editMode = kotObject.editMode;
+      this.selected = kotObject.selected;
+      this.allSelected = kotObject.allSelected;
+      this.someSelected = kotObject.someSelected;
+      this.createdDate = kotObject.createdDate;
+      this.stage = kotObject.stage;
+      this.totalTimeTakenNumber = 0;
+      this.totalTimeTaken = '0h 0m 0s';
+    } else {
+      this.products = [product];
+      this.editMode = false;
+      this.selected = false;
+      this.totalTimeTakenNumber = 0;
+      this.totalTimeTaken = '0h 0m 0s';
+      this.allSelected = false;
+      this.someSelected = false;
+    }
     this.toObject = this.toObject.bind(this);
     this.calculateTotalTimeTaken();
   }
@@ -44,12 +56,37 @@ export class Kot implements KotConstructor {
         name: product.name,
         price: product.price,
         type: product.type,
+        category: product.category,
         tags: product.tags || [],
         quantity: product.quantity,
         variants: product.variants,
         selected: product.selected,
+        images: product.images,
+        createdDate: product.createdDate,
+        visible: product.visible,
       };
     });
+  }
+
+  deductProductQuantity(product: Product) {
+    let index = this.products.findIndex((item) => item.id === product.id);
+    if (index > -1) {
+      this.products[index].quantity -= 1;
+    }
+  }
+
+  addProductQuantity(product: Product) {
+    let index = this.products.findIndex((item) => item.id === product.id);
+    if (index > -1) {
+      this.products[index].quantity += 1;
+    }
+  }
+
+  setProductQuantity(product: Product, quantity: number) {
+    let index = this.products.findIndex((item) => item.id === product.id);
+    if (index > -1) {
+      this.products[index].quantity = quantity;
+    }
   }
   
   getTime(date:Timestamp){

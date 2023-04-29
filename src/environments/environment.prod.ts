@@ -9,6 +9,9 @@ export const environment = {
     messagingSenderId: '403464137223',
     measurementId: 'G-LHHR6JB0XN',
   },
+  appVersion: require('../../package.json').version,
   production: true,
   printerServerUrl: 'http://localhost:3000',
 };
+
+window.onbeforeunload = function () {return false;};

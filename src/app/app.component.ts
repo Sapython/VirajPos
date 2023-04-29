@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
   rate: number = 0.8;
   pitch: number = 1;
 
-  constructor(private dataProvider:DataProvider,private dataService: GetDataService){
+  constructor(public dataProvider:DataProvider,private dataService: GetDataService){
     console.log("pywebview",window);
     window.addEventListener('load',(data)=>{
       console.log(document.querySelector("jdiv[class*='main_']"));

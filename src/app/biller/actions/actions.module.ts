@@ -11,8 +11,14 @@ import { SettleComponent } from './settle/settle.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AddDiscountComponent } from './add-discount/add-discount.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDialogModule } from '@angular/material/dialog';
 import { NonChargeableComponent } from './non-chargeable/non-chargeable.component';
 import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
+import { ActiveKotModule } from '../active-kot/active-kot.module';
+import { SplitBillComponent } from './split-bill/split-bill.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DialogModule } from '@angular/cdk/dialog';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -21,7 +27,8 @@ import { BaseComponentsModule } from 'src/app/base-components/base-components.mo
     CancelComponent,
     SettleComponent,
     AddDiscountComponent,
-    NonChargeableComponent
+    NonChargeableComponent,
+    SplitBillComponent
   ],
   imports: [
     CommonModule,
@@ -33,8 +40,12 @@ import { BaseComponentsModule } from 'src/app/base-components/base-components.mo
     MatInputModule,
     MatButtonToggleModule,
     BaseComponentsModule,
+    MatDialogModule,
+    ActiveKotModule,
+    MatCheckboxModule,
+    DialogModule,
     MatSlideToggleModule,
-    MatIconModule
+    MatSelectModule
   ],
   exports:[
     ActionsComponent

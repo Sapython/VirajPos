@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import Fuse from 'fuse.js';
 import { DataProvider } from 'src/app/provider/data-provider.service';
-import { Category, Menu } from 'src/app/structures/general.structure';
-import { Bill } from "../Bill";
-import { User } from "../User";
-import { Device } from "../Device";
-import { Table } from "../Table";
+import { Category } from 'src/app/structures/general.structure';
 import { Product } from '../constructors';
 
 @Component({
@@ -48,7 +44,7 @@ export class ProductsPanelComponent implements OnInit{
       return;
     }
     if (this.dataProvider.currentBill){
-      this.dataProvider.currentBill.addProduct(product);
+      this.dataProvider.currentBill.addProduct(JSON.parse(JSON.stringify(product)));
     }
   }
 }

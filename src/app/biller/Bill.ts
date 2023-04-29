@@ -7,14 +7,15 @@ import {
   CustomerInfo,
   Billing,
   Product,
-  Discount,
   Tax,
 } from './constructors';
 import { debounceTime, Subject } from 'rxjs';
 import { DataProvider } from '../provider/data-provider.service';
-import { DatabaseService } from '../services/database.service';
+import { DatabaseService, Menu } from '../services/database.service';
 import { Print, PrintConstructor } from './Print';
 import { Kot } from './Kot';
+import { splittedBill } from './actions/split-bill/split-bill.component';
+import { Discount } from './settings/settings.component';
 const taxes:Tax[] = [
   {
     id: 'tax1',
@@ -34,11 +35,14 @@ const taxes:Tax[] = [
 export class Bill implements BillConstructor {
   id: string;
   tokens: string[] = [];
+  billNo?: string;
+  orderNo: string;
   createdDate: Timestamp;
   stage: 'active' | 'finalized' | 'settled' | 'cancelled';
   customerInfo: CustomerInfo;
   device: Device;
   mode: 'dine' | 'takeaway' | 'online';
+  menu:Menu;
   kots: Kot[] = [];
   table: Table;
   printer:PrintConstructor = new Print()
@@ -74,8 +78,8 @@ export class Bill implements BillConstructor {
     phone: string;
     user: User;
   };
-  updated: Subject<void> = new Subject<void>();
-  currentKot: Kot | undefined = this.kots.find((kot) => kot.stage === 'active');
+  updated: Subject<boolean | void> = new Subject<boolean | void>();
+  currentKot: Kot | null = this.kots.find((kot) => kot.stage === 'active') || null;
   get kotWithoutFunctions(): any[]{
     return this.kots.map((kot) => kot.toObject());
   }
@@ -85,14 +89,24 @@ export class Bill implements BillConstructor {
     mode: 'dine' | 'takeaway' | 'online',
     device: Device,
     billerUser: User,
+    menu:Menu,
     private dataProvider: DataProvider,
-    private databaseService: DatabaseService
+    private databaseService: DatabaseService,
+    billNo?: string
   ) {
-    this.updated.pipe(debounceTime(10000)).subscribe(() => {
-      let data = this.toObject();
-      console.log('updating bill', data);
-      this.databaseService.updateBill(data);
-      console.log('Bill updated', data);
+    // this.updated.pipe(debounceTime(100)).subscribe(() => {
+
+    // })
+    this.orderNo = this.dataProvider.orderTokenNo.toString();
+    this.dataProvider.orderTokenNo++;
+    this.databaseService.addOrderToken();
+    this.updated.pipe(debounceTime(2000)).subscribe(async (data) => {
+      if (!data) {
+        let data = this.toObject();
+        console.log('updating bill', data);
+        await this.databaseService.updateBill(data);
+        console.log('Bill updated', data);
+      }
     });
     this.toObject = this.toObject.bind(this);
     this.id = id;
@@ -101,9 +115,11 @@ export class Bill implements BillConstructor {
     this.stage = 'active';
     this.mode = mode;
     this.customerInfo = {};
+    this.menu = menu;
     this.device = device;
     this.table = table;
     this.user = billerUser;
+    this.billNo = billNo;
     this.billing = {
       subTotal: 0,
       discount: [],
@@ -186,7 +202,11 @@ export class Bill implements BillConstructor {
     //         .quantity++
     //     : this.kots[kotIndex].products.push(product);
     // }
-    
+    if(this.stage !== 'active'){
+      alert('This bill is already finalized.');
+      return;
+    }
+    this.dataProvider.kotViewVisible = false;
     if (this.editKotMode!=null){
       // this.editKotMode.newKot.push(product);
       this.editKotMode.newKot.find((item) => item.id === product.id)
@@ -227,6 +247,7 @@ export class Bill implements BillConstructor {
         };
         console.log('edit kot mode 1', this.editKotMode);
         this.dataProvider.manageKot = false;
+        this.dataProvider.manageKotChanged.next(false);
         this.updated.next();
       } else {
         return;
@@ -240,6 +261,7 @@ export class Bill implements BillConstructor {
       };
       console.log('edit kot mode', this.editKotMode);
       this.dataProvider.manageKot = false;
+      this.dataProvider.manageKotChanged.next(false);
       this.updated.next();
     }
   }
@@ -264,13 +286,38 @@ export class Bill implements BillConstructor {
     this.updated.next();
   }
 
-  calculateBill() {
+  totalProducts() {
+    let total = 0;
+    this.kots.forEach((kot) => {
+      if (kot.stage === 'active') {
+        total += kot.products.length;
+      }
+    });
+    return total;
+  }
+
+  calculateBill(noUpdate: boolean = false) {
     if (this.billingMode === 'nonChargeable') {
       this.billing.subTotal = 0;
       this.billing.grandTotal = 0;
-      this.updated.next();
+      this.updated.next(noUpdate);
       return;
     }
+    // log items of active kot with their quantity
+    let kotItems: { id: string; quantity: number }[] = [];
+    this.kots.forEach((kot) => {
+      if (kot.stage === 'active') {
+        kot.products.forEach((product) => {
+          let item = kotItems.find((item) => item.id === product.id);
+          if (item) {
+            item.quantity += product.quantity;
+          } else {
+            kotItems.push({ ...product, quantity: product.quantity });
+          }
+        });
+      }
+    });
+    console.log('kot items', kotItems);
 
     this.billing.subTotal = this.kots.reduce((acc, cur) => {
       return (
@@ -281,13 +328,42 @@ export class Bill implements BillConstructor {
       );
     }, 0);
     // calculate discounts
+    this.billing.discount = this.billing.discount.filter((discount) => discount.accessLevels.includes(this.user.access))
+    this.billing.discount = this.billing.discount.filter((discount) => {
+      if(!discount.minimumAmount){
+        return true;
+      }
+      if(discount.minimumAmount <= this.billing.subTotal){
+        return true;
+      } else {
+        return false;
+      }
+    })
+    this.billing.discount = this.billing.discount.filter((discount) => {
+      if (!discount.minimumProducts){
+        return true
+      }
+      if (discount.minimumProducts <= this.totalProducts()){
+        return true
+      } else {
+        return false
+      }
+    })
     let discounts:Discount[] = this.billing.discount.map((discount) => {
       if (discount.type === 'percentage'){
+        let val = (discount.value / 100) * this.billing.subTotal
+        if (discount.maximumDiscount && val > discount.maximumDiscount) {
+          val = discount.maximumDiscount;
+        }
         return {
           ...discount,
-          totalAppliedDiscount: (discount.value / 100) * this.billing.subTotal,
+          totalAppliedDiscount: val,
         };
       } else {
+        let val = discount.value
+        if (discount.maximumDiscount && val > discount.maximumDiscount) {
+          val = discount.maximumDiscount;
+        }
         return {
           ...discount,
           totalAppliedDiscount: discount.value,
@@ -305,7 +381,7 @@ export class Bill implements BillConstructor {
     this.billing.taxes = taxes;
     this.billing.totalTax = totalTax;
     this.billing.grandTotal = this.billing.subTotal + totalTax;
-    this.updated.next();
+    this.updated.next(noUpdate);
   }
 
   removeProduct(product: Product, kotIndex: number) {
@@ -319,11 +395,16 @@ export class Bill implements BillConstructor {
   finalizeAndPrintKot() {
     if (this.editKotMode != null) {
       console.log("Old kot", this.editKotMode.previousKot, "New kot", this.editKotMode.newKot);
-      this.kots.find((kot) => this.editKotMode && kot.id === this.editKotMode.kot.id)!.products = this.editKotMode.newKot;
+      let kot = this.kots.find((kot) => this.editKotMode && kot.id === this.editKotMode.kot.id)
+      if(kot){
+        kot.products = this.editKotMode.newKot;
+        kot.stage = 'finalized';
+      }
       // cancelled kot
       // this.printKot({...this.editKotMode.kot,products:this.editKotMode.previousKot} as Kot,true);
       // edited kot
       // this.printKot({...this.editKotMode.kot,products:this.editKotMode.newKot} as Kot);
+      this.dataProvider.kotViewVisible = true;
     } else {
       let activeKot = this.kots.find(
         (value) => value.stage === 'active' || value.stage == 'edit'
@@ -337,6 +418,7 @@ export class Bill implements BillConstructor {
           if (this.nonChargeableDetail) {
             // running nonchargeable kot
             // this.printKot(activeKot); 
+            
           } else {
             // running chargeable kot
             // this.printKot(activeKot);
@@ -350,6 +432,7 @@ export class Bill implements BillConstructor {
             // this.printKot(activeKot);
           }
         }
+        this.dataProvider.kotViewVisible = true;
       } else {
         alert('No active kot found');
       }
@@ -388,6 +471,20 @@ export class Bill implements BillConstructor {
     if (this.kots.find((kot) => kot.stage === 'active')) {
       if (confirm('There are active KOTs. Do you want to finalize them?')) {
         this.finalizeAndPrintKot();
+      }
+    }
+    // alert("Mode: "+this.mode)
+    if (this.mode=='takeaway'){
+      console.log('customer info',this.customerInfo);
+      if (!(this.customerInfo.name && this.customerInfo.phone && this.customerInfo.address)){
+        alert('Please fill customer details');
+        return;
+      }
+    } else if (this.mode =='online'){
+      console.log('customer info',this.customerInfo);
+      if (!(this.customerInfo.name && this.customerInfo.phone && this.customerInfo.address && this.customerInfo.deliveryName && this.customerInfo.deliveryPhone)){
+        alert('Please fill customer details');
+        return;
       }
     }
     this.stage = 'finalized';
@@ -486,18 +583,41 @@ export class Bill implements BillConstructor {
       alert('Please set printer settings first')
       return
     }
-    const data = {
-      "printer": localStorage.getItem('kotPrinter'),
-      "currentProject":settings,
-      "tokenNo": kot.id,
-      // "deleted":deleted,
-      // "mode":deleted ? "modified" : "normal",
-      "tableNo":this.table.tableNo,
-      "tableType":"table",
-      "currentTable": this.table.tableNo,
-      "allProducts":products,
-      "billNo": this.id,
-      "date":(new Date()).toLocaleString(),
+    let data ={
+      'id':kot.id,
+      'businessDetails': this.dataProvider.currentBusiness,
+      "table": this.table.tableNo,
+      'billNo': this.id,
+      "orderNo":this.orderNo,
+      "date":(new Date()).toLocaleDateString('en-GB'),
+      "time":(new Date()).toLocaleTimeString('en-GB'),
+      "mode":"firstChargeable",
+      "products":[
+          {
+              "id":"1",
+              "name":"Item 1",
+              "instruction":"",
+              "quantity":2,
+          },
+          {
+              "id":"1",
+              "name":"Item 2",
+              "instruction":"spicy",
+              "quantity":2,
+          },
+          {
+              "id":"1",
+              "name":"Item 3",
+              "instruction":"",
+              "quantity":2,
+          },
+          {
+              "id":"1",
+              "name":"Item 4",
+              "instruction":"",
+              "quantity":2,
+          },
+      ]
     }
     console.log(data)
       fetch('http://192.168.29.125:'+settings['port']+'/printKot',{
@@ -520,7 +640,46 @@ export class Bill implements BillConstructor {
     cardEnding?: string,
     upiAddress?: string
   ) {
-    this.stage = 'settled';
+    this.calculateBill();
+    // update every product and increase their sales counter by their quantity
+    let products:Product[]=[];
+    let allProducts = this.kots.reduce((acc, cur) => {
+      return acc.concat(cur.products);
+    }, products);
+    allProducts.forEach((product) => {
+      if (!product.sales){
+        product.sales = 0
+      }
+      product.sales += product.quantity;
+    });
+    if (!this.billNo){
+      if (this.nonChargeableDetail){
+        this.billNo = "NC-" + this.dataProvider.ncBillToken.toString();
+        this.dataProvider.ncBillToken++;
+        this.databaseService.addNcBillToken();
+      } else {
+        if (this.mode=='dine'){
+          this.billNo = this.dataProvider.billToken.toString(),
+          this.dataProvider.billToken++;
+          this.databaseService.addBillToken();
+        } else if (this.mode == 'takeaway') {
+          this.billNo = this.dataProvider.takeawayToken.toString(),
+          this.dataProvider.takeawayToken++;
+          this.databaseService.addTakeawayToken();
+        } else if (this.mode == 'online') {
+          this.billNo = this.dataProvider.onlineTokenNo.toString(),
+          this.dataProvider.onlineTokenNo++;
+          this.databaseService.addOnlineToken();
+        } else {
+          this.billNo = this.dataProvider.billToken.toString(),
+          this.dataProvider.billToken++;
+          this.databaseService.addBillToken();
+        }
+      }
+    }
+    // update in databse
+    this.databaseService.updateProducts(allProducts);
+    // this.stage = 'settled';
     this.settlement = {
       customerName: customerName,
       customerContact: customerContact,
@@ -530,12 +689,12 @@ export class Bill implements BillConstructor {
       time: Timestamp.now(),
       user: this.user,
     };
+    this.dataProvider.currentTable?.clearTable()
     this.dataProvider.currentBill = undefined;
-    this.dataProvider.currentTable!.status = 'available';
-    this.dataProvider.currentTable!.bill = null;
     this.dataProvider.currentTable = undefined;
     this.dataProvider.totalSales += this.billing.grandTotal;
     this.updated.next();
+    return this.billNo;
   }
 
   cancel(reason: string, phone: string) {
@@ -592,6 +751,7 @@ export class Bill implements BillConstructor {
       tokens: this.tokens,
       createdDate: this.createdDate,
       table: this.table.id,
+      billNo: this.billNo || null,
       mode: this.mode,
       device: this.device,
       kots: this.kotWithoutFunctions,
@@ -604,5 +764,65 @@ export class Bill implements BillConstructor {
       nonChargeableDetail: this.nonChargeableDetail || null,
       customerInfo: this.customerInfo,
     };
+  }
+
+  static fromObject(object: BillConstructor,table:Table,dataprovider:DataProvider,databaseService:DatabaseService): Bill {
+    // this.id = object.id;
+    // this.tokens = object.tokens;
+    // this.createdDate = object.createdDate;
+    // this.mode = object.mode;
+    // this.device = object.device;
+    // // this.kots = object.kots;
+    // // create kots classes from objects and add them to the bill
+    // object.kots.forEach((kot) => {
+    //   console.log("Creating kot",kot);
+      
+    //   this.addKot(new Kot(kot.id,kot.products[0],kot));
+    // });
+    // this.billing = object.billing;
+    // this.stage = object.stage;
+    // this.user = object.user;
+    // this.settlement = object.settlement;
+    // this.cancelledReason = object.cancelledReason;
+    // this.billingMode = object.billingMode;
+    // this.nonChargeableDetail = object.nonChargeableDetail;
+    // this.customerInfo = object.customerInfo;
+    if(dataprovider.currentMenu?.selectedMenu){
+      let instance = new Bill(object.id,
+        table,
+        object.mode,
+        object.device,
+        object.user,
+        dataprovider.currentMenu?.selectedMenu,
+        dataprovider,
+        databaseService
+      );
+      instance.tokens = object.tokens;
+      instance.createdDate = object.createdDate;
+      instance.billing = object.billing;
+      instance.stage = object.stage;
+      instance.settlement = object.settlement;
+      instance.cancelledReason = object.cancelledReason;
+      instance.billingMode = object.billingMode;
+      instance.nonChargeableDetail = object.nonChargeableDetail;
+      instance.customerInfo = object.customerInfo;
+      // create kots classes from objects and add them to the bill
+      object.kots.forEach((kot) => {
+        console.log("Creating kot",kot);
+        instance.addKot(new Kot(kot.id,kot.products[0],kot));
+      });
+      // instance.currentKot = instance.kots.find((kot) => {
+      //   return kot.stage === 'active';
+      // }) || null;
+      instance.calculateBill(true);
+      return instance;
+    } else{
+      throw new Error("No menu selected")
+    }
+  }
+
+
+  splitBill(bills:splittedBill[]) {
+    
   }
 }

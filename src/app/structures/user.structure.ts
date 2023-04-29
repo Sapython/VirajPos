@@ -1,4 +1,5 @@
 import { Timestamp } from "@angular/fire/firestore";
+import { Device } from "../biller/Device";
 
 export interface UserRecord{
     name:string;
@@ -11,19 +12,36 @@ export interface UserRecord{
 export interface UserBusiness{
     businessId:string;
     access:Access;
+    name:string;
+    address:string;
     joiningDate:Timestamp;
 }
 export interface BusinessRecord{
     businessId:string;
-    name:string;
+    hotelName:string;
+    hotelLogo:string;
     address:string;
     phone:string;
     email:string;
     image:string;
-    users:string[];
+    modes:boolean[],
+    fssai:string;
+    gst:string;
+    users:Member[];
+    billerPin:string;
+    devices:string[]
 }
 export interface Access {
     lastUpdated:Timestamp;
     updatedBy:string;
-    accessLevel:'admin'|'manager'|'employee';
+    accessLevel:"manager"|
+    "waiter"|
+    "accountant"|
+    "admin";
+}
+export interface Member{
+    email:string;
+    access:string;
+    updatedBy:string;
+    lastUpdated:Timestamp;
 }

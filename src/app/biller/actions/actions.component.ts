@@ -6,11 +6,20 @@ import { CancelComponent } from './cancel/cancel.component';
 import { NonChargeableComponent } from './non-chargeable/non-chargeable.component';
 import { SettleComponent } from './settle/settle.component';
 import { CustomerPanelComponent } from '../customer-panel/customer-panel.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Product } from '../constructors';
+import { Kot } from '../Kot';
+import { zoomInOnEnterAnimation, zoomOutOnLeaveAnimation } from 'angular-animations';
+import { SplitBillComponent } from './split-bill/split-bill.component';
 
 @Component({
   selector: 'app-actions',
   templateUrl: './actions.component.html',
-  styleUrls: ['./actions.component.scss']
+  styleUrls: ['./actions.component.scss'],
+  animations: [
+    zoomInOnEnterAnimation({duration:300}),
+    zoomOutOnLeaveAnimation({duration:300}),
+  ],
 })
 export class ActionsComponent {
   @Input() billNo:number = 0;
@@ -22,17 +31,55 @@ export class ActionsComponent {
   @Output() raiseConcern = new EventEmitter();
   isNonChargeable:boolean = false;
   seeMore:boolean = false;
-  constructor(public dataProvider:DataProvider,private dialog:Dialog){}
+  activeKotIndex:number = 0;
+  kots: Kot[] = [];
+  allKot: Kot[] = [];
+  constructor(public dataProvider:DataProvider,private dialog:MatDialog){
+    this.dataProvider.billAssigned.subscribe(() => {
+      if(this.dataProvider.currentBill){
+        if ((this.dataProvider.currentBill?.kots || [])[0].products.length > 0){
+          console.log("!@#$%^&*(",this.dataProvider.currentBill.kots);
+          this.dataProvider.kotViewVisible = true;
+        }
+      this.dataProvider.currentBill.updated.subscribe(()=>{
+          if(this.dataProvider.currentBill){
+          // this.activeKotIndex = this.dataProvider.currentBill!.kots.findIndex((kot: Kot) => kot.stage === 'active' || kot.stage === 'edit');
+          if (this.dataProvider.currentBill.kots) {
+            this.allKot = this.dataProvider.currentBill.kots;
+            let activeKot = this.dataProvider.currentBill.kots.find(
+              (kot: Kot) => kot.stage === 'active' || kot.stage === 'edit'
+            );
+            this.activeKotIndex =
+              this.dataProvider.currentBill.kots.findIndex(
+                (kot: Kot) => kot.stage === 'active' || kot.stage === 'edit'
+              );
+            console.log('this.activeKotIndex', this.activeKotIndex);
+            if (activeKot) {
+              this.kots = [activeKot];
+            } else {
+              this.kots = [];
+            }
+          } else {
+            this.kots = [];
+          }
+        }
+        })
+      }
+    })
+  }
 
   cancelBill(){
     if(this.dataProvider.currentBill){
       let dialog = this.dialog.open(CancelComponent)
-      dialog.closed.subscribe((result:any)=>{
+      dialog.afterClosed().subscribe((result:any)=>{
         if(result.reason && result.phone) {
           this.dataProvider.currentBill?.cancel(result.reason,result.phone)
         }
       })
     }
+  }
+  delete(index: Product) {
+    this.dataProvider.currentBill?.removeProduct(index, this.activeKotIndex);
   }
 
   finalizeBill(){
@@ -44,7 +91,8 @@ export class ActionsComponent {
   settleBill(){
     if (this.dataProvider.currentBill) {
       let dialog = this.dialog.open(SettleComponent)
-      dialog.closed.subscribe((result:any)=>{
+      dialog.afterClosed().subscribe((result:any)=>{
+        console.log("Result",result);
         if(this.dataProvider.currentBill && result.settling){
           this.dataProvider.currentBill.settle(result.customerName || '',result.customerContact || '',result.paymentMethod || '',result.cardEnding || '',result.upiAddress || '')
         }
@@ -54,7 +102,7 @@ export class ActionsComponent {
 
   addDiscount(){
     const dialog = this.dialog.open(AddDiscountComponent)
-    dialog.closed.subscribe((result:any)=>{
+    dialog.afterClosed().subscribe((result:any)=>{
       if(this.dataProvider.currentBill && result.discounted){
         this.dataProvider.currentBill.addDiscount(result.discount)
       }
@@ -65,7 +113,7 @@ export class ActionsComponent {
     console.log(event);
     if(this.dataProvider.currentBill && event.checked){
       const dialog = this.dialog.open(NonChargeableComponent)
-      dialog.closed.subscribe((result:any)=>{
+      dialog.afterClosed().subscribe((result:any)=>{
         if (!result || !result.nonChargeable){
           this.isNonChargeable = false;
           return;
@@ -80,7 +128,18 @@ export class ActionsComponent {
   }
 
   addCustomerInfo(){
-    const dialog = this.dialog.open(CustomerPanelComponent)
+    const dialog = this.dialog.open(CustomerPanelComponent,{data:{dialog:true}})
     // dialog.afterClosed().subscribe((result)=>{})
+  }
+
+  toggleManageKot(){
+    
+  }
+
+  splitBill(){
+    if(this.dataProvider.currentBill){
+      const dialog = this.dialog.open(SplitBillComponent,{data:this.dataProvider.currentBill})
+      // this.dataProvider.currentBill.splitBill()
+    }
   }
 }

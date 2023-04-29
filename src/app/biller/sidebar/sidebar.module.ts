@@ -45,6 +45,13 @@ import { MatSelectModule } from '@angular/material/select';
 import {MatMenuModule} from '@angular/material/menu';
 import { ReportsComponent } from './info-panel/sales-summary/reports/reports.component'; 
 import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
+import { ProductCostingComponent } from './edit-menu/product-costing/product-costing.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { SelectRecipeComponent } from './edit-menu/select-recipe/select-recipe.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UpgradeComponent } from './info-panel/upgrade/upgrade.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component'; 
 
 @NgModule({
   declarations: [
@@ -73,6 +80,10 @@ import { BaseComponentsModule } from 'src/app/base-components/base-components.mo
     AddNewCategoryComponent,
     AddDishComponent,
     ReportsComponent,
+    ProductCostingComponent,
+    SelectRecipeComponent,
+    UpgradeComponent,
+    AddMenuComponent,
   ],
   imports: [
     CommonModule,
@@ -96,8 +107,11 @@ import { BaseComponentsModule } from 'src/app/base-components/base-components.mo
     MatStepperModule,
     MatSelectModule,
     MatMenuModule,
-    BaseComponentsModule
+    BaseComponentsModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule
   ],
-  exports:[SidebarComponent]
+  exports:[SidebarComponent,AddDishComponent,AddNewCategoryComponent,SelectRecipeComponent]
 })
 export class SidebarModule { }

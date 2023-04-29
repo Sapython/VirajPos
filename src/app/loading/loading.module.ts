@@ -6,13 +6,19 @@ import { LoadingComponent } from './loading.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'; 
 import { BaseComponentsModule } from '../base-components/base-components.module';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { SidebarModule } from '../biller/sidebar/sidebar.module';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
-    LoadingComponent
+    LoadingComponent,
   ],
   imports: [
     CommonModule,
@@ -22,7 +28,14 @@ import { BaseComponentsModule } from '../base-components/base-components.module'
     FormsModule,
     ReactiveFormsModule,
     BaseComponentsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatStepperModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatIconModule,
+    SidebarModule,
+    MatCheckboxModule,
+    MatSlideToggleModule
   ]
 })
 export class LoadingModule { }

@@ -4,9 +4,9 @@
     <!-- TODO name phone reason password -->
     <div class="mode">
       <mat-button-toggle-group name="mode" value="Coupon Code" formControlName="mode" aria-label="Font Style" #mode>
-        <mat-button-toggle value="directPercent">Direct Percent</mat-button-toggle>
-        <mat-button-toggle value="directFlat">Direct Flat</mat-button-toggle>
-        <mat-button-toggle value="codeBased">Coupon Code</mat-button-toggle>
+        <mat-button-toggle *ngIf="this.dataProvider.getAccess('admin')" value="directPercent">Direct Percent</mat-button-toggle>
+        <mat-button-toggle *ngIf="this.dataProvider.getAccess('admin')" value="directFlat">Direct Flat</mat-button-toggle>
+        <mat-button-toggle value="codeBased">Uploaded</mat-button-toggle>
         <!-- <mat-button-toggle value="preSelect">Selectable</mat-button-toggle> -->
       </mat-button-toggle-group>
     </div>
@@ -19,8 +19,16 @@
       <input type="text" matInput formControlName="amount" />
     </mat-form-field>
     <mat-form-field appearance="outline" *ngIf="discountForm.value.mode=='codeBased'">
-      <mat-label>Discount Code</mat-label>
-      <input type="text" matInput formControlName="code" />
+      <mat-form-field>
+        <mat-label>Select Discount</mat-label>
+        <mat-select placeholder="Discount" formControlName="selectDiscount" name="discount">
+          <ng-container *ngFor="let discount of this.dataProvider.discounts">
+            <mat-option [value]="discount" *ngIf="this.dataProvider.getAccess(discount.accessLevels)">
+              {{discount.name}} - {{discount.value}}{{discount.type=='percentage' ? '%' : 'Rs'}}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
     </mat-form-field>
     <div class="actions">
       <button mat-stroked-button color="primary" (click)="cancel()" type="button">Cancel</button>

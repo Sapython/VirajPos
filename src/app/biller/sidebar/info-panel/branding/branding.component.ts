@@ -7,7 +7,7 @@ import { DataProvider } from 'src/app/provider/data-provider.service';
   styleUrls: ['./branding.component.scss']
 })
 export class BrandingComponent {
-  @Input() stageNumber: number = 2;
+  @Input() stageNumber: number = 1;
   @Input() version = '1.0.0';
   @Output() upgrade:EventEmitter<void> = new EventEmitter();
   constructor(public dataProvider:DataProvider){

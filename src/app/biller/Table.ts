@@ -1,6 +1,6 @@
 import { Timestamp } from '@angular/fire/firestore';
 import { DataProvider } from '../provider/data-provider.service';
-import { TableConstructor, UserConstructor } from './constructors';
+import { BillConstructor, TableConstructor, UserConstructor } from './constructors';
 import { Bill } from "./Bill";
 import { DatabaseService } from '../services/database.service';
 import { debounceTime, Subject } from 'rxjs';
@@ -17,16 +17,16 @@ export class Table implements TableConstructor {
   occupiedStart: Timestamp;
   status: 'available' | 'occupied';
   tableNo: number;
-  type: 'table' | 'room' | 'token';
+  type: 'table' | 'room' | 'token' | 'online';
   updated: Subject<void> = new Subject<void>();
   constructor(
     id: string,
     tableNo: number,
     name: string,
     maxOccupancy: string,
-    type: 'table' | 'room' | 'token',
+    type: 'table' | 'room' | 'token' | 'online',
     private dataProvider: DataProvider,
-    private databaseService: DatabaseService,
+    public databaseService: DatabaseService,
   ) {
     this.id = id;
     this.occupiedStart = Timestamp.now();
@@ -37,8 +37,36 @@ export class Table implements TableConstructor {
     this.tableNo = tableNo;
     this.type = type;
     this.updated.pipe(debounceTime(1000)).subscribe(() => {
-      this.databaseService.updateTable(this.toObject());
+      // this.databaseService.updateTable(this.toObject());
+      if (this.type == 'table') {
+        this.updateBill(this.toObject());
+      } else if (this.type == 'room') {
+        this.updateBill(this.toObject());
+      } else if (this.type == 'token') {
+        this.updateToken(this.toObject());
+      } else if (this.type == 'online') {
+        this.updateOnlineToken(this.toObject());
+      }
     })
+    this.updated.next();
+  }
+
+  updateOnlineToken(data:any){
+    this.databaseService.updateOnlineToken(data);
+  }
+
+  updateToken(data: any) {
+    this.databaseService.updateToken(data);
+  }
+
+  updateBill(data:any){
+    this.databaseService.updateTable(data);
+  }
+
+  clearTable(){
+    this.bill = null;
+    this.status = 'available';
+    this.updated.next();
   }
 
   removeBill() {
@@ -52,16 +80,73 @@ export class Table implements TableConstructor {
     this.updated.next();
   }
 
-  fromObject(object: TableConstructor) {
-    this.id = object.id;
-    this.bill = object.bill;
-    this.maxOccupancy = object.maxOccupancy;
-    this.billPrice = object.billPrice;
-    this.name = object.name;
-    this.occupiedStart = object.occupiedStart;
-    this.status = object.status;
-    this.tableNo = object.tableNo;
-    this.type = object.type;
+  static async fromObject(object: TableConstructor,dataProvider:DataProvider,databaseService:DatabaseService) {
+    // if(typeof object.bill == 'string'){
+    //   let bill = await this.databaseService.getBill(object.bill)
+    //   if (bill.exists()){
+    //     let billData = bill.data() as BillConstructor;
+    //     console.log("billData ",billData);
+    //     this.id = object.id;
+    //     this.bill = Bill.fromObject(billData, this, this.dataProvider, this.databaseService);
+    //     this.maxOccupancy = object.maxOccupancy;
+    //     this.billPrice = object.billPrice;
+    //     this.name = object.name;
+    //     this.occupiedStart = object.occupiedStart;
+    //     this.status = object.status;
+    //     this.tableNo = object.tableNo;
+    //     this.type = object.type;
+    //   }
+    // }
+    let instance = new Table(
+      object.id,
+      object.tableNo,
+      object.name,
+      object.maxOccupancy,
+      object.type,
+      dataProvider,
+      databaseService
+    );
+    console.log("object.bill",object.bill);
+    if(typeof object.bill == 'string'){
+      let bill = await databaseService.getBill(object.bill)
+      console.log("bill.exists()",bill.exists());
+      if (bill.exists()){
+        let billData = bill.data() as BillConstructor;
+        console.log("billData ",billData);
+        instance.id = object.id;
+        instance.bill = Bill.fromObject(billData, instance, dataProvider, databaseService);
+        instance.maxOccupancy = object.maxOccupancy;
+        instance.billPrice = object.billPrice;
+        instance.name = object.name;
+        instance.occupiedStart = object.occupiedStart;
+        instance.status = object.status;
+        instance.tableNo = object.tableNo;
+        instance.type = object.type;
+        return instance;
+      } else {
+        instance.billPrice = object.billPrice;
+        instance.occupiedStart = object.occupiedStart;
+        instance.status = 'available';
+        return instance;
+      }
+    } else if(object.bill instanceof Bill) {
+      instance.bill = object.bill;
+      instance.maxOccupancy = object.maxOccupancy;
+      instance.billPrice = object.billPrice;
+      instance.name = object.name;
+      instance.occupiedStart = object.occupiedStart;
+      instance.status = object.status;
+      instance.tableNo = object.tableNo;
+      instance.type = object.type;
+      return instance;
+    } else {
+      instance.bill = object.bill;
+      instance.billPrice = object.billPrice;
+      instance.occupiedStart = object.occupiedStart;
+      instance.status = object.status;
+      instance.status = 'available';
+      return instance;
+    }
   }
 
   toObject() {
@@ -78,7 +163,16 @@ export class Table implements TableConstructor {
     };
   }
 
+  generateId() {
+    // random alphanumeric id
+    return Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 9) 
+  }
+
   occupyTable() {
+    if (!this.dataProvider.currentMenu?.selectedMenu){
+      alert("Please select a menu first");
+      return 
+    }
     if (this.status === 'available') {
       if (this.dataProvider.currentUser && this.dataProvider.currentDevice) {
         let user: UserConstructor = {
@@ -87,17 +181,29 @@ export class Table implements TableConstructor {
           access: '',
           image: this.dataProvider.currentUser?.image,
         };
+        var mode:'takeaway' | 'online' | 'dine';
+        if (this.type=='token'){
+          mode = 'takeaway';
+        } else if(this.type=='online') {
+          mode = 'online';
+        } else if(this.type=='table') {
+          mode = 'dine';
+        } else if(this.type=='room') {
+          mode = 'dine';
+        } else {
+          alert("Table corrupted please contact admin");
+          return
+        }
         this.bill = new Bill(
-          this.dataProvider.billToken.toString(),
+          this.generateId(),
           this,
-          'dine',
+          mode,
           this.dataProvider.currentDevice,
           user,
+          this.dataProvider.currentMenu?.selectedMenu,
           this.dataProvider,
           this.databaseService
         );
-        this.dataProvider.billToken++;
-        this.databaseService.addBillToken();
         this.occupiedStart = Timestamp.now();
         this.status = 'occupied';
         this.updated.next();
@@ -114,9 +220,12 @@ export class Table implements TableConstructor {
       }
     } else {
       if (this.status === 'occupied' && this.bill != undefined) {
+        console.log("Activating bill", this.bill);
         this.updated.next();
         return this.bill;
       } else {
+        this.status = 'available';
+        this.updated.next();
         throw new Error('No bill is available on table ' + this.tableNo);
       }
     }
@@ -142,3 +251,22 @@ export class Table implements TableConstructor {
     }
   }
 }
+
+
+// export class Token extends Table implements TableConstructor {
+//   constructor(
+//     id: string,
+//     tableNo: number,
+//     name: string,
+//     maxOccupancy: string,
+//     type: 'table' | 'room' | 'token',
+//     dataProvider: DataProvider,
+//     databaseService: DatabaseService,
+//   ) {
+//     super(id, tableNo, name, maxOccupancy, type, dataProvider, databaseService);
+//   }
+
+//   override updateBill(data:any){
+//     this.databaseService.updateToken(data);
+//   }
+// }

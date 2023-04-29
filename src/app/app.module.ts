@@ -38,10 +38,13 @@ import { GetDataService } from './services/get-data.service';
 import { BaseComponentsModule } from './base-components/base-components.module';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatNativeDateModule } from '@angular/material/core';
+import { DialogModule } from '@angular/cdk/dialog';
 
 const dbConfig: DBConfig = {
   name: 'Viraj',
-  version: 1,
+  version: 2,
   objectStoresMeta: [
     {
       store: 'business',
@@ -90,6 +93,16 @@ const dbConfig: DBConfig = {
         { name: 'averagePrice', keypath: 'averagePrice', options: { unique: false } },
       ]
     },
+    {
+      store: 'recommendedCategories',
+      storeConfig: { keyPath: 'id', autoIncrement: true },
+      storeSchema: [
+        { name: 'id', keypath: 'id', options: { unique: true } },
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'products', keypath: 'products', options: { unique: false } },
+        { name: 'averagePrice', keypath: 'averagePrice', options: { unique: false } },
+      ]
+    },
   ],
 };
 
@@ -118,6 +131,9 @@ const dbConfig: DBConfig = {
     MatSnackBarModule,
     BaseComponentsModule,
     MatButtonToggleModule,
+    MatProgressSpinnerModule,
+    MatNativeDateModule,
+    DialogModule
   ],
   providers: [
     DataProvider,

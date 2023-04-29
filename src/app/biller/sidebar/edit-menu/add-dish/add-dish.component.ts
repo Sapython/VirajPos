@@ -31,7 +31,7 @@ export class AddDishComponent {
   }
 
   addDish(){
-    this.databaseService.addRecipe(this.newDishForm.value);
+    this.databaseService.addRecipe({...this.newDishForm.value,createdDate:new Date()});
   }
 
 }

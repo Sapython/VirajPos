@@ -75,13 +75,13 @@ section {
 
         .actions {
             display: grid;
-            grid-template-areas: "a a a b b b" "c c d d e e";
+            grid-template-areas: "a a b b" "c d e f";
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            viraj-button[mat-flat-button] {
-                color: white;
+            viraj-button {
+                width: 100%;
             }
             viraj-button:nth-child(1){
                 grid-area: a;
@@ -98,6 +98,9 @@ section {
             viraj-button:nth-child(5){
                 grid-area: e;
             }
+            viraj-button:nth-child(5){
+                grid-area: f;
+            }
         }
 
         .customer{
@@ -113,6 +116,7 @@ section {
             animation: popIn 0.5s cubic-bezier(0.83, 0, 0.17, 1);
         }
     }
+
 }
 
 

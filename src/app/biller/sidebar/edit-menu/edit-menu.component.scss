@@ -3,8 +3,9 @@ section{
     display: flex;
     flex-direction: column;
     border-radius: 20px;
+    background: white;
+    padding: 20px;
     .view{
-        padding-top: 20px;
         display: grid;
         grid-template-columns: 1fr 3fr;
         background: white;
@@ -60,15 +61,21 @@ section{
                 }
             }
             .filters{
-                display: flex;
+                display: grid;
+                grid-template-columns: 4fr 1fr 1fr 1fr;
                 justify-content: space-between;
                 align-items: center;
                 width: 100%;
+                gap: 10px;
                 .pricing{
                     display: flex;
                     gap:40px;
                     justify-content: space-between;
                     align-items: center;
+                }
+                form{
+                    display: flex;
+                    gap: 15px;
                 }
             }
             .productList{

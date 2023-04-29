@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Auth, onAuthStateChanged, signOut, User } from '@angular/fire/auth';
-import { Firestore, serverTimestamp, setDoc } from '@angular/fire/firestore';
+import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signOut, User, UserCredential } from '@angular/fire/auth';
+import { arrayUnion, collection, Firestore, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { doc, getDoc, Timestamp } from '@firebase/firestore';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { firstValueFrom, take } from 'rxjs';
 import { Device } from "../biller/Device";
 import { DataProvider } from '../provider/data-provider.service';
-import { UserRecord } from '../structures/user.structure';
+import { BusinessRecord, UserBusiness, UserRecord } from '../structures/user.structure';
 import { AlertsAndNotificationsService } from './alerts-and-notification/alerts-and-notifications.service';
 
 @Injectable({
@@ -48,21 +48,41 @@ export class AuthService {
       this.dataProvider.isAuthStateAvaliable = true;
       // console.log('this.localUserId', this.localUserId);
       if (user) {
-        if (user.uid == this.localUserId) {
+        if (user.uid == this.localUserId && this.localUserData) {
           this.dataProvider.loggedIn = true;
           this.dataProvider.currentFirebaseUser = user;
+          this.dataProvider.userSubject.next({
+            status: true,
+            stage:1,
+            code:'localUserFound',
+            message: 'User found from local storage',
+            user:this.localUserData
+          })
         } else {
           this.getUser(user.uid).then((userData) => {
             // this.dataProvider.currentUser = user.data() as UserRecord;
             this.dataProvider.loggedIn = true;
             // console.log('User found', userData.data());
             if (userData.exists() && userData.data()) {
+              this.dataProvider.userSubject.next({
+                status: true,
+                stage:2,
+                code:'onlineUserFound',
+                message: 'User found from server',
+                user:userData.data() as UserRecord
+              })
               this.dataProvider.currentUser = userData.data() as UserRecord;
               this.addCurrentUserOnLocal(userData.data() as UserRecord);
             } else {
               this.alertify.presentToast('User not found');
-              this.signUpUser(user);
-              signOut(this.auth);
+              this.dataProvider.userSubject.next({
+                status: false,
+                stage:2,
+                code:'noUserRecord',
+                message: 'User does not exists on server',
+              })
+              // this.signUpUser(user);
+              // signOut(this.auth);
               // signUp the user
             }
           }).catch((err)=>{
@@ -82,6 +102,12 @@ export class AuthService {
       } else {
         this.dataProvider.loggedIn = false;
         this.dataProvider.currentUser = undefined;
+        this.dataProvider.userSubject.next({
+          status: false,
+          stage:0,
+          code:'noUser',
+          message: 'User not found',
+        })
         console.log('No auth state found');
       }
     });
@@ -170,7 +196,23 @@ export class AuthService {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  signUpUser(user:User){
+  async createAccount(email: string, password: string,business:BusinessRecord) {
+    let res = await createUserWithEmailAndPassword(this.auth, email, password);
+    await this.signUpUser(res.user,business);
+    return res;
+  }
+
+  addBusinessAccount(user: UserCredential, userBusiness: UserBusiness) {
+    return updateDoc(doc(this.fs, 'users/' + user.user.uid), {
+      business: arrayUnion(userBusiness),
+    })
+  }
+
+  userExists(email: string) {
+    return getDocs(query(collection(this.fs, 'users'), where('email', '==', email)));
+  }
+
+  signUpUser(user:User,business:BusinessRecord){
     let userRecord:UserRecord = {
       business:[{
         access:{
@@ -178,7 +220,9 @@ export class AuthService {
           lastUpdated:Timestamp.now(),
           updatedBy:'controller'
         },
-        businessId:'UTJetLFyQnfthZssQoEh',
+        address:business.address,
+        name:business.hotelName,
+        businessId:business.businessId,
         joiningDate:Timestamp.now()
       }],
       email:user.email || '',
@@ -187,6 +231,6 @@ export class AuthService {
       lastLogin:Timestamp.now(),
       userId:user.uid
     }
-    setDoc(doc(this.fs,'users/'+user.uid),userRecord)
+    return setDoc(doc(this.fs,'users/'+user.uid),userRecord)
   }
 }

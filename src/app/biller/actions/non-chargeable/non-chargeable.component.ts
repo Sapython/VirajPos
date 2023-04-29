@@ -1,6 +1,7 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 
 @Component({
@@ -15,7 +16,7 @@ export class NonChargeableComponent {
     name:new FormControl('',Validators.required),
     password:new FormControl('',Validators.required)
   });
-  constructor(private dialogRef:DialogRef,private dataProvider:DataProvider){}
+  constructor(private dialogRef:MatDialogRef<NonChargeableComponent>,private dataProvider:DataProvider){}
   submit(){
     if (this.nonChargeableForm.invalid) return;
     if (this.nonChargeableForm.value.password === this.dataProvider.password){

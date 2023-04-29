@@ -1,17 +1,17 @@
 <section>
   <div class="seeMore" *ngIf="dataProvider.moreActions">
     <div class="actions">
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="dataProvider.currentBill?.finalizeAndPrintKot()" color="primary">Re Print Bill</viraj-button>
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="finalizeBill()" color="primary">Raise Concern</viraj-button>
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="cancelBill()" color="primary">Cancel Bill</viraj-button>
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="seeMore=!seeMore" color="primary">More</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="dataProvider.currentBill?.finalizeAndPrintKot()">Re Print Bill</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="finalizeBill()">Raise Concern</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="cancelBill()">Cancel Bill</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="seeMore=!seeMore">More</viraj-button>
     </div>
   </div>
   <div class="main">
     <div class="details">
       <span>
         <p>Order Bill No.</p>
-        <strong>{{dataProvider.currentBill?.id}}</strong>
+        <strong>{{dataProvider.currentBill?.billNo || 'N/A'}}</strong>
       </span>
       <span>
         <p>Token No.</p>
@@ -28,22 +28,24 @@
       <span>
         <mat-slide-toggle [disabled]="this.dataProvider.currentBill?.stage!='active'" [(ngModel)]="isNonChargeable" (change)="nonChargeable($event)">Non Chargable</mat-slide-toggle>
       </span>
-      <viraj-button [small]="true" [minimalPadding]="true" type="outline" [disabled]="!this.dataProvider.currentBill" color="primary" (vclick)="dataProvider.manageKot=!dataProvider.manageKot">{{dataProvider.manageKot==true ? 'Back' : 'Manage KOT'}}</viraj-button>
+      <viraj-button [small]="true" [minimalPadding]="true" type="outline" [disabled]="!this.dataProvider.currentBill" (vclick)="dataProvider.manageKot=!dataProvider.manageKot;dataProvider.manageKotChanged.next(dataProvider.manageKot);">{{dataProvider.manageKot==true ? 'Back' : 'Manage KOT'}}</viraj-button>
     </div>
     <div class="actions" *ngIf="this.dataProvider.currentBill?.stage=='active'">
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active' && this.dataProvider.currentBill?.editKotMode==null" (click)="dataProvider.currentBill?.finalizeAndPrintKot()" color="primary">Print KOT</viraj-button>
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="finalizeBill()" color="primary">Finalize Bill</viraj-button>
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="cancelBill()" color="primary">Cancel Bill</viraj-button>
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="addDiscount()" color="primary">Discount</viraj-button>
-      <!-- <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="dataProvider.moreActions=!dataProvider.moreActions" color="primary">More</button> -->
-      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="dataProvider.currentBill?.setInstruction()" color="primary"><i class="ri-sticky-note-line"></i> Info</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active' && this.dataProvider.currentBill?.editKotMode==null" (click)="dataProvider.currentBill?.finalizeAndPrintKot()">Print KOT</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="finalizeBill()">Finalize Bill</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="cancelBill()">Cancel</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="addDiscount()">Discount</viraj-button>
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="this.dataProvider.allProducts=!this.dataProvider.allProducts">Preview</viraj-button>
+      <!-- <button [disabled]="this.dataProvider.currentBill?.stage!='active'" mat-flat-button (click)="dataProvider.moreActions=!dataProvider.moreActions">More</button> -->
+      <viraj-button [disabled]="this.dataProvider.currentBill?.stage!='active'" (vclick)="dataProvider.currentBill?.setInstruction()">Info</viraj-button>
     </div>
+    <viraj-button [disabled]="!this.dataProvider.currentBill" (vclick)="splitBill()">Split Bill</viraj-button>
     <div class="actions" *ngIf="this.dataProvider.currentBill?.stage=='finalized'">
-      <viraj-button [disabled]="!this.dataProvider.currentBill" (vclick)="settleBill()" color="primary">Settle Bill</viraj-button>
+      <viraj-button [disabled]="!this.dataProvider.currentBill" (vclick)="settleBill()">Settle Bill</viraj-button>
     </div>
     <div class="actions" *ngIf="this.dataProvider.currentBill?.stage=='cancelled'">
-      <viraj-button [disabled]="!this.dataProvider.currentBill" color="primary">Open Table</viraj-button>
+      <viraj-button [disabled]="!this.dataProvider.currentBill">Open Table</viraj-button>
     </div>
-    <viraj-button (vclick)="addCustomerInfo()" *ngIf="dataProvider.clientHeight < 890">Add Customer Info</viraj-button>
+    <viraj-button [disabled]="!this.dataProvider.currentBill" (vclick)="addCustomerInfo()" *ngIf="dataProvider.clientHeight < 890">Add Customer Info</viraj-button>
   </div>
 </section>

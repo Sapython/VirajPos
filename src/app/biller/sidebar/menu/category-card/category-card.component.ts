@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DataProvider } from 'src/app/provider/data-provider.service';
-import { Category } from 'src/app/structures/general.structure';
+import { Category, RootCategory } from 'src/app/structures/general.structure';
 
 @Component({
   selector: 'app-category-card',
