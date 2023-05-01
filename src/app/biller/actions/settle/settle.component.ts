@@ -6,8 +6,9 @@ import { DataProvider } from 'src/app/provider/data-provider.service';
 import { SplitBillComponent } from '../split-bill/split-bill.component';
 import { DatabaseService } from 'src/app/services/database.service';
 import { Bill } from '../../Bill';
-import { Product, Tax } from '../../constructors';
+import { BillConstructor, Product, Tax } from '../../constructors';
 import { Discount } from '../../settings/settings.component';
+import { PrintingService } from 'src/app/services/printing.service';
 
 const taxes:Tax[] = [
   {
@@ -46,7 +47,7 @@ export class SettleComponent {
     percentageSplitForm:this.percentageSplitForm
   })
   
-  constructor(private dialogRef:MatDialogRef<SettleComponent>,public dataProvider:DataProvider,private dialog:MatDialog,public databaseService:DatabaseService){
+  constructor(private dialogRef:MatDialogRef<SettleComponent>,public dataProvider:DataProvider,private dialog:MatDialog,public databaseService:DatabaseService,private printingService:PrintingService){
     this.settleBillForm.valueChanges.subscribe((value)=>{
       this.percentageSplits = []
       console.log(value);
@@ -94,7 +95,7 @@ export class SettleComponent {
       console.log(value);
       if (value){
         let data = {
-          ...this.dataProvider.currentBill?.toObject()
+          ...this.dataProvider.currentBill?.toObject(),
         }
         this.dataProvider.currentBill?.calculateBill()
         console.log("bills",value,this.dataProvider.currentBill);
@@ -169,6 +170,7 @@ export class SettleComponent {
           data.billing!.grandTotal = data.billing!.subTotal + totalTax;
           console.log("grandTotal",data.billing!.grandTotal);
           console.log("data 1",data);
+          this.printingService.reprintBill(data as any)
           this.databaseService.updateBill(data)
           console.log("data 2",data);
           

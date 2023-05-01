@@ -183,7 +183,7 @@ export class PrintingService {
       'businessDetails': businessDetails
     }
     console.log("printing data",billdata,printerConfig);
-    return window.pywebview.api.print(billdata['mode'],billdata,printerConfig);
+    return window.pywebview.api.print('reprintBill',billdata,printerConfig);
   }
 
   reprintKot(kot:KotConstructor,table:string,billNo:string){
@@ -287,7 +287,7 @@ export class PrintingService {
       'businessDetails': businessDetails
     }
     console.log("printing data",kotdata,printerConfig);
-    return window.pywebview.api.print('reprintKot',kotdata,printerConfig);
+    return window.pywebview.api.print('editedKot',kotdata,printerConfig);
   }
 
 }

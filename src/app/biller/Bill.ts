@@ -435,6 +435,7 @@ export class Bill implements BillConstructor {
       if(kot){
         kot.products = this.editKotMode.newKot;
         kot.stage = 'finalized';
+        this.printingService.printEditedKot(kot,this.editKotMode.newKot,this.table.name,this.orderNo || '')
       }
       
       this.dataProvider.kotViewVisible = true;
@@ -705,6 +706,7 @@ export class Bill implements BillConstructor {
       time: Timestamp.now(),
       user: this.user,
     };
+    this.printingService.printBill(this)
     if(this.nonChargeableDetail){
       this.databaseService.addSales(this.billing.grandTotal,'nonChargeableSales')
     } else if(this.mode=='dineIn'){

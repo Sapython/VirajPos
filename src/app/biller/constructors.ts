@@ -25,7 +25,7 @@ export interface BillConstructor {
     time: Timestamp;
     user: UserConstructor;
   }
-  instruction: string;
+  instruction?: string;
   customerInfo: CustomerInfo;
   billingMode: 'cash' | 'card' | 'upi' | 'nonChargeable';
   mode: 'dineIn' | 'takeaway' | 'online';
