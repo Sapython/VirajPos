@@ -173,7 +173,7 @@ export class SettleComponent {
           this.printingService.reprintBill(data as any)
           this.databaseService.updateBill(data)
           console.log("data 2",data);
-          
+          this.dialogRef.close()
           // let billInstance = new Bill(
           //   this.generateId(),
           //   this.dataProvider.currentBill!.table,

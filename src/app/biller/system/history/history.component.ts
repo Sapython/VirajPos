@@ -50,7 +50,7 @@ export class HistoryComponent {
   }
 
   reprintKot(kot:KotConstructor,bill:BillConstructor){
-    // this.printingService.reprintKot(kot,bill.table,bill.billNo);
+    this.printingService.reprintKot(kot,bill.table.name,bill.billNo||'');
   }
 }
 interface ExtendedBillConstructor extends BillConstructor{
