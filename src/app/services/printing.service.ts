@@ -15,12 +15,12 @@ export class PrintingService {
 
 
   getPrinters(){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     return window.pywebview.api.getPrinters();
   }
 
   printKot(tableNo:string,orderNo:string,products:Product[],id:string,mode:'firstChargeable'|'cancelledKot'|'editedKot'|'runningNonChargeable'|'runningChargeable'|'firstNonChargeable'|'reprintKot'|'online'){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,
@@ -55,7 +55,7 @@ export class PrintingService {
   }
 
   deleteKot(tableNo:string,orderNo:string,products:Product[],id:string){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,
@@ -91,7 +91,7 @@ export class PrintingService {
   }
 
   printBill(bill:Bill){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,
@@ -151,7 +151,7 @@ export class PrintingService {
   }
 
   reprintBill(bill:BillConstructor){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,
@@ -225,7 +225,7 @@ export class PrintingService {
   }
 
   reprintKot(kot:KotConstructor,table:string,billNo:string){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,
@@ -275,7 +275,7 @@ export class PrintingService {
   }
 
   printEditedKot(kot:KotConstructor,oldProducts:Product[],table:string,billNo:string){
-    if(!window.pywebview.api) return;
+    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,

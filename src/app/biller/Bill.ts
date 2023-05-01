@@ -295,6 +295,7 @@ export class Bill implements BillConstructor {
         kot: kot,
         kotIndex: this.kots.findIndex((localKot) => localKot.id==kot.id) || 0,
       };
+      // finalize the kot
       console.log('edit kot mode', this.editKotMode);
       this.dataProvider.manageKot = false;
       this.dataProvider.manageKotChanged.next(false);
@@ -431,13 +432,15 @@ export class Bill implements BillConstructor {
   finalizeAndPrintKot() {
     if (this.editKotMode != null) {
       console.log("Old kot", this.editKotMode.previousKot, "New kot", this.editKotMode.newKot);
-      let kot = this.kots.find((kot) => this.editKotMode && kot.id === this.editKotMode.kot.id)
-      if(kot){
-        kot.products = this.editKotMode.newKot;
-        kot.stage = 'finalized';
-        this.printingService.printEditedKot(kot,this.editKotMode.newKot,this.table.name,this.orderNo || '')
+      let kotIndex = this.kots.findIndex((kot) => this.editKotMode && kot.id === this.editKotMode.kot.id)
+      if(kotIndex){
+        this.kots[kotIndex].products = this.editKotMode.newKot;
+        this.kots[kotIndex].stage = 'finalized';
+        console.log('Active kot', this.kots[kotIndex]);
+        alert("Kot found")
+        this.printingService.printEditedKot(this.kots[kotIndex],this.editKotMode.newKot,this.table.name,this.orderNo || '')
       }
-      
+      this.editKotMode = null;
       this.dataProvider.kotViewVisible = true;
     } else {
       let activeKot = this.kots.find(

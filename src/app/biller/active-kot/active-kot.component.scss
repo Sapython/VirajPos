@@ -124,6 +124,9 @@ section{
         gap: 20px;
         padding: 20px;
         overflow-x: scroll;
+        &::-webkit-scrollbar{
+            display: none;
+        }
         .label{
             display: flex;
             gap: 10px;
