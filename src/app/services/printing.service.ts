@@ -39,7 +39,7 @@ export class PrintingService {
       'orderNo': orderNo,
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
-      "mode":"firstChargeable",
+      "mode":mode,
       "products":products.map((product:Product)=>{
         return {
           "id":product.id,
