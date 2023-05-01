@@ -90,9 +90,13 @@ export class ActiveKotComponent implements OnChanges {
     this.dataProvider.currentBill?.removeProduct(index, this.activeKotIndex);
   }
 
-  printKot(kot: Kot) {}
+  printKot(kot: Kot) {
+    this.dataProvider.currentBill?.printKot(kot,'reprintKot');
+  }
 
-  deleteKot(kot: Kot) {}
+  deleteKot(kot: Kot) {
+    this.dataProvider.currentBill?.deleteKot(kot);
+  }
 
   editKot(kot: Kot) {
     this.dataProvider.currentBill?.editKot(kot);

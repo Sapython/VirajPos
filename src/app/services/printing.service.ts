@@ -19,7 +19,7 @@ export class PrintingService {
     return window.pywebview.api.getPrinters();
   }
 
-  printKot(tableNo:string,orderNo:string,products:Product[],id:string){
+  printKot(tableNo:string,orderNo:string,products:Product[],id:string,mode:'firstChargeable'|'cancelledKot'|'editedKot'|'runningNonChargeable'|'runningChargeable'|'firstNonChargeable'|'reprintKot'|'online'){
     if(!window.pywebview.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
@@ -47,6 +47,42 @@ export class PrintingService {
           "quantity":product.quantity,
           "price":product.price,
           "total":product.price*product.quantity,
+        }
+      })
+    }
+    console.log("printing data",data,printerConfig);
+    return window.pywebview.api.print(data['mode'],data,printerConfig);
+  }
+
+  deleteKot(tableNo:string,orderNo:string,products:Product[],id:string){
+    if(!window.pywebview.api) return;
+    let businessDetails = {
+      'name': this.dataprovider.currentBusiness?.hotelName,
+      'address': this.dataprovider.currentBusiness?.address,
+      'phone': this.dataprovider.currentBusiness?.phone,
+      "gst": this.dataprovider.currentBusiness?.gst,
+      "fssai": this.dataprovider.currentBusiness?.fssai,
+    }
+    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+      return {product:product.id,printer:product.category.printer}
+    })
+    let data ={
+      'id':id,
+      'businessDetails': businessDetails,
+      "table": tableNo,
+      'orderNo': orderNo,
+      "date":(new Date()).toLocaleDateString(),
+      "time":(new Date()).toLocaleTimeString(),
+      "mode":"cancelledKot",
+      "products":products.map((product:Product)=>{
+        return {
+          "id":product.id,
+          "name":product.name,
+          "instruction":product.instruction,
+          "quantity":product.quantity,
+          "price":product.price,
+          "total":product.price*product.quantity,
+          "edited":true
         }
       })
     }

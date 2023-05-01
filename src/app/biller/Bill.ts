@@ -609,7 +609,11 @@ export class Bill implements BillConstructor {
     
   }
 
-  printKot(kot:Kot,mode:'cancelledKot'|'editedKot'|'runningNonChargeable'|'runningChargeable'|'firstNonChargeable'|'firstChargeable'|'online'|'bill'|'reprintBill'){
+  deleteKot(kot: Kot) {
+    this.printingService.deleteKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,kot.id)
+  }
+
+  printKot(kot:Kot,mode:'firstChargeable'|'cancelledKot'|'editedKot'|'runningNonChargeable'|'runningChargeable'|'firstNonChargeable'|'reprintKot'|'online'){
     // let products = kot.products.map((product)=>{
     //   return {
     //     name:product.name,
@@ -617,7 +621,7 @@ export class Bill implements BillConstructor {
     //     instruction:product.instruction,
     //   }
     // })
-    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,kot.id)
+    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,kot.id,mode)
     // let data ={
     //   'id':kot.id,
     //   'businessDetails': this.dataProvider.currentBusiness,
