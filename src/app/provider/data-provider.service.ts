@@ -32,6 +32,12 @@ export class DataProvider {
 
   // constants
   public password:string = '123456';
+  public accessLevels:string[] = [
+    "manager",
+    "waiter",
+    "accountant",
+    "admin"
+  ]
 
   // recommendationConfig
   highCostConfig:{min:number,max:number} = {min:0,max:0};
@@ -49,6 +55,10 @@ export class DataProvider {
   public kotToken:number = 0;
   public takeawayToken:number = 0;
   public onlineTokenNo:number = 0;
+  public dineInSales:number = 0;
+  public takeawaySales:number = 0;
+  public onlineSales:number = 0;
+  public nonChargeableSales:number = 0;
   public tableTimeOutTime:number = 45;
 
   // public access
@@ -72,7 +82,7 @@ export class DataProvider {
   public onlineTokens:Table[] = [];
   
   // statuses
-  public billingMode:'dine'|'takeaway'|'online' = 'dine';
+  public billingMode:'dineIn'|'takeaway'|'online' = 'dineIn';
   public isAuthStateAvaliable:boolean =false;
   public loggedIn:boolean = false;
   public kotViewVisible:boolean = false;
@@ -103,6 +113,21 @@ export class DataProvider {
   public billUpdated:Subject<void> = new Subject<void>();
   public settingsChanged:Subject<any> = new Subject<any>();
 
+  public get currentAccessLevel(){
+    if(this.currentBusiness){
+      let user = this.currentBusiness.users.find((user)=>{
+        return user.email == this.currentUser?.email
+      })
+      if(user){
+        return user.access;
+      } else {
+        return "waiter";
+      }
+    } else {
+      return "waiter";
+    }
+  }
+
   public getAccess(level:string | string[]){
     if(this.currentBusiness && this.currentUser){
       let user = this.currentBusiness.users.find((user)=>{
@@ -125,6 +150,7 @@ export class DataProvider {
   // onboarding vars
   public userSubject:Subject<userState> = new Subject<userState>();
   public menuLoadSubject:Subject<any> = new Subject<any>();
+  public modeChanged:Subject<string> = new Subject<string>();
   public currentBusiness:BusinessRecord|undefined;
   public businessId:string = "";
 }

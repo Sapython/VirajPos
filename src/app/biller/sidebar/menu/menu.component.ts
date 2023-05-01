@@ -1,9 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { debounceTime, firstValueFrom, Subject } from 'rxjs';
 import { Category, RootCategory, ViewCategory } from 'src/app/structures/general.structure';
-import { OptionComponent } from './option/option.component';
 import { Dialog } from '@angular/cdk/dialog'
-import { EditMenuComponent } from '../edit-menu/edit-menu.component';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
@@ -180,10 +178,6 @@ export class MenuComponent implements OnInit,AfterViewInit {
     },(err)=>{
       console.log("Serious error occured while storing categories",err)
     })
-  }
-
-  editMenu(){
-    const dialog = this.dialog.open(EditMenuComponent)
   }
 
   openCategory(category:Category){

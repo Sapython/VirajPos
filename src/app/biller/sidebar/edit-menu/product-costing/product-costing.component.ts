@@ -37,14 +37,17 @@ export class ProductCostingComponent implements OnInit {
       })
     })
   }
+  
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     this.getIngredients();
   }
+
   switch(event:any){
     console.log(event);
   }
+
   getIngredients(){
     this.databaseService.getIngredients().then((res:any)=>{
       this.ingredients.push(...res.docs.map((doc:any)=>{

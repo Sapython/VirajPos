@@ -27,6 +27,8 @@ export interface BusinessRecord{
     modes:boolean[],
     fssai:string;
     gst:string;
+    cgst:number;
+    sgst:number;
     users:Member[];
     billerPin:string;
     devices:string[]
@@ -44,4 +46,5 @@ export interface Member{
     access:string;
     updatedBy:string;
     lastUpdated:Timestamp;
+    new?:boolean;
 }

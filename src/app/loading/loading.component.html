@@ -308,7 +308,7 @@
                   name="access"
                 >
                   <mat-option
-                    *ngFor="let access of accessLevels"
+                    *ngFor="let access of this.dataProvider.accessLevels"
                     [value]="access"
                   >
                     {{ access }}

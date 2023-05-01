@@ -51,7 +51,9 @@ import { SelectRecipeComponent } from './edit-menu/select-recipe/select-recipe.c
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UpgradeComponent } from './info-panel/upgrade/upgrade.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component'; 
+import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component';
+import { SelectCategoryComponent } from './edit-menu/select-category/select-category.component'; 
+import {MatRadioModule} from '@angular/material/radio'; 
 
 @NgModule({
   declarations: [
@@ -84,6 +86,7 @@ import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component';
     SelectRecipeComponent,
     UpgradeComponent,
     AddMenuComponent,
+    SelectCategoryComponent,
   ],
   imports: [
     CommonModule,
@@ -94,7 +97,6 @@ import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component';
     MatRippleModule,
     OverlayModule,
     DialogModule,
-    MatFormFieldModule,
     MatInputModule,
     MatSlideToggleModule,
     MatSliderModule,
@@ -110,7 +112,8 @@ import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component';
     BaseComponentsModule,
     MatButtonToggleModule,
     MatProgressSpinnerModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatRadioModule
   ],
   exports:[SidebarComponent,AddDishComponent,AddNewCategoryComponent,SelectRecipeComponent]
 })

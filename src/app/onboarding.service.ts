@@ -79,21 +79,18 @@ export class OnboardingService {
           if (setting.takeawayMenu){
             let inst = new ModeConfig('Takeaway','takeaway',setting.takeawayMenu,setting.takeawayMenu.id,this.dataProvider,this.databaseService,this.alertify,this.dialog);
             menuInits.push('takeaway')
-            this.dataProvider.currentMenu = inst;
             this.dataProvider.menus.push(inst);
             this.loadingSteps.next('Found Takeaway Menu');
           }
           if (setting.onlineMenu){
             let inst = new ModeConfig('Online','online',setting.onlineMenu,setting.onlineMenu.id,this.dataProvider,this.databaseService,this.alertify,this.dialog);
             menuInits.push('online')
-            this.dataProvider.currentMenu = inst;
             this.dataProvider.menus.push(inst);
             this.loadingSteps.next('Found Online Menu');
           }
           if (setting.dineInMenu){
             let inst = new ModeConfig('Dine In','dineIn',setting.dineInMenu,setting.dineInMenu.id,this.dataProvider,this.databaseService,this.alertify,this.dialog);
             menuInits.push('dineIn')
-            this.dataProvider.currentMenu = inst;
             this.dataProvider.menus.push(inst);
             this.loadingSteps.next('Found Dine In Menu');
           }
@@ -114,6 +111,18 @@ export class OnboardingService {
             // check if all menus are loaded
             if (verifiedMenus.length == menuInits.length){
               this.loadingSteps.next('All menus loaded');
+              // set current menu in order of dineIn, takeaway, online
+              let currentMenu = this.dataProvider.menus.find((menu)=>menu.type == 'dineIn') || this.dataProvider.menus.find((menu)=>menu.type == 'takeaway') || this.dataProvider.menus.find((menu)=>menu.type == 'online');
+              if (currentMenu){
+                this.dataProvider.menuLoadSubject.next(currentMenu);
+              } else {
+                this.loadingSteps.next('No menus found');
+                this.alertify.presentToast('No menus found','error');
+                this.stage = 'onboardingStep3';
+                return
+              }
+              this.dataProvider.currentMenu = currentMenu;
+              this.dataProvider.products = this.dataProvider.currentMenu.products;
               if (setting.modes[0]){
                 await this.getTables();
                 this.loadingSteps.next('All tables loaded');
@@ -141,7 +150,10 @@ export class OnboardingService {
       }
     })
     console.log('business/'+business.businessId,'/settings/settings');
-    
+    docData(doc(this.firestore,'business',business.businessId),{idField:'businessId'}).subscribe((res)=>{
+      this.dataProvider.currentBusiness = res as BusinessRecord;
+      console.log("Business Changed",res);
+    })
     docData(doc(this.firestore,'business',business.businessId,'settings','settings')).subscribe((res)=>{
       console.log("Settings Changed",res);
       this.dataProvider.billToken = res['billTokenNo'];
@@ -156,7 +168,12 @@ export class OnboardingService {
       this.dataProvider.dineInMenu = res['dineInMenu'];
       this.dataProvider.takeawayMenu = res['takeawayMenu'];
       this.dataProvider.onlineMenu = res['onlineMenu'];
+      this.dataProvider.dineInSales = res['dineInSales'];
+      this.dataProvider.takeawaySales = res['takeawaySales'];
+      this.dataProvider.onlineSales = res['onlineSales'];
+      this.dataProvider.nonChargeableSales = res['nonChargeableSales'];
       this.dataProvider.settingsChanged.next(res)
+
     })
   }
 

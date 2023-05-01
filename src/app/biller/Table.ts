@@ -20,6 +20,7 @@ export class Table implements TableConstructor {
   tableNo: number;
   type: 'table' | 'room' | 'token' | 'online';
   updated: Subject<void> = new Subject<void>();
+
   constructor(
     id: string,
     tableNo: number,
@@ -38,6 +39,7 @@ export class Table implements TableConstructor {
     this.status = 'available';
     this.tableNo = tableNo;
     this.type = type;
+    this.firebaseUpdate();
     this.updated.pipe(debounceTime(1000)).subscribe(() => {
       // this.databaseService.updateTable(this.toObject());
       if (this.type == 'table') {
@@ -51,6 +53,49 @@ export class Table implements TableConstructor {
       }
     })
     this.updated.next();
+  }
+
+  firebaseUpdate() {
+    // fetch the table from the database and update the local table
+    var mode:'tables'|'tokens'|'onlineTokens' = 'tables';
+    if (this.type == 'table') {
+      mode = 'tables';
+    } else if (this.type == 'token') {
+      mode = 'tokens';
+    } else if (this.type == 'online') {
+      mode = 'onlineTokens';
+    }
+    this.databaseService.getTable(this.id,mode).subscribe(async (res) => {
+      let table:TableConstructor = res as TableConstructor;
+      console.log("table",table);
+      this.status = res['status'];
+      this.billPrice = res['billPrice'];
+      this.occupiedStart = res['occupiedStart'];
+      if (!this.bill && res['bill']) {
+        if(typeof table.bill == 'string'){
+          let bill = await this.databaseService.getBill(table.bill)
+          console.log("bill.exists()",bill.exists());
+          if (bill.exists()){
+            let billData = bill.data() as BillConstructor;
+            console.log("billData ",billData);
+            this.id = table.id;
+            this.bill = Bill.fromObject(billData, this, this.dataProvider, this.databaseService,this.printingService);
+            this.maxOccupancy = table.maxOccupancy;
+            this.billPrice = table.billPrice;
+            this.name = table.name;
+            this.occupiedStart = table.occupiedStart;
+            this.status = table.status;
+            this.tableNo = table.tableNo;
+            this.type = table.type;
+          }
+        }
+      }
+      this.status = res['status'];
+      this.billPrice = res['billPrice'];
+      this.occupiedStart = res['occupiedStart'];
+      // console.log("res",res);
+      // this.bill = res.bill;
+    })
   }
 
   updateOnlineToken(data:any){
@@ -127,6 +172,10 @@ export class Table implements TableConstructor {
         instance.type = object.type;
         return instance;
       } else {
+        console.log("bill does not exist",object.bill, {...bill.data(),id:bill.id});
+        console.log("bill",bill);
+        console.log("object",object);
+        alert("bill does not exist")
         instance.billPrice = object.billPrice;
         instance.occupiedStart = object.occupiedStart;
         instance.status = 'available';
@@ -174,7 +223,7 @@ export class Table implements TableConstructor {
   occupyTable() {
     if (!this.dataProvider.currentMenu?.selectedMenu){
       alert("Please select a menu first");
-      return 
+      return;
     }
     if (this.status === 'available') {
       if (this.dataProvider.currentUser && this.dataProvider.currentDevice) {
@@ -184,18 +233,18 @@ export class Table implements TableConstructor {
           access: '',
           image: this.dataProvider.currentUser?.image,
         };
-        var mode:'takeaway' | 'online' | 'dine';
+        var mode:'takeaway' | 'online' | 'dineIn';
         if (this.type=='token'){
           mode = 'takeaway';
         } else if(this.type=='online') {
           mode = 'online';
         } else if(this.type=='table') {
-          mode = 'dine';
+          mode = 'dineIn';
         } else if(this.type=='room') {
-          mode = 'dine';
+          mode = 'dineIn';
         } else {
           alert("Table corrupted please contact admin");
-          return
+          return;
         }
         this.bill = new Bill(
           this.generateId(),

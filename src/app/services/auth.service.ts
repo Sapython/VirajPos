@@ -9,6 +9,7 @@ import { Device } from "../biller/Device";
 import { DataProvider } from '../provider/data-provider.service';
 import { BusinessRecord, UserBusiness, UserRecord } from '../structures/user.structure';
 import { AlertsAndNotificationsService } from './alerts-and-notification/alerts-and-notifications.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,7 @@ export class AuthService {
     private dataProvider: DataProvider,
     private dbService: NgxIndexedDBService,
     private fs: Firestore,
+    private router:Router,
     private alertify: AlertsAndNotificationsService
   ) {
     this.setupDevice()
@@ -190,6 +192,11 @@ export class AuthService {
     } else {
       return false;
     }
+  }
+
+  logout(){
+    // signOut(this.auth);
+    this.router.navigateByUrl('/login');
   }
 
   loginWithEmailPassword(email: string, password: string) {

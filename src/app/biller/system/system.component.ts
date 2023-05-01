@@ -3,21 +3,37 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SettingsComponent } from '../settings/settings.component';
 import { ChatComponent } from './chat/chat.component';
 import { DataProvider } from 'src/app/provider/data-provider.service';
+import { HistoryComponent } from './history/history.component';
+import { slideInDownOnEnterAnimation, slideOutUpOnLeaveAnimation } from 'angular-animations';
+import { AuthService } from 'src/app/services/auth.service';
 declare var jivo_api:any;
 @Component({
   selector: 'app-system',
   templateUrl: './system.component.html',
-  styleUrls: ['./system.component.scss']
+  styleUrls: ['./system.component.scss'],
+  animations:[
+    slideInDownOnEnterAnimation(),
+    slideOutUpOnLeaveAnimation()
+  ]
 })
 export class SystemComponent {
-  @Input() businessName: string = "Govindam Restaurant";
-  @Input() currentUser: string = "Saptam";
-  @Input() currentUserId: string = "GVSP";
+  @Input() businessName: string = this.dataProvider.currentBusiness?.hotelName || '';
+  @Input() currentUser: string = this.dataProvider.currentUser?.email || '';
+  @Input() accessLevel: string = this.dataProvider.currentAccessLevel;
   @Output() logout: EventEmitter<any> = new EventEmitter<any>();
   @Output() support: EventEmitter<any> = new EventEmitter<any>();
   @Output() settings: EventEmitter<any> = new EventEmitter<any>();
   @Output() lock: EventEmitter<any> = new EventEmitter<any>();
-  constructor(private dialog:Dialog,private dataProvider:DataProvider){}
+  constructor(private dialog:Dialog,public dataProvider:DataProvider,private authService:AuthService){
+  }
+
+  logOut(){
+    this.authService.logout()
+  }
+
+  openHistory(){
+    const dialog = this.dialog.open(HistoryComponent)
+  }
 
   openSettings(){
     const dialog = this.dialog.open(SettingsComponent);

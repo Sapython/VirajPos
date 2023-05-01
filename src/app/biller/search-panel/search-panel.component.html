@@ -1,8 +1,8 @@
 <section>
     <div id="search" [class]="active ? 'active' :''" *ngIf="dataProvider.clientWidth >= 900 || searchVisible">
         <input (input)="searchSubcription.next(search.value)" #search (focus)="active = true" (blur)="active=false" type="search" [placeholder]="dynamicPlaceholder">
-        <viraj-button [minimalPadding]="true" type="icon"><i class="ri-search-line"></i></viraj-button>
-        <viraj-button [minimalPadding]="true" type="icon" (vclick)="searchVisible=false"><i class="ri-close-fill"></i></viraj-button>
+        <viraj-button *ngIf="dataProvider.clientWidth < 900" [minimalPadding]="true" type="icon"><i class="ri-search-line"></i></viraj-button>
+        <viraj-button *ngIf="dataProvider.clientWidth < 900" [minimalPadding]="true" type="icon" (vclick)="searchVisible=false"><i class="ri-close-fill"></i></viraj-button>
     </div>
     <viraj-button type="icon" (vclick)="searchVisible=true" *ngIf="dataProvider.clientWidth < 900 && !searchVisible">
         <i class="ri-search-line"></i>
@@ -14,8 +14,8 @@
                 {{dataProvider.clientWidth < 1500 ? 'Table' : 'View Table '}}
             </ng-container>
         </viraj-button>
-        <mat-button-toggle-group value="dine" color="primary" (change)="switchMode($event)" [(ngModel)]="dataProvider.billingMode" name="fontStyle" aria-label="Font Style">
-            <mat-button-toggle color="primary" value="dine" *ngIf="this.dataProvider.activeModes[0]">
+        <mat-button-toggle-group value="dineIn" color="primary" (change)="switchMode($event)" [value]="this.dataProvider.currentMenu?.type" name="fontStyle" aria-label="Font Style">
+            <mat-button-toggle color="primary" value="dineIn" *ngIf="this.dataProvider.activeModes[0]">
                 <ng-container>Dine In</ng-container>
             </mat-button-toggle>
             <mat-button-toggle color="primary" value="takeaway" *ngIf="this.dataProvider.activeModes[1]">

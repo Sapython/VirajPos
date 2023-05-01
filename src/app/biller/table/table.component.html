@@ -34,10 +34,16 @@
     <h2>Table</h2>
     <ng-container *ngIf="moveKotMode">
         <div class="modes">
-            <mat-button-toggle-group [(ngModel)]="editBillingMode" [value]="editBillingMode" color="primary" name="fontStyle" aria-label="Font Style">
-                <mat-button-toggle color="primary" value="dine">Dine In</mat-button-toggle>
-                <mat-button-toggle color="primary" value="takeaway">Takeaway</mat-button-toggle>
-                <mat-button-toggle color="primary" value="online">Online</mat-button-toggle>
+            <mat-button-toggle-group [value]="this.dataProvider.currentMenu?.type" color="primary" (change)="switchMode($event)" name="fontStyle" aria-label="Font Style">
+                <mat-button-toggle color="primary" value="dineIn" *ngIf="this.dataProvider.activeModes[0]">
+                    <ng-container>Dine In</ng-container>
+                </mat-button-toggle>
+                <mat-button-toggle color="primary" value="takeaway" *ngIf="this.dataProvider.activeModes[1]">
+                    <ng-container>Takeaway</ng-container>
+                </mat-button-toggle>
+                <mat-button-toggle color="primary" value="online" *ngIf="this.dataProvider.activeModes[2]">
+                    <ng-container>Online</ng-container>
+                </mat-button-toggle>
             </mat-button-toggle-group>
         </div>
         <div class="tables">
@@ -65,13 +71,19 @@
     </ng-container>
     <ng-container *ngIf="!moveKotMode">
         <div class="modes">
-            <mat-button-toggle-group [(ngModel)]="dataProvider.billingMode" [value]="dataProvider.billingMode" color="primary" name="fontStyle" aria-label="Font Style">
-                <mat-button-toggle color="primary" value="dine">Dine In</mat-button-toggle>
-                <mat-button-toggle color="primary" value="takeaway">Takeaway</mat-button-toggle>
-                <mat-button-toggle color="primary" value="online">Online</mat-button-toggle>
+            <mat-button-toggle-group [value]="this.dataProvider.currentMenu?.type" color="primary" (change)="switchMode($event)" name="fontStyle" aria-label="Font Style">
+                <mat-button-toggle color="primary" value="dineIn" *ngIf="this.dataProvider.activeModes[0]">
+                    <ng-container>Dine In</ng-container>
+                </mat-button-toggle>
+                <mat-button-toggle color="primary" value="takeaway" *ngIf="this.dataProvider.activeModes[1]">
+                    <ng-container>Takeaway</ng-container>
+                </mat-button-toggle>
+                <mat-button-toggle color="primary" value="online" *ngIf="this.dataProvider.activeModes[2]">
+                    <ng-container>Online</ng-container>
+                </mat-button-toggle>
             </mat-button-toggle-group>
         </div>
-        <div class="tables" *ngIf="this.dataProvider.billingMode=='dine'">
+        <div class="tables" *ngIf="this.dataProvider.billingMode=='dineIn'">
             <button class="table" [ngClass]="{'active':table.status=='occupied','late':this.dataProvider.tableTimeOutTime <= table.minutes,'finalized':table.bill?.stage=='finalized'}"  matRipple *ngFor="let table of tables" (click)="openTable(table,$event)">
                 <p class="name">Table {{table.name}}</p>
                 <p class="cost" *ngIf="table.bill?.billing?.grandTotal"><strong>{{table.bill?.billing?.grandTotal | currency:'INR'}}</strong></p>

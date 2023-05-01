@@ -7,7 +7,7 @@ export interface BillConstructor {
   id: string;
   tokens: string[];
   billNo?: string;
-  orderNo: string;
+  orderNo: string|null;
   createdDate: Timestamp;
   stage: 'active' | 'finalized' | 'settled' | 'cancelled';
   cancelledReason?: {
@@ -28,7 +28,7 @@ export interface BillConstructor {
   instruction: string;
   customerInfo: CustomerInfo;
   billingMode: 'cash' | 'card' | 'upi' | 'nonChargeable';
-  mode: 'dine' | 'takeaway' | 'online';
+  mode: 'dineIn' | 'takeaway' | 'online';
   device: DeviceConstructor;
   user: UserConstructor;
   kots: KotConstructor[];

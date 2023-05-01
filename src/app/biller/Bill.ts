@@ -8,6 +8,7 @@ import {
   Billing,
   Product,
   Tax,
+  KotConstructor,
 } from './constructors';
 import { debounceTime, Subject } from 'rxjs';
 import { DataProvider } from '../provider/data-provider.service';
@@ -37,12 +38,12 @@ export class Bill implements BillConstructor {
   id: string;
   tokens: string[] = [];
   billNo?: string;
-  orderNo: string;
+  orderNo: string|null = null;
   createdDate: Timestamp;
   stage: 'active' | 'finalized' | 'settled' | 'cancelled';
   customerInfo: CustomerInfo;
   device: Device;
-  mode: 'dine' | 'takeaway' | 'online';
+  mode: 'dineIn' | 'takeaway' | 'online';
   menu:Menu;
   kots: Kot[] = [];
   table: Table;
@@ -79,6 +80,7 @@ export class Bill implements BillConstructor {
     phone: string;
     user: User;
   };
+  billSubscriptionCallerStarted: boolean = false;
   updated: Subject<boolean | void> = new Subject<boolean | void>();
   currentKot: Kot | null = this.kots.find((kot) => kot.stage === 'active') || null;
   get kotWithoutFunctions(): any[]{
@@ -87,7 +89,7 @@ export class Bill implements BillConstructor {
   constructor(
     id: string,
     table: Table,
-    mode: 'dine' | 'takeaway' | 'online',
+    mode: 'dineIn' | 'takeaway' | 'online',
     device: Device,
     billerUser: User,
     menu:Menu,
@@ -99,20 +101,22 @@ export class Bill implements BillConstructor {
     // this.updated.pipe(debounceTime(100)).subscribe(() => {
 
     // })
-    this.orderNo = this.dataProvider.orderTokenNo.toString();
-    this.dataProvider.orderTokenNo++;
-    this.databaseService.addOrderToken();
     this.updated.pipe(debounceTime(2000)).subscribe(async (data) => {
       if (!data) {
         let data = this.toObject();
         console.log('updating bill', data);
         await this.databaseService.updateBill(data);
         console.log('Bill updated', data);
+        this.table.updated.next()
+      }
+      if(!this.billSubscriptionCallerStarted){
+        this.firebaseUpdate();
       }
     });
+    this.firebaseUpdate()
     this.toObject = this.toObject.bind(this);
     this.id = id;
-    this.instruction = ""
+    this.instruction = "";
     this.createdDate = Timestamp.now();
     this.stage = 'active';
     this.mode = mode;
@@ -137,7 +141,7 @@ export class Bill implements BillConstructor {
     let products:Product[] = []
     this.kots.forEach((kot) => {
       kot.products.forEach((product) => {
-        let index = products.findIndex((item) => item.id === product.id)
+        let index = products.findIndex((item) => item.id === product.id);
         if(index !== -1){
           products[index].quantity += product.quantity;
         } else {
@@ -146,6 +150,59 @@ export class Bill implements BillConstructor {
       })
     })
     return products;
+  }
+
+  firebaseUpdate(){
+    if (this.id){
+      this.databaseService.getBillSubscription(this.id).subscribe((bill) => {
+        this.billSubscriptionCallerStarted = true;
+        console.log('bill changed', bill);
+        if(bill){
+          this.stage = bill['stage'];
+          this.billNo = bill['billNo'];
+          this.orderNo = bill['orderNo'];
+          this.createdDate = bill['createdDate'];
+          this.customerInfo = bill['customerInfo'];
+          this.device = bill['device'];
+          this.mode = bill['mode'];
+          this.menu = bill['menu'];
+          // this.table = bill['table'];
+          this.billing = bill['billing'];
+          this.instruction = bill['instruction'];
+          this.user = bill['user'];
+          this.nonChargeableDetail = bill['nonChargeableDetail'];
+          this.billingMode = bill['billingMode'];
+          this.settlement = bill['settlement'];
+          this.cancelledReason = bill['cancelledReason'];
+          // update kots and products
+          // first find a kot that matches the id then check for products that match the id and update the quantity and stage
+          this.kots.forEach((kot) => {
+            let index = bill['kots'].findIndex((item:KotConstructor) => item.id === kot.id);
+            if(index !== -1){
+              kot.stage = bill['kots'][index]['stage'];
+              kot.products.forEach((product) => {
+                let productIndex = bill['kots'][index]['products'].findIndex((item:Product) => item.id === product.id);
+                if(productIndex !== -1){
+                  product.quantity = bill['kots'][index]['products'][productIndex]['quantity'];
+                }
+              })
+              kot.createdDate = bill['kots'][index]['createdDate'];
+              kot.editMode = bill['kots'][index]['editMode'];
+            } else {
+              // remove kot
+              this.kots = this.kots.filter((item) => item.id !== kot.id);
+            }
+          })
+          // add new kots
+          bill['kots'].forEach((kot:KotConstructor) => {
+            let index = this.kots.findIndex((item) => item.id === kot.id);
+            if(index === -1){
+              this.kots.push(new Kot(kot.id, kot.products[0], kot));
+            }
+          })
+        }
+      })
+    }
   }
 
   addKot(kot: Kot) {
@@ -186,6 +243,11 @@ export class Bill implements BillConstructor {
     } else {
       const kotIndex = this.kots.findIndex((kot) => kot.stage === 'active');
       if (kotIndex === -1) {
+        if (!this.orderNo){
+          this.orderNo = this.dataProvider.orderTokenNo.toString();
+          this.dataProvider.orderTokenNo++;
+          this.databaseService.addOrderToken();
+        }
         let kot = new Kot(this.dataProvider.kotToken.toString(),product)
         this.kots.push(kot)
         this.dataProvider.kotToken++;
@@ -223,8 +285,12 @@ export class Bill implements BillConstructor {
         return;
       }
     } else {
+      let clonedArray:Product[] = [];
+      kot.products.forEach((product) => {
+        clonedArray.push({ ...product });
+      });
       this.editKotMode = {
-        newKot: kot.products.slice(),
+        newKot: clonedArray,
         previousKot: kot.products,
         kot: kot,
         kotIndex: this.kots.findIndex((localKot) => localKot.id==kot.id) || 0,
@@ -376,6 +442,8 @@ export class Bill implements BillConstructor {
       let activeKot = this.kots.find(
         (value) => value.stage === 'active' || value.stage == 'edit'
       );
+      console.log("info =>",activeKot);
+      
       if (activeKot) {
         activeKot.stage = 'finalized';
         console.log('Active kot', activeKot);
@@ -457,6 +525,7 @@ export class Bill implements BillConstructor {
     this.stage = 'finalized';
     let data = this.toObject();
     this.databaseService.updateBill(data);
+
     this.updated.next();
     this.printBill()
   }
@@ -547,7 +616,7 @@ export class Bill implements BillConstructor {
     //     instruction:product.instruction,
     //   }
     // })
-    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo,kot.products,this.id)
+    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,this.id)
     // let data ={
     //   'id':kot.id,
     //   'businessDetails': this.dataProvider.currentBusiness,
@@ -605,7 +674,7 @@ export class Bill implements BillConstructor {
         this.dataProvider.ncBillToken++;
         this.databaseService.addNcBillToken();
       } else {
-        if (this.mode=='dine'){
+        if (this.mode=='dineIn'){
           this.billNo = this.dataProvider.billToken.toString(),
           this.dataProvider.billToken++;
           this.databaseService.addBillToken();
@@ -636,6 +705,15 @@ export class Bill implements BillConstructor {
       time: Timestamp.now(),
       user: this.user,
     };
+    if(this.nonChargeableDetail){
+      this.databaseService.addSales(this.billing.grandTotal,'nonChargeableSales')
+    } else if(this.mode=='dineIn'){
+      this.databaseService.addSales(this.billing.grandTotal,'dineInSales')
+    } else if (this.mode == 'takeaway'){
+      this.databaseService.addSales(this.billing.grandTotal,'takeawaySales')
+    } else if (this.mode == 'online'){
+      this.databaseService.addSales(this.billing.grandTotal,'onlineSales')
+    }
     this.dataProvider.currentTable?.clearTable()
     this.dataProvider.currentBill = undefined;
     this.dataProvider.currentTable = undefined;
@@ -699,6 +777,7 @@ export class Bill implements BillConstructor {
       createdDate: this.createdDate,
       table: this.table.id,
       billNo: this.billNo || null,
+      orderNo: this.orderNo || null,
       mode: this.mode,
       device: this.device,
       kots: this.kotWithoutFunctions,
@@ -749,6 +828,7 @@ export class Bill implements BillConstructor {
       instance.createdDate = object.createdDate;
       instance.billing = object.billing;
       instance.stage = object.stage;
+      instance.orderNo = object.orderNo;
       instance.settlement = object.settlement;
       instance.cancelledReason = object.cancelledReason;
       instance.billingMode = object.billingMode;

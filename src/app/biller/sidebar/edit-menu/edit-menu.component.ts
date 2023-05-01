@@ -1,9 +1,8 @@
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { Component, OnInit } from '@angular/core';
-import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { Subject, debounceTime, firstValueFrom } from 'rxjs';
 import { DataProvider } from 'src/app/provider/data-provider.service';
-import { Category, RootCategory } from 'src/app/structures/general.structure';
+import { Category } from 'src/app/structures/general.structure';
 import { AddDishComponent } from './add-dish/add-dish.component';
 import { AddNewCategoryComponent } from './add-new-category/add-new-category.component';
 import { SelectRecipeComponent } from './select-recipe/select-recipe.component';
@@ -12,9 +11,11 @@ import { DatabaseService, Menu } from 'src/app/services/database.service';
 import { AlertsAndNotificationsService } from 'src/app/services/alerts-and-notification/alerts-and-notifications.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProductCostingComponent } from './product-costing/product-costing.component';
-import Fuse from 'fuse.js';
 import { AddMenuComponent } from './add-menu/add-menu.component';
 import { PrintingService } from 'src/app/services/printing.service';
+
+import Fuse from 'fuse.js';
+import { SelectCategoryComponent } from './select-category/select-category.component';
 @Component({
   selector: 'app-edit-menu',
   templateUrl: './edit-menu.component.html',
@@ -78,6 +79,12 @@ export class EditMenuComponent implements OnInit {
     })
   }
 
+  getMenus(){
+    this.databaseService.getMenus().then((menus)=>{
+      this.dataProvider.allMenus = menus.docs.map((doc)=>{ return {...doc.data(),id:doc.id} as Menu});
+    })
+  };
+
   async ngOnInit(): Promise<void> {
     try{
       this.printers = await this.printingService.getPrinters()
@@ -97,8 +104,8 @@ export class EditMenuComponent implements OnInit {
     const dialog = this.dialog.open(AddMenuComponent)
     dialog.closed.subscribe((data:any)=>{
       console.log("data",data);
+      this.getMenus();
       if(data){
-
         // this.databaseService.addNewMenu(data.menu,data.products).then((data:any)=>{
 
         // })
@@ -126,28 +133,28 @@ export class ModeConfig {
   searchSubject:Subject<string> = new Subject<string>();
   fuseInstance:Fuse<Product> = new Fuse([],{keys:['name']});
   highCostForm:FormGroup = new FormGroup({
-    min:new FormControl(this.dataProvider.highCostConfig,[Validators.required]),
-    max:new FormControl()
+    min:new FormControl(this.dataProvider.highCostConfig.min,[Validators.required]),
+    max:new FormControl(this.dataProvider.highCostConfig.max)
   });
   lowCostForm:FormGroup = new FormGroup({
-    min:new FormControl(this.dataProvider.lowCostConfig,[Validators.required]),
-    max:new FormControl()
+    min:new FormControl(this.dataProvider.lowCostConfig.min,[Validators.required]),
+    max:new FormControl(this.dataProvider.lowCostConfig.min)
   })
   highRangeForm:FormGroup = new FormGroup({
-    min:new FormControl(this.dataProvider.highRangeConfig,[Validators.required]),
-    max:new FormControl()
+    min:new FormControl(this.dataProvider.highRangeConfig.min,[Validators.required]),
+    max:new FormControl(this.dataProvider.highRangeConfig.max)
   })
   lowRangeForm:FormGroup = new FormGroup({
-    min:new FormControl(this.dataProvider.lowRangeConfig,[Validators.required]),
-    max:new FormControl()
+    min:new FormControl(this.dataProvider.lowRangeConfig.min,[Validators.required]),
+    max:new FormControl(this.dataProvider.lowRangeConfig.max)
   })
   mostSellingForm:FormGroup = new FormGroup({
-    min:new FormControl(this.dataProvider.mostSellingConfig,[Validators.required]),
-    max:new FormControl()
+    min:new FormControl(this.dataProvider.mostSellingConfig.min,[Validators.required]),
+    max:new FormControl(this.dataProvider.mostSellingConfig.max)
   })
   newDishesForm:FormGroup = new FormGroup({
-    min:new FormControl(this.dataProvider.newDishesConfig,[Validators.required]),
-    max:new FormControl()
+    min:new FormControl(this.dataProvider.newDishesConfig.min,[Validators.required]),
+    max:new FormControl(this.dataProvider.newDishesConfig.max)
   })
   constructor(name:string,type:'dineIn'|'takeaway'|'online',selectedMenu:Menu|undefined,selectedMenuId:string,private dataProvider:DataProvider,private databaseService:DatabaseService,private alertify:AlertsAndNotificationsService,private dialog:Dialog){
     this.name = name;
@@ -196,6 +203,9 @@ export class ModeConfig {
     if(this.selectedMenu){
       let data = await this.databaseService.getProductsByMenu(this.selectedMenu);
       this.products = data.docs.map((doc)=>{return {...doc.data(),id:doc.id} as Product});
+      console.log("this.products",this.products);
+      this.allProductsCategory.products = this.products;
+      this.allProductsCategory.averagePrice = this.products.reduce((acc,curr)=>acc+curr.price,0)/this.products.length;
       this.fuseInstance.setCollection(this.products);
       this.selectedCategory = this.allProductsCategory;
     }
@@ -205,11 +215,13 @@ export class ModeConfig {
     if(this.selectedMenu){
       let data = await this.databaseService.getRecommendedCategoriesByMenu(this.selectedMenu)
       this.recommendedCategories = data.docs.map((doc)=>{
+        let products = this.products.filter((p)=>{return doc.data()['products'].includes(p.id) && p.visible})
         return {
           ...doc.data(),
           name:doc.data()['name'],
           id:doc.id,
-          products: this.products.filter((p)=>{return doc.data()['products'].includes(p.id)})
+          products: products,
+          averagePrice: products.reduce((acc,curr)=>acc+curr.price,0)/products.length
         } as Category
       });
     }
@@ -218,14 +230,18 @@ export class ModeConfig {
   async getViewCategories(){
     if(this.selectedMenu){
       let data = await this.databaseService.getViewCategoriesByMenu(this.selectedMenu)
+      console.log("Getting view cats",data.docs);
       this.viewCategories = data.docs.map((doc)=>{
+        let products = this.products.filter((p)=>{return doc.data()['products'].includes(p.id) && p.visible})
         return {
           ...doc.data(),
           name:doc.data()['name'],
           id:doc.id,
-          products: this.products.filter((p)=>{return doc.data()['products'].includes(p.id)})
+          products: products,
+          averagePrice: products.reduce((acc,curr)=>acc+curr.price,0)/products.length,
         } as Category
       });
+      console.log("this.viewCategories",this.viewCategories);
     }
   }
 
@@ -233,11 +249,13 @@ export class ModeConfig {
     if(this.selectedMenu){
       let data = await this.databaseService.getMainCategoriesByMenu(this.selectedMenu)
       this.mainCategories = data.docs.map((doc)=>{
+        let products = this.products.filter((p)=>{return doc.id == p.category?.id && p.visible})
         return {
           ...doc.data(),
           name:doc.data()['name'],
           id:doc.id,
-          products: this.products.filter((p)=>{return doc.id == p.category.id}),
+          products: products,
+          averagePrice: products.reduce((acc,curr)=>acc+curr.price,0)/products.length,
         } as Category
       })
     }
@@ -274,6 +292,12 @@ export class ModeConfig {
   };
   addViewCategory(){
     const dialog = this.dialog.open(AddNewCategoryComponent, {data:{products:this.products}})
+    dialog.closed.subscribe((data:any)=>{
+      if (data){
+        this.viewCategories.push(data);
+      }
+      this.getViewCategories();
+    })
   };
   disableAll(){
     if(this.selectedCategory){
@@ -299,7 +323,9 @@ export class ModeConfig {
   };
   recommendationSave(id:string){
     if (this.selectedMenu){
+      console.log("this.products",this.products);
       if (id=='highRange'){
+        console.log("this.highRangeForm.value",this.highRangeForm.value);
         if (this.highRangeForm.value.min && this.highRangeForm.value.max){
           var filteredList = this.products.filter(product => product.price >= this.highRangeForm.value.min && product.price <= this.highRangeForm.value.max);
         } else if (this.highRangeForm.value.min){
@@ -309,12 +335,24 @@ export class ModeConfig {
         } else {
           var filteredList = this.products;
         }
-        this.databaseService.setSettingsMenu(this.highRangeForm.value,'highRange',filteredList.map((p) => p.id),this.selectedMenu).then((data:any)=>{
+        let currSelectedCategory = this.selectedCategory;
+        if(currSelectedCategory && this.selectedCategory){
+          this.selectedCategory.products = filteredList;
+          console.log("this.selectedCategory",this.selectedCategory.products);
+          currSelectedCategory.loading = true;
+        }
+        this.databaseService.setSettingsMenu(this.highRangeForm.value,'highRange',filteredList.map((p) => p.id),this.selectedMenu).then(async (data:any)=>{
+          await this.getRecommendedCategories();
           this.alertify.presentToast("Settings Updated Successfully");
         }).catch((err)=>{
           this.alertify.presentToast("Settings Update Failed");
+        }).finally(()=>{
+          if(currSelectedCategory){
+            currSelectedCategory.loading = false;
+          }
         })
       } else if (id=='lowRange'){
+        console.log("this.lowRangeForm.value",this.lowRangeForm.value);
         if (this.lowRangeForm.value.min && this.lowRangeForm.value.max){
           var filteredList = this.products.filter(product => product.price >= this.lowRangeForm.value.min && product.price <= this.lowRangeForm.value.max);
         } else if (this.lowRangeForm.value.min){
@@ -324,12 +362,25 @@ export class ModeConfig {
         } else {
           var filteredList = this.products;
         }
-        this.databaseService.setSettingsMenu(this.lowRangeForm.value,'lowRange',filteredList.map((p) => p.id),this.selectedMenu).then((data:any)=>{
+        console.log("filteredList",filteredList);
+        let currSelectedCategory = this.selectedCategory;
+        if(currSelectedCategory && this.selectedCategory){
+          this.selectedCategory.products = filteredList;
+          console.log("this.selectedCategory",this.selectedCategory.products);
+          currSelectedCategory.loading = true;
+        }
+        this.databaseService.setSettingsMenu(this.lowRangeForm.value,'lowRange',filteredList.map((p) => p.id),this.selectedMenu).then(async (data:any)=>{
+          await this.getRecommendedCategories();
           this.alertify.presentToast("Settings Updated Successfully");
         }).catch((err)=>{
           this.alertify.presentToast("Settings Update Failed");
+        }).finally(()=>{
+          if(currSelectedCategory){
+            currSelectedCategory.loading = false;
+          }
         })
       } else if (id=='mostSelling'){
+        console.log("this.mostSellingForm.value",this.mostSellingForm.value);
         // var filteredList = this.products.filter(product => (product.sales || 0) >= this.mostSellingForm.value.min && (product.sales || 0) <= this.mostSellingForm.value.max);
         if (this.mostSellingForm.value.min && this.mostSellingForm.value.max){
           var filteredList = this.products.filter(product => (product.sales || 0) >= this.mostSellingForm.value.min && (product.sales || 0) <= this.mostSellingForm.value.max);
@@ -340,12 +391,25 @@ export class ModeConfig {
         } else {
           var filteredList = this.products;
         }
-        this.databaseService.setSettingsMenu(this.mostSellingForm.value,'mostSelling',filteredList.map((p) => p.id),this.selectedMenu).then((data:any)=>{
+        let currSelectedCategory = this.selectedCategory;
+        if(currSelectedCategory && this.selectedCategory){
+          this.selectedCategory.products = filteredList;
+          console.log("this.selectedCategory",this.selectedCategory.products);
+          currSelectedCategory.loading = true;
+        }
+        console.log("filteredList",filteredList);
+        this.databaseService.setSettingsMenu(this.mostSellingForm.value,'mostSelling',filteredList.map((p) => p.id),this.selectedMenu).then(async (data:any)=>{
+          await this.getRecommendedCategories();
           this.alertify.presentToast("Settings Updated Successfully");
         }).catch((err)=>{
           this.alertify.presentToast("Settings Update Failed");
+        }).finally(()=>{
+          if(currSelectedCategory){
+            currSelectedCategory.loading = false;
+          }
         })
       } else if (id=='newDishes'){
+        console.log("this.newDishesForm.value",this.newDishesForm.value);
         // var filteredList = this.products.filter(product => product.createdDate.toDate().getTime() >= this.newDishesForm.value.min.getTime() && product.createdDate.toDate().getTime() <= this.newDishesForm.value.max.getTime());
         if (this.newDishesForm.value.min && this.newDishesForm.value.max){
           var filteredList = this.products.filter(product => product.createdDate.toDate().getTime() >= this.newDishesForm.value.min.getTime() && product.createdDate.toDate().getTime() <= this.newDishesForm.value.max.getTime());
@@ -356,18 +420,49 @@ export class ModeConfig {
         } else {
           var filteredList = this.products;
         }
-        this.databaseService.setSettingsMenu(this.newDishesForm.value,'newDishes',filteredList.map((p) => p.id),this.selectedMenu).then((data:any)=>{
+        let currSelectedCategory = this.selectedCategory;
+        if(currSelectedCategory && this.selectedCategory){
+          this.selectedCategory.products = filteredList;
+          console.log("this.selectedCategory",this.selectedCategory.products);
+          currSelectedCategory.loading = true;
+        }
+        this.databaseService.setSettingsMenu(this.newDishesForm.value,'newDishes',filteredList.map((p) => p.id),this.selectedMenu).then(async (data:any)=>{
+          await this.getRecommendedCategories();
           this.alertify.presentToast("Settings Updated Successfully");
         }).catch((err)=>{
           this.alertify.presentToast("Settings Update Failed");
+        }).finally(()=>{
+          if(currSelectedCategory){
+            currSelectedCategory.loading = false;
+          }
         })
       }
     } else {
       this.alertify.presentToast("Please Select Menu");
     }
   };
-  addRecipe(){
-    this.dialog.open(AddDishComponent, {})
+
+  addRecipe(menuId:string){
+    let dialog = this.dialog.open(AddDishComponent)
+    firstValueFrom(dialog.closed).then(async (data:any)=>{
+      if (data){
+        const categoryDialog = this.dialog.open(SelectCategoryComponent, {data:{mainCategories:this.mainCategories,viewCategories:this.viewCategories}})
+        let category:any = await firstValueFrom(categoryDialog.closed)
+        delete category.mainCategory.products;
+        console.log("category data",category);
+        // this.mainCategories
+        this.dataProvider.loading = true;
+        let productRes = await this.databaseService.addRecipe({...data,category:category.mainCategory,createdDate:new Date()},menuId)
+        let viewCategoryRes = await Promise.all(this.viewCategories.map((c)=>{
+          return this.databaseService.updateViewCategory(c.id,[productRes.id])
+        }))
+        this.alertify.presentToast("Recipe Added Successfully");
+      }
+    }).catch((err)=>{
+      this.alertify.presentToast("Recipe Added Failed");
+    }).finally(()=>{
+      this.dataProvider.loading = false;
+    });
   };
   selectRecipe(){
     const dialog = this.dialog.open(SelectRecipeComponent, {data:this.products})

@@ -55,13 +55,6 @@ export class LoadingComponent {
     }
   ]
 
-  accessLevels:string[] = [
-    "manager",
-    "waiter",
-    "accountant",
-    "admin"
-  ]
-
   menuImage: File | undefined;
   products: Product[] = [];
   customDishes: any[] = [];
@@ -265,6 +258,8 @@ export class LoadingComponent {
           fssai:this.onboardingBusinessForm.value.fssai,
           gst:this.onboardingBusinessForm.value.gst,
           image:'',
+          cgst:2.5,
+          sgst:2.5,
           phone:this.onboardingBusinessForm.value.phone,
           users:[{
             access:'admin',
@@ -328,6 +323,8 @@ export class LoadingComponent {
         fssai:this.onboardingBusinessForm.value.fssai,
         gst:this.onboardingBusinessForm.value.gst,
         image:'',
+        cgst:2.5,
+        sgst:2.5,
         phone:this.onboardingBusinessForm.value.phone,
         users:[{
           access:'admin',
@@ -373,6 +370,10 @@ export class LoadingComponent {
           onlineTokenNo:0,
           ncBillTokenNo:0,
           takeawayTokenNo:0,
+          nonChargeableSales:0,
+          takeawaySales:0,
+          dineInSales:0,
+          onlineSales:0,
           password:this.securityForm.value.billerPin,
           tableTimeOutTime:45,
           modes:this.dataProvider.activeModes,

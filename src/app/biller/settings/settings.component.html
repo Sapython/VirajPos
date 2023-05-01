@@ -138,16 +138,16 @@
     <button (click)="activeTab='about'" [ngClass]="{'active':activeTab=='about'}">
       About
     </button>
-    <button (click)="activeTab='printer'" [ngClass]="{'active':activeTab=='printer'}">
+    <!-- <button (click)="activeTab='printer'" [ngClass]="{'active':activeTab=='printer'}">
       Printer
-    </button>
+    </button> -->
     <button (click)="activeTab='view'" [ngClass]="{'active':activeTab=='view'}">
       View
     </button>
     <button (click)="activeTab='config'" [ngClass]="{'active':activeTab=='config'}">
       Config
     </button>
-    <button (click)="activeTab='account'" [ngClass]="{'active':activeTab=='account'}">
+    <button (click)="activeTab='account'" *ngIf="this.dataProvider.getAccess(['admin'])" [ngClass]="{'active':activeTab=='account'}">
       Account
     </button>
     <button (click)="activeTab='discount'" [ngClass]="{'active':activeTab=='discount'}">
@@ -206,7 +206,7 @@
     </ng-container>
     <ng-container *ngSwitchCase="'account'">
       <h3>Account Settings</h3>
-      <button mat-flat-button (click)="addAccount()">Add Account</button>
+      <button mat-flat-button color="primary" (click)="addAccount()">Add Account</button>
       <!-- <ol>
         <li *ngFor="let account of accounts">
           <strong></strong>
@@ -223,10 +223,24 @@
         </thead>
         <tbody>
           <tr *ngFor="let account of this.dataProvider.currentBusiness?.users">
-            <td>{{account.email}}</td>
-            <td>{{account.access}}</td>
+            <td>
+              <ng-container *ngIf="!account.new">
+                {{account.email}}
+              </ng-container>
+              <input type="email" [(ngModel)]="account.email" *ngIf="account.new">
+            </td>
+            <td class="select">
+              <mat-select placeholder="Select" (valueChange)="account.new! ? updateBusiness() : {}" [(ngModel)]="account.access" name="access">
+                <mat-option *ngFor="let access of this.dataProvider.accessLevels" [value]="access">
+                  {{access | titlecase}}
+                </mat-option>
+              </mat-select>
+            </td>
             <td>{{account.updatedBy}}</td>
-            <td>{{account.lastUpdated.toDate() | date:'short'}}</td>
+            <td>
+              {{account.lastUpdated.toDate() | date:'short'}}
+              <button mat-flat-button *ngIf="account.new" color="primary" (click)="updateBusiness()">Update</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -234,9 +248,9 @@
     <ng-container *ngSwitchCase="'view'">
       <h3>View Modes</h3>
       <div class="row smartButtons">
-        <button [ngClass]="{'selected':dataProvider.smartMode}" (click)="smartModeToggle(true)">
+        <button [disabled]="true" [ngClass]="{'selected':dataProvider.smartMode}" (click)="smartModeToggle(true)">
           <img src="assets/images/brain.svg" alt="">
-          Smart Mode
+          Smart Mode*
         </button>
         <button [ngClass]="{'selected':!dataProvider.smartMode}" (click)="smartModeToggle(false)">
           <img src="assets/images/noBrain.svg" alt="">
@@ -253,6 +267,7 @@
           Touch Mode
         </button>
       </div>
+      <p class="danger"><sup>*</sup> Smart mode is currently disabled for this account.</p>
     </ng-container>
     <ng-container *ngSwitchCase="'about'">
       <h3>About</h3>
@@ -303,13 +318,13 @@
       <form class="form" [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
         <mat-form-field class="example-form-field" appearance="outline">
           <mat-label>Project Name:</mat-label>
-          <input matInput type="text" formControlName="projectName" />
+          <input matInput type="text" formControlName="hotelName" />
         </mat-form-field>
         <mat-form-field class="example-form-field" appearance="outline">
           <mat-label>Phone Number:</mat-label>
-          <input matInput type="text" formControlName="phoneNumber" />
+          <input matInput type="text" formControlName="phone" />
         </mat-form-field>
-        <mat-form-field class="example-form-field" appearance="outline">
+        <mat-form-field class="example-form-field fullWidth" appearance="outline">
           <mat-label>Address:</mat-label>
           <input matInput type="text" formControlName="address" />
         </mat-form-field>
@@ -319,7 +334,11 @@
         </mat-form-field> -->
         <mat-form-field class="example-form-field" appearance="outline">
           <mat-label>GST No:</mat-label>
-          <input matInput type="text" formControlName="gstNumber" />
+          <input matInput type="text" formControlName="gst" />
+        </mat-form-field>
+        <mat-form-field class="example-form-field" appearance="outline">
+          <mat-label>FSSAI No:</mat-label>
+          <input matInput type="text" formControlName="fssai" />
         </mat-form-field>
         <mat-form-field class="example-form-field" appearance="outline">
           <mat-label>CGST:</mat-label>
@@ -347,11 +366,7 @@
             }}</mat-option>
           </mat-select>
         </mat-form-field> -->
-        <mat-form-field class="example-form-field" appearance="outline">
-          <mat-label>FSSAI No:</mat-label>
-          <input matInput type="text" formControlName="fssaiNo" />
-        </mat-form-field>
-        <mat-form-field class="example-form-field" appearance="outline">
+        <!-- <mat-form-field class="example-form-field" appearance="outline">
           <mat-label>Counter No:</mat-label>
           <input matInput type="text" formControlName="counterNo" />
         </mat-form-field>
@@ -362,7 +377,7 @@
         <mat-form-field class="example-form-field" appearance="outline">
           <mat-label>Device Name:</mat-label>
           <input matInput type="text" formControlName="deviceName" />
-        </mat-form-field>
+        </mat-form-field> -->
         <button
           color="primary"
           style="margin-right: 20px"

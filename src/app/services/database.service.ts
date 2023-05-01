@@ -238,19 +238,13 @@ export class DatabaseService {
 
   getProducts() {
     return getDocs(
-      collection(this.firestore, '/business/'+this.dataProvider.businessId+'/recipes')
+      collection(this.firestore, '/business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/products')
     );
   }
 
   getMainCategories() {
     return getDocs(
-      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/categories')
-    );
-  }
-
-  getRecipes() {
-    return getDocs(
-      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/recipes')
+      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/rootCategories')
     );
   }
 
@@ -261,9 +255,9 @@ export class DatabaseService {
     );
   }
 
-  addRecipe(recipe: any) {
+  addRecipe(recipe: any,menuId:string) {
     return addDoc(
-      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/recipes'),
+      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+menuId+'/products'),
       recipe
     );
   }
@@ -346,16 +340,16 @@ export class DatabaseService {
     );
   }
 
-  updateRecipe(recipe: any) {
-    return updateDoc(
-      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/recipes/' + recipe.id),
-      recipe,
-      { merge: true }
+  getBill(id: string) {
+    console.log('business/'+this.dataProvider.businessId+'/bills', id);
+    return getDoc(
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/bills', id)
     );
   }
 
-  getBill(id: string) {
-    return getDoc(
+  getBillSubscription(id: string) {
+    console.log('business/'+this.dataProvider.businessId+'/bills', id);
+    return docData(
       doc(this.firestore, 'business/'+this.dataProvider.businessId+'/bills', id)
     );
   }
@@ -393,17 +387,24 @@ export class DatabaseService {
     );
   }
 
+  getTable(tableId:string,type:'tables'|'tokens'|'onlineTokens') {
+    console.log('business/'+this.dataProvider.businessId+'/'+type, tableId);
+    return docData(
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/'+type, tableId)
+    );
+  }
+
   addViewCategory(category: any, id?: string) {
     if (!id)
       return addDoc(
         collection(
           this.firestore,
-          'business/'+this.dataProvider.businessId+'/viewCategories'
+          'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/viewCategories'
         ),
         category
       );
     return setDoc(
-      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/viewCategories/' + id),
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/viewCategories/' + id),
       category,
       { merge: true }
     );
@@ -414,12 +415,12 @@ export class DatabaseService {
       return addDoc(
         collection(
           this.firestore,
-          'business/'+this.dataProvider.businessId+'/rootCategories'
+          'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/rootCategories'
         ),
         category
       );
     return setDoc(
-      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/rootCategories/' + id),
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/rootCategories/' + id),
       category,
       { merge: true }
     );
@@ -427,19 +428,19 @@ export class DatabaseService {
 
   getRootCategories() {
     return getDocs(
-      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/rootCategories')
+      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/rootCategories')
     );
   }
 
   getViewCategories() {
     return getDocs(
-      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/viewCategories')
+      collection(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/viewCategories')
     );
   }
 
   updateViewCategory(id: string, products: string[]) {
     return updateDoc(
-      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/viewCategories/' + id),
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/viewCategories/' + id),
       { products: arrayUnion(...products) }
     );
   }
@@ -448,7 +449,7 @@ export class DatabaseService {
     return setDoc(
       doc(
         this.firestore,
-        'business/'+this.dataProvider.businessId+'/recommendedCategories/' + category.id
+        'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/recommendedCategories/' + category.id
       ),
       category,
       { merge: true }
@@ -459,7 +460,7 @@ export class DatabaseService {
     return getDocs(
       collection(
         this.firestore,
-        'business/'+this.dataProvider.businessId+'/recommendedCategories'
+        'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/recommendedCategories'
       )
     );
   }
@@ -481,7 +482,7 @@ export class DatabaseService {
     return setDoc(
       doc(
         this.firestore,
-        '/business/'+this.dataProvider.businessId+'/recommendedCategories/' + type
+        '/business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/recommendedCategories/' + type
       ),
       { settings: data, products: productList },
       { merge: true }
@@ -494,7 +495,7 @@ export class DatabaseService {
         return setDoc(
           doc(
             this.firestore,
-            'business/'+this.dataProvider.businessId+'/recipes/' + product.id
+            'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/products/' + product.id
           ),
           { ...product, quantity: 1 },
           { merge: true }
@@ -505,7 +506,7 @@ export class DatabaseService {
 
   updateProductVisiblity(id: string, visible: boolean) {
     return setDoc(
-      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/recipes/' + id),
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/products/' + id),
       { visible: visible },
       { merge: true }
     );
@@ -513,7 +514,7 @@ export class DatabaseService {
 
   updateCategoryVisiblity(id: string, type: string, enabled: boolean) {
     return setDoc(
-      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/' + type + '/' + id),
+      doc(this.firestore, 'business/'+this.dataProvider.businessId+'/menus/'+this.dataProvider.currentMenu?.selectedMenu?.id+'/' + type + '/' + id),
       { enabled: enabled },
       { merge: true }
     );
@@ -799,6 +800,18 @@ export class DatabaseService {
       return setDoc(doc(this.firestore,'business/'+businessId+'/tables',table.id),table);
     }))
   }
+
+  addSales(sale:number,type:string){
+    alert("Adding sales")
+    return updateDoc(doc(this.firestore,'business/'+this.dataProvider.businessId+'/settings/settings'),{
+      [type]:increment(sale)
+    })
+  }
+
+  updateBusiness(business:BusinessRecord){
+    return setDoc(doc(this.firestore,'business',business.businessId),business,{merge:true});
+  }
+
 }
 
 export interface Menu {

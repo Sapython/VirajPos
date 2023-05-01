@@ -19,7 +19,7 @@
           </mat-select>
           <div class="categories">
             <span>Product List</span>
-            <app-category-card
+            <app-category-card [full]="true"
               (click)="
                 mode.selectCategory(mode.allProductsCategory);
                 mode.currentType = 'all'
@@ -27,7 +27,7 @@
               [category]="mode.allProductsCategory"
             ></app-category-card>
             <span>Recommended</span>
-            <app-category-card
+            <app-category-card [full]="true"
               *ngFor="let category of mode.recommendedCategories"
               (click)="
                 mode.selectCategory(category);
@@ -41,7 +41,7 @@
                 (vclick)="mode.addViewCategory()"
                 ><i class="ri-add-box-fill"></i></viraj-button
             ></span>
-            <app-category-card
+            <app-category-card [full]="true"
               *ngFor="let category of mode.viewCategories"
               (click)="
                 mode.selectCategory(category); mode.currentType = 'view'
@@ -49,7 +49,7 @@
               [category]="category"
             ></app-category-card>
             <span>Main Categories</span>
-            <app-category-card
+            <app-category-card [full]="true"
               *ngFor="let category of mode.mainCategories"
               (click)="
                 mode.selectCategory(category); mode.currentType = 'root'
@@ -86,13 +86,13 @@
                   *ngIf="['all'].includes(mode.currentType)"
                   mat-stroked-button
                   mat-button
-                  [matMenuTriggerFor]="menu"
+                  (click)="mode.addRecipe(mode.selectedMenuId)"
                   color="primary"
                 >
                   Add Recipe
                 </button>
                 <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="mode.addRecipe()">New Dish</button>
+                  <button mat-menu-item (click)="mode.addRecipe(mode.selectedMenuId)">New Dish</button>
                   <button mat-menu-item (click)="mode.selectRecipe()">Old Dish</button>
                   <button mat-menu-item>Upload From Excel</button>
                   <button mat-menu-item (click)="mode.getExcelFormat()">
@@ -254,6 +254,7 @@
             </div>
             <div class="productList">
               <p>Total {{ mode.selectedCategory.products.length }} Products</p>
+              <mat-spinner mode="indeterminate" *ngIf="mode.selectedCategory.loading"></mat-spinner>
               <div
                 class="product"
                 *ngFor="

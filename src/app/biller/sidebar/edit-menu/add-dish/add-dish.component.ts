@@ -1,5 +1,7 @@
+import { DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { DataProvider } from 'src/app/provider/data-provider.service';
 import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
@@ -20,7 +22,7 @@ export class AddDishComponent {
     variants: new FormControl(this.variants),
   });
 
-  constructor(private databaseService:DatabaseService) { }
+  constructor(private databaseService:DatabaseService,private dataProvider:DataProvider,private dialogRef:DialogRef) { }
 
   addVariant(){
     this.variants.push({variantName:'',price:0});
@@ -31,7 +33,7 @@ export class AddDishComponent {
   }
 
   addDish(){
-    this.databaseService.addRecipe({...this.newDishForm.value,createdDate:new Date()});
+    this.dialogRef.close(this.newDishForm.value)
   }
 
 }

@@ -26,7 +26,7 @@ export class SearchPanelComponent implements OnInit {
   index:number = 0;
   active:boolean = false;
   dynamicPlaceholder:string = this.placeholders[0];
-  selectedMode:'dine'|'takeAway'|'online' = "dine";
+  selectedMode:'dineIn'|'takeAway'|'online' = "dineIn";
   searchSubcription:Subject<string> = new Subject<string>();
   currentSearchTerm:string = "";
   billListnerActive:boolean = false;
@@ -39,6 +39,11 @@ export class SearchPanelComponent implements OnInit {
     this.searchSubcription.pipe(debounceTime(400)).subscribe((value)=>{
       console.log(value);
       this.fetchAdvancedResults(value)
+    })
+    this.dataProvider.modeChanged.subscribe((mode)=>{
+      if(this.dataProvider.currentMenu){
+        this.searchInstance.setCollection(this.dataProvider.currentMenu?.products)
+      }
     })
     this.searchSubcription.pipe(debounceTime(200)).subscribe((value)=>{
       console.log(value);
@@ -92,7 +97,6 @@ export class SearchPanelComponent implements OnInit {
       if (this.allBills.length > 0){
         this.billResults.push({
           type:'bill',
-          
           billId: this.allBills[0].id,
         })
       }
@@ -106,7 +110,8 @@ export class SearchPanelComponent implements OnInit {
   switchMode(mode:any){
     console.log("mode",mode);
     this.dataProvider.billingMode = mode.value;
-    if (mode.value == 'dine'){
+    this.dataProvider.modeChanged.next(mode.value);
+    if (mode.value == 'dineIn'){
       console.log("this.dataProvider.dineInMenu",this.dataProvider.dineInMenu);
       if(!this.dataProvider.dineInMenu){
         alert("No dine-in menu found");
@@ -115,6 +120,11 @@ export class SearchPanelComponent implements OnInit {
       this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
         return menu.selectedMenu?.id == this.dataProvider.dineInMenu?.id
       });
+      if (this.dataProvider.currentMenu){
+        this.dataProvider.currentMenu.type = 'dineIn';
+      } else {
+        console.log("this.dataProvider.menus",this.dataProvider.menus);
+      }
       console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
     } else if (mode.value == 'takeaway'){
       console.log("this.dataProvider.takeawayMenu",this.dataProvider.takeawayMenu);
@@ -125,8 +135,12 @@ export class SearchPanelComponent implements OnInit {
       this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
         return menu.selectedMenu?.id == this.dataProvider.takeawayMenu?.id
       });
+      if (this.dataProvider.currentMenu){
+        this.dataProvider.currentMenu.type = 'takeaway';
+      } else {
+        console.log("this.dataProvider.menus",this.dataProvider.menus);
+      }
       console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
-      
     } else if (mode.value == 'online'){
       console.log("this.dataProvider.onlineMenu",this.dataProvider.onlineMenu);
       if(!this.dataProvider.onlineMenu){
@@ -136,6 +150,11 @@ export class SearchPanelComponent implements OnInit {
       this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
         return menu.selectedMenu?.id == this.dataProvider.onlineMenu?.id
       });
+      if (this.dataProvider.currentMenu){
+        this.dataProvider.currentMenu.type = 'online';
+      } else {
+        console.log("this.dataProvider.menus",this.dataProvider.menus);
+      }
       console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
     }
   }

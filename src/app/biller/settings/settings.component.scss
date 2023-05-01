@@ -82,11 +82,17 @@ section{
             }
         }
     }
+    td.select{
+        width: 120px;
+    }
     .active{
         form{
             display: grid;
             grid-template-columns: 1fr 1fr;
             column-gap:10px;
+            .fullWidth{
+                grid-column: 1/3;
+            }
         }
         .printers{
             display: flex;
@@ -131,6 +137,9 @@ section{
             button.selected{
                 box-shadow:0px 0px 96px rgba(0, 0, 0, 0.13);
             }
+            button[disabled]{
+                cursor: not-allowed;
+            }
         }
     }
     .spaced{
@@ -171,6 +180,9 @@ section{
                 }
             }
         }
+    }
+    .danger{
+        color: rgb(255, 74, 74);
     }
     .modes{
         display: flex;

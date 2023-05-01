@@ -24,7 +24,7 @@ export class TableComponent implements OnInit {
     fromTable: Table | undefined;
     toTable: Table | undefined;
   } = { fromTable: undefined, toTable: undefined };
-  public editBillingMode: 'dine' | 'takeaway' | 'online' = 'dine';
+  public editBillingMode: 'dineIn' | 'takeaway' | 'online' = 'dineIn';
   constructor(
     public dialogRef: DialogRef,
     public dataProvider: DataProvider,
@@ -226,5 +226,48 @@ export class TableComponent implements OnInit {
     }
     this.moveKotSelectedTable!.bill?.calculateBill();
     table.bill?.calculateBill();
+  }
+
+  switchMode(mode:any){
+    console.log("mode",mode);
+    this.dataProvider.billingMode = mode.value;
+    this.dataProvider.modeChanged.next(mode.value);
+    if (mode.value == 'dineIn'){
+      console.log("this.dataProvider.dineInMenu",this.dataProvider.dineInMenu);
+      if(!this.dataProvider.dineInMenu){
+        alert("No dine-in menu found");
+        return;
+      }
+      this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
+        return (menu.selectedMenu?.id == this.dataProvider.dineInMenu?.id)
+      });
+      if (this.dataProvider.currentMenu){
+        this.dataProvider.currentMenu.type = 'dineIn';
+      } else {
+        console.log("this.dataProvider.menus",this.dataProvider.menus);
+      }
+      console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
+    } else if (mode.value == 'takeaway'){
+      console.log("this.dataProvider.takeawayMenu",this.dataProvider.takeawayMenu);
+      if(!this.dataProvider.takeawayMenu){
+        alert("No takeaway menu found");
+        return;
+      }
+      this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
+        return menu.selectedMenu?.id == this.dataProvider.takeawayMenu?.id
+      });
+      console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
+      
+    } else if (mode.value == 'online'){
+      console.log("this.dataProvider.onlineMenu",this.dataProvider.onlineMenu);
+      if(!this.dataProvider.onlineMenu){
+        alert("No online menu found");
+        return;
+      }
+      this.dataProvider.currentMenu = this.dataProvider.menus.find((menu)=>{
+        return menu.selectedMenu?.id == this.dataProvider.onlineMenu?.id
+      });
+      console.log("this.dataProvider.currentMenu",this.dataProvider.currentMenu);
+    }
   }
 }

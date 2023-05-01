@@ -8,6 +8,7 @@ export interface Category {
     enabled:boolean;
     updated?:boolean;
     printer?:string;
+    loading?:boolean;
 }
 export interface RootCategory {
     id:string;

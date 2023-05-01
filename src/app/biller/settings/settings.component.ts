@@ -26,16 +26,13 @@ export class SettingsComponent {
   @Output() save = new EventEmitter();
   activeTab:'printer'|'account'|'view'|'about'|'config'|'discount' = 'config'
   settingsForm:FormGroup = new FormGroup({
-    projectName: new FormControl('',[Validators.required]),
-    phoneNumber: new FormControl('',[Validators.required]),
-    address: new FormControl('',[Validators.required]),
-    gstNumber: new FormControl('',[Validators.required]),
-    fssaiNo: new FormControl('',[Validators.required]),
-    counterNo: new FormControl('',[Validators.required]),
-    cashierName: new FormControl('',[Validators.required]),
-    deviceName: new FormControl('',[Validators.required]),
-    cgst:new FormControl('',[Validators.required]),
-    sgst:new FormControl('',[Validators.required]),
+    hotelName: new FormControl(this.dataProvider.currentBusiness?.hotelName,[Validators.required]),
+    phone: new FormControl(this.dataProvider.currentBusiness?.phone,[Validators.required]),
+    address: new FormControl(this.dataProvider.currentBusiness?.address,[Validators.required]),
+    gst: new FormControl(this.dataProvider.currentBusiness?.gst,[Validators.required]),
+    fssai: new FormControl(this.dataProvider.currentBusiness?.fssai,[Validators.required]),
+    cgst:new FormControl(this.dataProvider.currentBusiness?.cgst,[Validators.required]),
+    sgst:new FormControl(this.dataProvider.currentBusiness?.sgst,[Validators.required]),
   })
   loadingDiscount:boolean = false;
   viewSettings:FormGroup = new FormGroup({
@@ -117,7 +114,13 @@ export class SettingsComponent {
   }
 
   addAccount(){
-
+    this.dataProvider.currentBusiness?.users.push({
+      access:'waiter',
+      email:'',
+      lastUpdated:Timestamp.now(),
+      updatedBy:this.dataProvider.currentUser?.name || 'user',
+      new:true,
+    })
   }
 
   setPrinters(){
@@ -141,29 +144,13 @@ export class SettingsComponent {
   }
 
   saveSettings(){
-    // filter settings value that are empty
-    let settings = Object.keys(this.settingsForm.value).reduce((acc:any,curr:any)=>{
-      if (this.settingsForm.value[curr]){
-        acc[curr] = this.settingsForm.value[curr]
-      }
-      return acc
-    },{})
-    localStorage.setItem("printerSettings",JSON.stringify(settings))
-    localStorage.setItem("kotPrinter",settings.kotPrinter)
-    localStorage.setItem("billPrinter",settings.billPrinter)
-    console.log("filtered settings",settings)
-    
-    // console.log(this.settingsForm.value,this.dataProvider.projects);
-    // this.dataProvider.allProjects.forEach((project:any,index:number)=>{
-    //   if (project.projectId === this.dataProvider.currentProject.projectId){
-    //     // this.dataProvider.currentProject = project
-    //     console.log({...project,...settings});
-    //     this.dataProvider.allProjects[index] = {...project,...settings}
-    //   }
-    // })
-    // // console.log(this.dataProvider.allProjects);
-    // this.databaseService.updateProject(this.dataProvider.allProjects)
-    // this.save.emit(this.settingsForm.value)
+    this.databaseService.updateBusiness(this.settingsForm.value).then(()=>{
+      this.alertify.presentToast("Settings saved successfully")
+      // this.cancel.emit()
+    }).catch((err)=>{
+      this.alertify.presentToast("Error while saving settings")
+      console.log(err)
+    })
   }
 
   addConfig(){
@@ -219,6 +206,19 @@ export class SettingsComponent {
         console.log("no data",data);
       }
     })
+  }
+
+  updateBusiness(){
+    this.dataProvider.currentBusiness?.users.forEach((user:any)=>{
+      if (user.new){
+        delete user.new
+      }
+    })
+    setTimeout(()=>{
+      if(this.dataProvider.currentBusiness){
+        this.databaseService.updateBusiness(this.dataProvider.currentBusiness);
+      }
+    },700)
   }
 
 }

@@ -42,6 +42,8 @@ export class KotItemComponent implements OnChanges {
 
   setInfo(){
     this.info = prompt("Enter instruction",this.info || '')
+    if(this.info === null) return;
+    this.product!.instruction = this.info;
   }
   invertHex(hex:string) {
     hex.replace('#','')
