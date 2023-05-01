@@ -19,7 +19,7 @@ export class PrintingService {
     return window.pywebview.api.getPrinters();
   }
 
-  printKot(tableNo:string,billNo:string,products:Product[],id:string){
+  printKot(tableNo:string,orderNo:string,products:Product[],id:string){
     if(!window.pywebview.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
@@ -35,7 +35,7 @@ export class PrintingService {
       'id':id,
       'businessDetails': businessDetails,
       "table": tableNo,
-      'billNo': billNo,
+      'orderNo': orderNo,
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
       "mode":"firstChargeable",
@@ -104,8 +104,9 @@ export class PrintingService {
       "totalQuantity":bill.totalProducts(),
       "cashierName": this.dataprovider.currentUser?.name,
       "mode":"bill",
-      "table": 1,
-      'billNo': 1,
+      "table": bill.table.name,
+      'billNo': bill.billNo,
+      'orderNo': bill.orderNo,
       'notes':[],
       'businessDetails': businessDetails
     }
@@ -179,6 +180,7 @@ export class PrintingService {
       "mode":"bill",
       "table": bill.table,
       'billNo': bill.billNo,
+      'orderNo': bill.orderNo,
       'notes':[],
       'businessDetails': businessDetails
     }
@@ -228,7 +230,7 @@ export class PrintingService {
       "cashierName": this.dataprovider.currentUser?.name,
       "mode":"kot",
       "table": table,
-      'billNo': billNo,
+      'orderNo': billNo,
       'notes':[],
       'businessDetails': businessDetails
     }
