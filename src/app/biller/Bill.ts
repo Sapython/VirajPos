@@ -617,7 +617,7 @@ export class Bill implements BillConstructor {
     //     instruction:product.instruction,
     //   }
     // })
-    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,this.id)
+    this.printingService.printKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,kot.id)
     // let data ={
     //   'id':kot.id,
     //   'businessDetails': this.dataProvider.currentBusiness,
