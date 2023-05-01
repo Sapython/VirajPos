@@ -19,4 +19,10 @@ export class SelectRecipeComponent {
   close() {
     this.dialogRef.close();
   }
+
+  switchAll(event:any){
+    this.products.forEach((product:Product)=>{
+      product.selected = event.checked;
+    })
+  }
 }
