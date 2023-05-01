@@ -286,10 +286,18 @@ export class PrintingService {
     let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
-    let products:Product[] = []
-    products = oldProducts.map((product:any)=>{
-      product.edited = true
-      return product
+    let products:any[] = []
+    oldProducts.forEach((product:any)=>{
+      let prd = {
+        "id":product.id,
+        "name":product.name,
+        "instruction":product.instruction,
+        "quantity":product.quantity,
+        "price":product.price,
+        "total":product.price*product.quantity,
+        edited:true
+      };
+      products.push(prd)
     })
     let totalQuantity = 0;
     kot.products.forEach((product) => {
@@ -302,19 +310,20 @@ export class PrintingService {
         totalQuantity += product.quantity;
       }
     })
-    let newProducts = products.map((product:Product)=>{
-      return {
+    products.forEach((product:Product)=>{
+      let prd = {
         "id":product.id,
         "name":product.name,
         "instruction":product.instruction,
         "quantity":product.quantity,
         "price":product.price,
         "total":product.price*product.quantity,
-      }
+      };
+      products.push(prd);
     })
     let kotdata = {
       "id": kot.id,
-      "products":[...products,...newProducts],
+      "products":products,
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
       "totalQuantity":totalQuantity,

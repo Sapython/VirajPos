@@ -437,8 +437,8 @@ export class Bill implements BillConstructor {
         this.kots[kotIndex].products = this.editKotMode.newKot;
         this.kots[kotIndex].stage = 'finalized';
         console.log('Active kot', this.kots[kotIndex]);
-        alert("Kot found")
         this.printingService.printEditedKot(this.kots[kotIndex],this.editKotMode.newKot,this.table.name,this.orderNo || '')
+        alert("Kot found")
       }
       this.editKotMode = null;
       this.dataProvider.kotViewVisible = true;
