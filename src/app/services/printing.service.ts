@@ -302,18 +302,19 @@ export class PrintingService {
         totalQuantity += product.quantity;
       }
     })
+    let newProducts = products.map((product:Product)=>{
+      return {
+        "id":product.id,
+        "name":product.name,
+        "instruction":product.instruction,
+        "quantity":product.quantity,
+        "price":product.price,
+        "total":product.price*product.quantity,
+      }
+    })
     let kotdata = {
       "id": kot.id,
-      "products":products.map((product:Product)=>{
-        return {
-          "id":product.id,
-          "name":product.name,
-          "instruction":product.instruction,
-          "quantity":product.quantity,
-          "price":product.price,
-          "total":product.price*product.quantity,
-        }
-      }),
+      "products":[...products,...newProducts],
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
       "totalQuantity":totalQuantity,
