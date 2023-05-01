@@ -28,7 +28,8 @@ export class PrintingService {
       "gst": this.dataprovider.currentBusiness?.gst,
       "fssai": this.dataprovider.currentBusiness?.fssai,
     }
-    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+    let filteredProducts = this.dataprovider.currentMenu?.products.filter((product:Product)=>product.category) || []
+    let printerConfig = filteredProducts.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
     let data ={
@@ -63,7 +64,8 @@ export class PrintingService {
       "gst": this.dataprovider.currentBusiness?.gst,
       "fssai": this.dataprovider.currentBusiness?.fssai,
     }
-    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+    let filteredProducts = this.dataprovider.currentMenu?.products.filter((product:Product)=>product.category) || []
+    let printerConfig = filteredProducts.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
     let data ={
@@ -99,7 +101,8 @@ export class PrintingService {
       "gst": this.dataprovider.currentBusiness?.gst,
       "fssai": this.dataprovider.currentBusiness?.fssai,
     }
-    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+    let filteredProducts = this.dataprovider.currentMenu?.products.filter((product:Product)=>product.category) || []
+    let printerConfig = filteredProducts.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
     let billdata = {
@@ -159,7 +162,8 @@ export class PrintingService {
       "gst": this.dataprovider.currentBusiness?.gst,
       "fssai": this.dataprovider.currentBusiness?.fssai,
     }
-    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+    let filteredProducts = this.dataprovider.currentMenu?.products.filter((product:Product)=>product.category) || []
+    let printerConfig = filteredProducts.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
     let products:Product[] = []
@@ -233,21 +237,11 @@ export class PrintingService {
       "gst": this.dataprovider.currentBusiness?.gst,
       "fssai": this.dataprovider.currentBusiness?.fssai,
     }
-    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+    let filteredProducts = this.dataprovider.currentMenu?.products.filter((product:Product)=>product.category) || []
+    let printerConfig = filteredProducts.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
     let products:Product[] = []
-    let totalQuantity = 0;
-    kot.products.forEach((product) => {
-      let index = products.findIndex((item) => item.id === product.id);
-      if(index !== -1){
-        products[index].quantity += product.quantity;
-        totalQuantity += product.quantity;
-      } else {
-        products.push(product);
-        totalQuantity += product.quantity;
-      }
-    })
     let kotdata = {
       "id": kot.id,
       "products":products.map((product:Product)=>{
@@ -262,7 +256,6 @@ export class PrintingService {
       }),
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
-      "totalQuantity":totalQuantity,
       "cashierName": this.dataprovider.currentUser?.name,
       "mode":"kot",
       "table": table,
@@ -275,7 +268,6 @@ export class PrintingService {
   }
 
   printEditedKot(kot:KotConstructor,oldProducts:Product[],table:string,billNo:string){
-    if(!window.pywebview?.api) return;
     let businessDetails = {
       'name': this.dataprovider.currentBusiness?.hotelName,
       'address': this.dataprovider.currentBusiness?.address,
@@ -283,7 +275,9 @@ export class PrintingService {
       "gst": this.dataprovider.currentBusiness?.gst,
       "fssai": this.dataprovider.currentBusiness?.fssai,
     }
-    let printerConfig = this.dataprovider.currentMenu?.products.map((product:any)=>{
+    // filter with no category
+    let filteredProducts = this.dataprovider.currentMenu?.products.filter((product:Product)=>product.category) || []
+    let printerConfig = filteredProducts.map((product:any)=>{
       return {product:product.id,printer:product.category.printer}
     })
     let products:any[] = []
@@ -299,18 +293,7 @@ export class PrintingService {
       };
       products.push(prd)
     })
-    let totalQuantity = 0;
-    kot.products.forEach((product) => {
-      let index = products.findIndex((item) => item.id === product.id);
-      if(index !== -1){
-        products[index].quantity += product.quantity;
-        totalQuantity += product.quantity;
-      } else {
-        products.push(product);
-        totalQuantity += product.quantity;
-      }
-    })
-    products.forEach((product:Product)=>{
+    kot.products.forEach((product:Product)=>{
       let prd = {
         "id":product.id,
         "name":product.name,
@@ -326,7 +309,6 @@ export class PrintingService {
       "products":products,
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
-      "totalQuantity":totalQuantity,
       "cashierName": this.dataprovider.currentUser?.name,
       "mode":"kot",
       "table": table,
@@ -335,7 +317,8 @@ export class PrintingService {
       'businessDetails': businessDetails
     }
     console.log("printing data",kotdata,printerConfig);
+    if(!window.pywebview?.api) return;
     return window.pywebview.api.print('editedKot',kotdata,printerConfig);
   }
-
+  
 }

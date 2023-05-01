@@ -86,8 +86,16 @@ export class ActiveKotComponent implements OnChanges {
     console.log('this.labels', this.labels);
   }
 
-  delete(index: Product) {
-    this.dataProvider.currentBill?.removeProduct(index, this.activeKotIndex);
+  delete(product: Product) {
+    if (this.dataProvider.currentBill?.editKotMode) {
+      const index = this.dataProvider.currentBill?.editKotMode.newKot.findIndex(
+        (item) => item.id === product.id
+      );
+      this.dataProvider.currentBill?.editKotMode.newKot.splice(index, 1);
+      this.dataProvider.currentBill.calculateBill();
+    } else {
+      this.dataProvider.currentBill?.removeProduct(product, this.activeKotIndex);
+    }
   }
 
   printKot(kot: Kot) {

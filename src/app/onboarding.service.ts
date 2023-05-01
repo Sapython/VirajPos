@@ -152,10 +152,10 @@ export class OnboardingService {
     console.log('business/'+business.businessId,'/settings/settings');
     docData(doc(this.firestore,'business',business.businessId),{idField:'businessId'}).subscribe((res)=>{
       this.dataProvider.currentBusiness = res as BusinessRecord;
-      console.log("Business Changed",res);
+      // console.log("Business Changed",res);
     })
     docData(doc(this.firestore,'business',business.businessId,'settings','settings')).subscribe((res)=>{
-      console.log("Settings Changed",res);
+      // console.log("Settings Changed",res);
       this.dataProvider.billToken = res['billTokenNo'];
       this.dataProvider.kotToken = res['kitchenTokenNo'];
       this.dataProvider.ncBillToken = res['ncBillTokenNo'] || 0;
@@ -186,7 +186,7 @@ export class OnboardingService {
         // tableClass.fromObject(table);
         return await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService);
       })
-      console.log("tables ",tables);
+      // console.log("tables ",tables);
       // add data to indexedDB
       let formedTable = await Promise.all(tables);
       // formedTable.forEach((table)=>{
@@ -238,7 +238,7 @@ export class OnboardingService {
     let tables = res.docs.map(async (doc)=>{
       let table =  {...doc.data(),id:doc.id} as TableConstructor
       let tableClass = await Table.fromObject(table,this.dataProvider,this.databaseService,this.printingService)
-      console.log("ONLINE TABLE",tableClass);
+      // console.log("ONLINE TABLE",tableClass);
       return tableClass;
     })
     let formedTable = await Promise.all(tables);

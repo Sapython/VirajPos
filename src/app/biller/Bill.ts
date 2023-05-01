@@ -104,9 +104,9 @@ export class Bill implements BillConstructor {
     this.updated.pipe(debounceTime(2000)).subscribe(async (data) => {
       if (!data) {
         let data = this.toObject();
-        console.log('updating bill', data);
+        // console.log('updating bill', data);
         await this.databaseService.updateBill(data);
-        console.log('Bill updated', data);
+        // console.log('Bill updated', data);
         this.table.updated.next()
       }
       if(!this.billSubscriptionCallerStarted){
@@ -431,13 +431,15 @@ export class Bill implements BillConstructor {
 
   finalizeAndPrintKot() {
     if (this.editKotMode != null) {
+      alert("Editable kot found")
       console.log("Old kot", this.editKotMode.previousKot, "New kot", this.editKotMode.newKot);
       let kotIndex = this.kots.findIndex((kot) => this.editKotMode && kot.id === this.editKotMode.kot.id)
-      if(kotIndex){
+      console.log("Kot index", kotIndex);
+      if(kotIndex != -1){
         this.kots[kotIndex].products = this.editKotMode.newKot;
         this.kots[kotIndex].stage = 'finalized';
         console.log('Active kot', this.kots[kotIndex]);
-        this.printingService.printEditedKot(this.kots[kotIndex],this.editKotMode.newKot,this.table.name,this.orderNo || '')
+        this.printingService.printEditedKot(this.kots[kotIndex],this.editKotMode.previousKot,this.table.name,this.orderNo || '')
         alert("Kot found")
       }
       this.editKotMode = null;
