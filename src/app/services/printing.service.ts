@@ -12,8 +12,6 @@ export class PrintingService {
 
   constructor(private dataprovider:DataProvider) { }
 
-
-
   getPrinters(){
     if(!window.pywebview?.api) return;
     return window.pywebview.api.getPrinters();
