@@ -310,9 +310,9 @@ export class PrintingService {
       "date":(new Date()).toLocaleDateString(),
       "time":(new Date()).toLocaleTimeString(),
       "cashierName": this.dataprovider.currentUser?.name,
-      "mode":"kot",
+      "mode":"editedKot",
+      'orderNo': billNo,
       "table": table,
-      'billNo': billNo,
       'notes':[],
       'businessDetails': businessDetails
     }
