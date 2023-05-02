@@ -26,9 +26,9 @@
                 <span></span>
                 <p>Move KOT/Item</p>
             </button>
-            <button class="editTable">
+            <!-- <button class="editTable">
                 Edit Table
-            </button>
+            </button> -->
         </div>
     </div>
     <h2>Table</h2>
@@ -52,20 +52,20 @@
                 <p class="cost" *ngIf="table.bill?.billing?.grandTotal"><strong>{{table.bill?.billing?.grandTotal | currency:'INR'}}</strong></p>
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
-                <div class="actions" *ngIf="table.status == 'occupied'">
+                <!-- <div class="actions" *ngIf="table.status == 'occupied'">
                     <viraj-button [minimalPadding]="true" type="icon" (vclick)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
                     <viraj-button [minimalPadding]="true" type="icon" (vclick)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
-                </div>
+                </div> -->
             </button>
             <button class="table" [ngClass]="{'active':table.status=='occupied','disabled':table.status!='occupied','late':this.dataProvider.tableTimeOutTime <= table.minutes,'finalized':table.bill?.stage=='finalized'}" matRipple [matRippleDisabled]="table.status!='occupied'" *ngFor="let table of this.dataProvider.tokens" (click)="moveKot(table,$event)">
                 <p class="name">Token {{table.name}}</p>
                 <p class="cost" *ngIf="table.bill?.billing?.grandTotal"><strong>{{table.bill?.billing?.grandTotal | currency:'INR'}}</strong></p>
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
-                <div class="actions" *ngIf="table.status == 'occupied'">
+                <!-- <div class="actions" *ngIf="table.status == 'occupied'">
                     <viraj-button [minimalPadding]="true" type="icon" (vclick)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
                     <viraj-button [minimalPadding]="true" type="icon" (vclick)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
-                </div>
+                </div> -->
             </button>
         </div>
     </ng-container>
@@ -89,10 +89,10 @@
                 <p class="cost" *ngIf="table.bill?.billing?.grandTotal"><strong>{{table.bill?.billing?.grandTotal | currency:'INR'}}</strong></p>
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
-                <div class="actions" *ngIf="table.status == 'occupied'">
+                <!-- <div class="actions" *ngIf="table.status == 'occupied'">
                     <viraj-button [minimalPadding]="true" type="icon" (click)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
                     <viraj-button [minimalPadding]="true" type="icon" (click)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
-                </div>
+                </div> -->
             </button>
             <button class="table empty">
                 <mat-icon>add</mat-icon>
@@ -100,19 +100,19 @@
             </button>
         </div>
         <div class="tables" *ngIf="this.dataProvider.billingMode=='takeaway'">
+            <button class="table empty" (click)="addToken()" >
+                <mat-icon>add</mat-icon>
+                <p>Add New Token</p>
+            </button>
             <button class="table" [ngClass]="{'active':table.status=='occupied','late':this.dataProvider.tableTimeOutTime <= table.minutes,'finalized':table.bill?.stage=='finalized'}"  matRipple *ngFor="let table of this.dataProvider.tokens" (click)="openTable(table,$event)">
                 <p class="name">Token {{table.name}}</p>
                 <p class="cost" *ngIf="table.bill?.billing?.grandTotal"><strong>{{table.bill?.billing?.grandTotal | currency:'INR'}}</strong></p>
                 <p class="time" *ngIf="table.status == 'occupied' && table.timeSpent">{{ table.timeSpent }}</p>
                 <!-- <p class="time">{{table.occupiedStart.toDate() | date}}</p> -->
-                <div class="actions" *ngIf="table.status == 'occupied'">
+                <!-- <div class="actions" *ngIf="table.status == 'occupied'">
                     <viraj-button [minimalPadding]="true" type="icon" color="primary" (click)="printTable(table,$event)"><i class="ri-printer-fill"></i></viraj-button>
                     <viraj-button [minimalPadding]="true" type="icon" color="primary" (click)="openTable(table,$event)"><i class="ri-eye-fill"></i></viraj-button>
-                </div>
-            </button>
-            <button class="table empty" (click)="addToken()" >
-                <mat-icon>add</mat-icon>
-                <p>Add New Token</p>
+                </div> -->
             </button>
         </div>
         <div class="tables" *ngIf="this.dataProvider.billingMode=='online'">

@@ -233,7 +233,9 @@ export class Bill implements BillConstructor {
       alert('This bill is already finalized.');
       return;
     }
+    this.dataProvider.manageKot = false;
     this.dataProvider.kotViewVisible = false;
+    this.dataProvider.allProducts = false;
     if (this.editKotMode!=null){
       // this.editKotMode.newKot.push(product);
       this.editKotMode.newKot.find((item) => item.id === product.id)

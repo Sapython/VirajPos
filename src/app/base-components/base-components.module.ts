@@ -7,6 +7,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { SlideButtonComponent } from './slide-toggle/slide-button/slide-button.component';
 import { SlideButtonDirective } from './slide-toggle/slide-button.directive';
 import { RoundOffPipe } from './round-off.pipe';
+import { DialogComponent } from './dialog/dialog.component';
 
 
 
@@ -17,7 +18,8 @@ import { RoundOffPipe } from './round-off.pipe';
     SlideToggleComponent,
     SlideButtonComponent,
     SlideButtonDirective,
-    RoundOffPipe
+    RoundOffPipe,
+    DialogComponent
   ],
   imports: [
     CommonModule,

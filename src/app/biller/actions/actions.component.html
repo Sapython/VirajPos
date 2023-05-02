@@ -25,8 +25,8 @@
         <p>Table No.</p>
         <strong>{{dataProvider.currentBill?.table?.name}}</strong>
       </span>
-      <span>
-        <mat-slide-toggle [disabled]="!this.dataProvider.getAccess(['admin','manager','accountant'])" [(ngModel)]="isNonChargeable" (change)="nonChargeable($event)">Non Chargable</mat-slide-toggle>
+      <span *ngIf="this.dataProvider.currentBill?.stage=='active'">
+        <mat-slide-toggle [disabled]="this.dataProvider.currentBill?.stage=='active' && !this.dataProvider.getAccess(['admin','manager','accountant'])" [(ngModel)]="isNonChargeable" (change)="nonChargeable($event)">Non Chargable</mat-slide-toggle>
       </span>
       <viraj-button *ngIf="this.dataProvider.currentBill?.stage=='active'" [small]="true" [minimalPadding]="true" type="outline" [disabled]="!this.dataProvider.currentBill" (vclick)="dataProvider.manageKot=!dataProvider.manageKot;dataProvider.kotViewVisible=false;dataProvider.manageKotChanged.next(dataProvider.manageKot);">{{dataProvider.manageKot==true ? 'Back' : 'Manage KOT'}}</viraj-button>
     </div>

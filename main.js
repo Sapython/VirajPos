@@ -1,6 +1,8 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
-
+require('update-electron-app')({
+    repo:'swayambhu-innovations/Packages'
+})
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,

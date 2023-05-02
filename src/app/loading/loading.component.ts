@@ -31,8 +31,8 @@ export class LoadingComponent {
     address:new FormControl('',[Validators.required]),
     phone:new FormControl('',[Validators.required]),
     email:new FormControl('',[Validators.required]),
-    fssai:new FormControl('',[Validators.required]),
-    gst:new FormControl('',[Validators.required]),
+    fssai:new FormControl(''),
+    gst:new FormControl(''),
   })
 
   securityForm:FormGroup = new FormGroup({

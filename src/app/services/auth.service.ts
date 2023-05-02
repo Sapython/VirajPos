@@ -195,7 +195,10 @@ export class AuthService {
   }
 
   logout(){
-    // signOut(this.auth);
+    signOut(this.auth);
+    // clear local storage
+    localStorage.clear();
+    indexedDB.deleteDatabase('Viraj')
     this.router.navigateByUrl('/login');
   }
 
