@@ -9,6 +9,7 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
     },
   });
   console.log(path.join(__dirname, "./dist/viraj/index.html"))

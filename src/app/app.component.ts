@@ -11,20 +11,18 @@ import { slideLeftRoRight, slider } from './route-animations';
 import { GetDataService } from './services/get-data.service';
 import { DataProvider } from './provider/data-provider.service';
 import { PrintingService } from './services/printing.service';
-declare var pywebview:any;
-declare var jivo_api:any;
-declare var jivo_config:any;
+declare var pywebview: any;
+declare var jivo_api: any;
+declare var jivo_config: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  animations: [
-    slider
-  ],
+  animations: [slider],
 })
 export class AppComponent implements OnInit {
   title = 'Viraj';
-  test:number[] = [1,2,3,4,5,6,7,8,9,10]
+  test: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   availableVoices: SpeechSynthesisVoice[] = [];
   selectedVoice: SpeechSynthesisVoice | undefined;
   speechSynthesis: SpeechSynthesis | undefined;
@@ -33,39 +31,48 @@ export class AppComponent implements OnInit {
   rate: number = 0.8;
   pitch: number = 1;
 
-  constructor(public dataProvider:DataProvider,private dataService: GetDataService,private printingService:PrintingService){
+  constructor(
+    public dataProvider: DataProvider,
+    private dataService: GetDataService,
+    private printingService: PrintingService
+  ) {
     // console.log("pywebview",window,this.printingService.getPrinters());
     // setInterval(()=>{
     //   this.printingService.printBill()
     // },10000)
-    window.addEventListener('load',(data)=>{
+    window.addEventListener('load', (data) => {
       console.log(document.querySelector("jdiv[class*='main_']"));
-      let chatFinderInterval = setInterval(()=>{
-        let element = document.getElementById('jcont')
-        if(element){
+      let chatFinderInterval = setInterval(() => {
+        let element = document.getElementById('jcont');
+        if (element) {
           let response = jivo_api.setCustomData([
             {
-              title:"User",
-              content:this.dataProvider.currentUser?.userId,
-              user:{
-                name:this.dataProvider.currentUser?.name,
-                email:this.dataProvider.currentUser?.email,
-                image:this.dataProvider.currentUser?.image,
-                business:this.dataProvider.currentUser?.business,
-                device:this.dataProvider.currentDevice
+              title: 'User',
+              content: this.dataProvider.currentUser?.userId,
+              user: {
+                name: this.dataProvider.currentUser?.name,
+                email: this.dataProvider.currentUser?.email,
+                image: this.dataProvider.currentUser?.image,
+                business: this.dataProvider.currentUser?.business,
+                device: this.dataProvider.currentDevice,
               },
-            }
+            },
           ]);
-          console.log("chat response",response);
-          clearInterval(chatFinderInterval)
+          console.log('chat response', response);
+          clearInterval(chatFinderInterval);
         }
-      },500)
-    })
+      }, 500);
+    });
   }
 
-  hideChatWindow(){
+  checkPrinting(){
+    // printing.print()
+  }
+
+  hideChatWindow() {
     console.log(document.querySelector('jdiv'));
   }
+
   ngOnInit() {
     this.speechSynthesis = window.speechSynthesis;
     this.availableVoices = this.getVoices();
@@ -110,7 +117,10 @@ export class AppComponent implements OnInit {
   }
 
   prepareRoute(outlet: RouterOutlet) {
-    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
-
+    return (
+      outlet &&
+      outlet.activatedRouteData &&
+      outlet.activatedRouteData['animation']
+    );
   }
 }
