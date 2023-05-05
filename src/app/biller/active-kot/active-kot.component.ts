@@ -43,11 +43,13 @@ export class ActiveKotComponent implements OnChanges {
               this.activeKotSubscription.unsubscribe();
               return;
             }
+            // console.log("GENO 1");
             if (this.dataProvider.currentBill.kots) {
               this.allKot = this.dataProvider.currentBill.kots;
               let activeKot = this.dataProvider.currentBill.kots.find(
                 (kot: Kot) => kot.stage === 'active' || kot.stage === 'edit'
               );
+              // console.log("GENO 2", this.dataProvider.currentBill.kots);
               this.activeKotIndex =
                 this.dataProvider.currentBill.kots.findIndex(
                   (kot: Kot) => kot.stage === 'active' || kot.stage === 'edit'
@@ -58,7 +60,9 @@ export class ActiveKotComponent implements OnChanges {
               } else {
                 this.kots = [];
               }
+              // console.log("GENO 3",this.kots);
             } else {
+              // console.log("GENO 2", this.dataProvider.currentBill.kots);
               this.kots = [];
             }
           });

@@ -1,7 +1,8 @@
-import { DialogRef } from '@angular/cdk/dialog';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { DialogComponent } from 'src/app/base-components/dialog/dialog.component';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 
 @Component({
@@ -16,13 +17,13 @@ export class NonChargeableComponent {
     name:new FormControl('',Validators.required),
     password:new FormControl('',Validators.required)
   });
-  constructor(private dialogRef:MatDialogRef<NonChargeableComponent>,private dataProvider:DataProvider){}
+  constructor(private dialogRef:MatDialogRef<NonChargeableComponent>,private dataProvider:DataProvider,private dialog:Dialog){}
   submit(){
     if (this.nonChargeableForm.invalid) return;
-    if (this.nonChargeableForm.value.password === this.dataProvider.password){
-      this.dialogRef.close({...this.nonChargeableForm.value,nonChargeable:true})
-    } else {
-      alert('Wrong Password')
+    if(this.nonChargeableForm.value.password != this.dataProvider.password){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'Invalid Password',description:'Please enter the correct password to continue.',buttons:['Ok'],primary:[0]}})
+      return;
     }
+    this.dialogRef.close({...this.nonChargeableForm.value,nonChargeable:true})
   }
 }

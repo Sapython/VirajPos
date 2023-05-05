@@ -33,6 +33,12 @@ section {
                 border-radius: 10px;
                 background: #2BA063;
             }
+            &.non{
+                border: 2px solid rgba(115, 17, 17, 0.688);
+                span{
+                    background: rgba(115, 17, 17, 0.688);
+                }
+            }
         }
 
         .info {

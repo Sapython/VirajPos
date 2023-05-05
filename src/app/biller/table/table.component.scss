@@ -90,14 +90,22 @@ section{
             }
         }
     }
+    .modes{
+        display: flex;
+        justify-content: space-between;
+    }
+    .tableWrapper{
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px;
+        box-sizing: border-box;
+        padding-bottom: 300px;
+    }
     .tables{
         display: flex;
-        max-height: 50vh;
-        overflow-y: auto;
         flex-wrap: wrap;
         justify-content: flex-start;
         gap:20px;
-        padding: 20px;
         button.table{
             width: 120px;
             height: 120px;
@@ -113,6 +121,9 @@ section{
             gap:4px;
             transition: scale 0.4s cubic-bezier(0.65, 0, 0.35, 1);
             box-sizing: content-box;
+            *{
+                font-size: var(--Viraj-font-large);
+            }
             p{
                 margin:0px;
             }
@@ -176,6 +187,20 @@ section{
         .table.disabled{
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        button.medium{
+            width: 90px;
+            height: 90px;
+            *{
+                font-size: var(--Viraj-font-medium) !important;
+            }
+        }
+        button.small{
+            width: 60px;
+            height: 60px;
+            *{
+                font-size: var(--Viraj-font-small) !important;
+            }
         }
     }
 }

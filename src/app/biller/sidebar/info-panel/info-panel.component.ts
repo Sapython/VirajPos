@@ -5,6 +5,7 @@ import { DataProvider } from 'src/app/provider/data-provider.service';
 import { SalesSummaryComponent } from './sales-summary/sales-summary.component';
 import { OrderSummaryComponent } from './order-summary/order-summary.component';
 import { UpgradeComponent } from './upgrade/upgrade.component';
+import { environment } from 'src/environments/environment';
 declare var Hammer:any;
 @Component({
   selector: 'app-info-panel',
@@ -15,6 +16,7 @@ export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
   limitedSale:string = "0";
   isOpen = false;
   isSalesOpen = false;
+  version:string = "1.0.0";
   height:number = 0;
   closeOrdersPanelSubscription:Subject<boolean> = new Subject<boolean>();
   closeSalesPanelSubscription:Subject<boolean> = new Subject<boolean>();
@@ -23,6 +25,7 @@ export class InfoPanelComponent implements OnInit,OnChanges, AfterViewInit{
       this.isOpen = false;
       this.isSalesOpen = false;
     })
+    this.version = environment.appVersion
     console.log("this.el.nativeElement",this.el.nativeElement.offsetHeight);
     this.height = this.el.nativeElement.offsetHeight;
   }

@@ -14,6 +14,7 @@ export class CustomerPanelComponent {
     name: new FormControl(this.dataProvider.currentBill?.customerInfo.name,[this.dataProvider.currentBill?.mode=='takeaway' ? Validators.required : Validators.nullValidator]),
     phone: new FormControl(this.dataProvider.currentBill?.customerInfo.phone,[this.dataProvider.currentBill?.mode=='takeaway' ? Validators.required : Validators.nullValidator]),
     address: new FormControl(this.dataProvider.currentBill?.customerInfo.address,[this.dataProvider.currentBill?.mode=='takeaway' ? Validators.required : Validators.nullValidator]),
+    gst: new FormControl(this.dataProvider.currentBill?.customerInfo.gst),
   });
   @Input() padding: boolean = true;
   @Input() orderFrequency: number = 0;

@@ -130,7 +130,6 @@ export class LoadingComponent {
   }
 
   saveBusinessDetails(){
-
   }
 
   login() {
@@ -225,7 +224,7 @@ export class LoadingComponent {
     })
   }
 
-  completeOnboarding(){
+  async completeOnboarding(){
     this.onboardingStarted = true;
     // this.onboardingService.stage = 'virajGettingReady';
     // this.databaseService.setSettings() 
@@ -234,12 +233,15 @@ export class LoadingComponent {
     let password = this.securityForm.value.password;
     this.loginStage.next('Checking Account')
     let id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    if(this.logoFile){
+      var logo = await this.databaseService.upload('business/'+id,this.logoFile)
+    }
     this.authService.userExists(email).then((exists)=>{
       if(exists.docs.length > 0){
         this.loginStage.next('Account Exists')
         this.authService.loginWithEmailPassword(email,password).then((data)=>{
           this.loginStage.next('Logged In')
-          this.onboard(data,id)
+          this.onboard(data,id,logo)
         }).catch((error)=>{
           this.loginStage.next('Error Logging In')
           this.alertify.presentToast(error.message,'error')
@@ -250,7 +252,7 @@ export class LoadingComponent {
           address:this.onboardingBusinessForm.value.address,
           businessId:id,
           hotelName:this.onboardingBusinessForm.value.name,
-          hotelLogo:'',
+          hotelLogo:logo || '',
           billerPin:this.securityForm.value.billerPin,
           devices:[],
           modes:this.dataProvider.activeModes,
@@ -258,6 +260,7 @@ export class LoadingComponent {
           fssai:this.onboardingBusinessForm.value.fssai,
           gst:this.onboardingBusinessForm.value.gst,
           image:'',
+          billerPrinter:'',
           cgst:2.5,
           sgst:2.5,
           phone:this.onboardingBusinessForm.value.phone,
@@ -271,7 +274,7 @@ export class LoadingComponent {
         this.loginStage.next('Creating Account')
         this.authService.createAccount(email,password,data).then((data)=>{
           this.loginStage.next('Account Created')
-          this.onboard(data,id)
+          this.onboard(data,id,logo)
         }).catch((error)=>{
           this.loginStage.next('Error Creating Account')
           this.alertify.presentToast(error.message,'error')
@@ -292,7 +295,7 @@ export class LoadingComponent {
     return this.dataProvider.activeModes.filter((mode)=>!mode).length >= 2
   }
 
-  async onboard(user:UserCredential,id:string){
+  async onboard(user:UserCredential,id:string,logoImage?:string){
     // TODO: create id
     // TODO: set settings
     // TODO: create current account
@@ -315,7 +318,7 @@ export class LoadingComponent {
         address:this.onboardingBusinessForm.value.address,
         businessId:id,
         hotelName:this.onboardingBusinessForm.value.name,
-        hotelLogo:'',
+        hotelLogo:logoImage || '',
         modes:this.dataProvider.activeModes,
         billerPin:this.securityForm.value.billerPin,
         devices:[],
@@ -323,6 +326,7 @@ export class LoadingComponent {
         fssai:this.onboardingBusinessForm.value.fssai,
         gst:this.onboardingBusinessForm.value.gst,
         image:'',
+        billerPrinter:'',
         cgst:2.5,
         sgst:2.5,
         phone:this.onboardingBusinessForm.value.phone,
@@ -348,7 +352,7 @@ export class LoadingComponent {
       let tables:TableConstructor[] = []
       for(let i=0;i<10;i++){
         tables.push({
-          name:`${i+1}`,
+          name:`Table ${i+1}`,
           status:'available',
           id:`${i+1}`,
           bill:null,

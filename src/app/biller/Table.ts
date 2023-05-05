@@ -12,6 +12,7 @@ export class Table implements TableConstructor {
   bill: Bill | null = null;
   timeSpent:string = "";
   minutes:number = 0;
+  group?:string;
   maxOccupancy: string;
   billPrice: number;
   name: string;
@@ -221,6 +222,7 @@ export class Table implements TableConstructor {
   }
 
   occupyTable() {
+    console.log("this.dataProvider.tempProduct 1",this.dataProvider.tempProduct);
     if (!this.dataProvider.currentMenu?.selectedMenu){
       alert("Please select a menu first");
       return;
@@ -275,6 +277,11 @@ export class Table implements TableConstructor {
       if (this.status === 'occupied' && this.bill != undefined) {
         console.log("Activating bill", this.bill);
         this.updated.next();
+        console.log("this.dataProvider.tempProduct",this.dataProvider.tempProduct);
+        if (this.dataProvider.tempProduct){
+          this.bill.addProduct(this.dataProvider.tempProduct)
+          this.dataProvider.tempProduct = undefined;
+        }
         return this.bill;
       } else {
         this.status = 'available';

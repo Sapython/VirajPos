@@ -28,6 +28,10 @@ export class AddDishComponent {
     this.variants.push({variantName:'',price:0});
   }
 
+  cancel(){
+    this.dialogRef.close()
+  }
+
   removeVariant(i:number){
     this.variants.splice(i,1);
   }

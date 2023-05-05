@@ -105,6 +105,7 @@ export interface CustomerInfo {
   name?: string;
   phone?: string;
   address?: string;
+  gst?: string;
   deliveryName?: string;
   deliveryPhone?: string;
 }

@@ -523,7 +523,7 @@ export class DatabaseService {
   async addNewMenu(
     menu: Menu,
     catGroups: { name: string; products: Product[] }[],
-    businessId?: string
+    businessId?: string,
   ) {
     if (!businessId){
       businessId = this.dataProvider.businessId
@@ -534,8 +534,10 @@ export class DatabaseService {
         collection(this.firestore, 'business/'+businessId+'/menus'),
         menu
       );
+      let allProducts:Product[] = [];
       let productsRef:Promise<DocumentReference>[] = []
       let rootCategoriesRef = catGroups.forEach(async (catGroup) => {
+        allProducts = [...allProducts, ...catGroup.products];
         let res = await addDoc(
           collection(
             this.firestore,
@@ -568,24 +570,24 @@ export class DatabaseService {
           averagePrice: 0,
           enabled: true,
           name: 'High Range',
-          settings: { min: null, max: null },
-          products: [],
+          settings: { min: 300, max: null },
+          products: allProducts.filter((product) => product.price >= 300),
         },
         {
           id: 'lowRange',
           averagePrice: 0,
           enabled: true,
           name: 'Low Range',
-          settings: { min: null, max: null },
-          products: [],
+          settings: { min: null, max: 200 },
+          products: allProducts.filter((product) => product.price <= 200),
         },
         {
           id: 'mostSelling',
           averagePrice: 0,
           enabled: true,
           name: 'Most Selling',
-          settings: { min: null, max: null },
-          products: [],
+          settings: { min: 100, max: null },
+          products: allProducts.filter((product) => (product.sales||0) >= 100),
         },
         {
           id: 'newDishes',
@@ -808,7 +810,7 @@ export class DatabaseService {
     })
   }
 
-  updateBusiness(business:BusinessRecord){
+  updateBusiness(business:OptionalBusinessRecord){
     return setDoc(doc(this.firestore,'business',business.businessId),business,{merge:true});
   }
 
@@ -818,4 +820,22 @@ export interface Menu {
   id?: string;
   name: string;
   description: string;
+}
+export interface OptionalBusinessRecord {
+  businessId:string;
+  hotelName?:string;
+  hotelLogo?:string;
+  address?:string;
+  phone?:string;
+  email?:string;
+  image?:string;
+  modes?:boolean[],
+  fssai?:string;
+  gst?:string;
+  billerPrinter?:string;
+  cgst?:number;
+  sgst?:number;
+  users?:Member[];
+  billerPin?:string;
+  devices?:string[]
 }

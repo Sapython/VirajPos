@@ -229,6 +229,9 @@ export class Bill implements BillConstructor {
   }
 
   addProduct(product: Product) {
+    if (this.stage == 'finalized' && this.mode == 'takeaway'){
+      this.stage = 'active';
+    }
     if(this.stage !== 'active'){
       alert('This bill is already finalized.');
       return;
@@ -262,7 +265,7 @@ export class Bill implements BillConstructor {
           : this.kots[kotIndex].products.push(product);
       }
     }
-
+    this.updated.next();
     this.calculateBill();
   }
 
@@ -454,6 +457,7 @@ export class Bill implements BillConstructor {
         activeKot.stage = 'finalized';
         console.log('Active kot', activeKot);
         this.databaseService.addKitchenToken();
+        activeKot.createdDate = Timestamp.now();
         this.updated.next();
         if (this.kots.length > 1){
           if (this.nonChargeableDetail) {
@@ -477,6 +481,9 @@ export class Bill implements BillConstructor {
         alert('No active kot found');
       }
     }
+    if(this.dataProvider.showTableOnBillAction){
+      this.dataProvider.openTableView.next(true);
+    }
   }
 
   addDiscount(discount: Discount) {
@@ -491,6 +498,9 @@ export class Bill implements BillConstructor {
         this.billing.grandTotal -= discount.value;
       }
     });
+    if(this.dataProvider.showTableOnBillAction){
+      this.dataProvider.openTableView.next(true);
+    }
     this.updated.next();
   }
 
@@ -534,6 +544,9 @@ export class Bill implements BillConstructor {
 
     this.updated.next();
     this.printBill()
+    if(this.dataProvider.showTableOnBillAction){
+      this.dataProvider.openTableView.next(true);
+    }
   }
   setInstruction(){
     this.instruction = prompt('Enter instruction') || ''
@@ -730,6 +743,9 @@ export class Bill implements BillConstructor {
     this.dataProvider.currentTable = undefined;
     this.dataProvider.totalSales += this.billing.grandTotal;
     this.updated.next();
+    if(this.dataProvider.showTableOnBillAction){
+      this.dataProvider.openTableView.next(true);
+    }
     return this.billNo;
   }
 
@@ -748,6 +764,9 @@ export class Bill implements BillConstructor {
     this.dataProvider.currentTable!.bill = null;
     this.dataProvider.currentTable = undefined;
     // this.dataProvider.totalSales += this.billing.grandTotal;
+    if(this.dataProvider.showTableOnBillAction){
+      this.dataProvider.openTableView.next(true);
+    }
     this.updated.next();
   }
 

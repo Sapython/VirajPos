@@ -1,4 +1,4 @@
-import { DialogRef } from '@angular/cdk/dialog';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs';
@@ -6,6 +6,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Discount } from '../../settings/settings.component';
 import { Timestamp } from '@angular/fire/firestore';
 import { DataProvider } from 'src/app/provider/data-provider.service';
+import { DialogComponent } from 'src/app/base-components/dialog/dialog.component';
 
 @Component({
   selector: 'app-add-discount',
@@ -18,10 +19,12 @@ export class AddDiscountComponent {
     mode:new FormControl('directPercent'),
     percent:new FormControl(0),
     selectDiscount:new FormControl(''),
-    amount:new FormControl(0)
+    amount:new FormControl(0),
+    password:new FormControl(0),
+    reason:new FormControl(0),
   });
   discounts:Discount[] = []
-  constructor(private dialogRef:MatDialogRef<AddDiscountComponent>,public dataProvider:DataProvider) {
+  constructor(private dialogRef:MatDialogRef<AddDiscountComponent>,public dataProvider:DataProvider,private dialog:Dialog) {
     // this.discountForm.get('code')?.valueChanges.pipe(debounceTime(600)).subscribe((value)=>{
     //   // this.mode = value;
     //   if (value === 'DISCOUNT20'){
@@ -39,6 +42,10 @@ export class AddDiscountComponent {
   // }
 
   submit(){
+    if(this.discountForm.value.password != this.dataProvider.password){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'Invalid Password',description:'Please enter the correct password to continue.',buttons:['Ok'],primary:[0]}})
+      return;
+    }
     console.log(this.discountForm.value);
     if (this.discountForm.value.mode == 'codeBased'){
       this.dialogRef.close({discount:this.discountForm.value.selectDiscount,discounted:true})

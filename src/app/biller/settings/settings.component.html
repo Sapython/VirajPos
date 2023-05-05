@@ -135,78 +135,66 @@
   </mat-tab-group> -->
 
   <div class="tabs">
-    <button (click)="activeTab='about'" [ngClass]="{'active':activeTab=='about'}">
+    <button
+      (click)="activeTab = 'about'"
+      [ngClass]="{ active: activeTab == 'about' }"
+    >
       About
     </button>
-    <!-- <button (click)="activeTab='printer'" [ngClass]="{'active':activeTab=='printer'}">
+    <button
+      (click)="activeTab = 'printer'"
+      [ngClass]="{ active: activeTab == 'printer' }"
+    >
       Printer
-    </button> -->
-    <button (click)="activeTab='view'" [ngClass]="{'active':activeTab=='view'}">
+    </button>
+    <button
+      (click)="activeTab = 'view'"
+      [ngClass]="{ active: activeTab == 'view' }"
+    >
       View
     </button>
-    <button (click)="activeTab='config'" [ngClass]="{'active':activeTab=='config'}">
+    <button
+      (click)="activeTab = 'config'"
+      [ngClass]="{ active: activeTab == 'config' }"
+    >
       Config
     </button>
-    <button (click)="activeTab='account'" *ngIf="this.dataProvider.getAccess(['admin'])" [ngClass]="{'active':activeTab=='account'}">
+    <button
+      (click)="activeTab = 'account'"
+      *ngIf="this.dataProvider.getAccess(['admin'])"
+      [ngClass]="{ active: activeTab == 'account' }"
+    >
       Account
     </button>
-    <button (click)="activeTab='discount'" [ngClass]="{'active':activeTab=='discount'}">
+    <button
+      (click)="activeTab = 'discount'"
+      [ngClass]="{ active: activeTab == 'discount' }"
+    >
       Discounts
     </button>
   </div>
   <div class="active spaced" [ngSwitch]="activeTab">
     <ng-container *ngSwitchCase="'printer'">
       <h3>Printer Settings</h3>
-      <viraj-button (vclick)="addConfig()">
-        <i class="ri-add-fill"></i> Add Config
-      </viraj-button>
-      <form (ngSubmit)="setPrinters()" class="printers">
-        <div class="grid">
-          <ng-container *ngFor="let config of configs">
-            <div class="categories">
-              <ol>
-                <li *ngFor="let item of config.categories">
-                  <mat-checkbox
-                    [(ngModel)]="item.selected"
-                    [indeterminate]="item.indeterminate"
-                    [checked] = "item.selected"
-                    (change)="onCategoryChange(item)"
-                    [ngModelOptions]="{ standalone: true }"
-                    >{{ item.name }}</mat-checkbox
-                  >
-                  <ol>
-                    <li *ngFor="let product of item.products">
-                      <mat-checkbox
-                        [(ngModel)]="product.selected"
-                        (change)="onProductChange(item)"
-                        [ngModelOptions]="{ standalone: true }"
-                        >{{ product.name }}</mat-checkbox
-                      >
-                    </li>
-                  </ol>
-                </li>
-              </ol>
-            </div>
-            <mat-form-field appearance="outline">
-              <mat-label>Choose Printer For Bill</mat-label>
-              <mat-select [formControl]="config.printerControl">
-                <mat-option>Clear</mat-option>
-                <mat-option
-                  [value]="printer"
-                  *ngFor="let printer of printers"
-                  >{{ printer }}</mat-option
-                >
-              </mat-select>
-            </mat-form-field>
-          </ng-container>
-          <h4 *ngIf="configs.length==0">No Configs Found</h4>
-        </div>
-        <viraj-button >Submit</viraj-button>
-      </form>
+      <mat-form-field apperance="outline">
+        <mat-label>Bill Printer</mat-label>
+        <mat-select
+        #billerPrinter
+        (selectionChange)="updateBillPrinter(billerPrinter.value)"
+          name="printer"
+        >
+          <mat-option> Select </mat-option>
+          <mat-option [value]="printer" *ngFor="let printer of printers">
+            {{ printer }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </ng-container>
     <ng-container *ngSwitchCase="'account'">
       <h3>Account Settings</h3>
-      <button mat-flat-button color="primary" (click)="addAccount()">Add Account</button>
+      <button mat-flat-button color="primary" (click)="addAccount()">
+        Add Account
+      </button>
       <!-- <ol>
         <li *ngFor="let account of accounts">
           <strong></strong>
@@ -225,21 +213,40 @@
           <tr *ngFor="let account of this.dataProvider.currentBusiness?.users">
             <td>
               <ng-container *ngIf="!account.new">
-                {{account.email}}
+                {{ account.email }}
               </ng-container>
-              <input type="email" [(ngModel)]="account.email" *ngIf="account.new">
+              <input
+                type="email"
+                [(ngModel)]="account.email"
+                *ngIf="account.new"
+              />
             </td>
             <td class="select">
-              <mat-select placeholder="Select" (valueChange)="account.new! ? updateBusiness() : {}" [(ngModel)]="account.access" name="access">
-                <mat-option *ngFor="let access of this.dataProvider.accessLevels" [value]="access">
-                  {{access | titlecase}}
+              <mat-select
+                placeholder="Select"
+                (valueChange)="account.new! ? updateBusiness() : {}"
+                [(ngModel)]="account.access"
+                name="access"
+              >
+                <mat-option
+                  *ngFor="let access of this.dataProvider.accessLevels"
+                  [value]="access"
+                >
+                  {{ access | titlecase }}
                 </mat-option>
               </mat-select>
             </td>
-            <td>{{account.updatedBy}}</td>
+            <td>{{ account.updatedBy }}</td>
             <td>
-              {{account.lastUpdated.toDate() | date:'short'}}
-              <button mat-flat-button *ngIf="account.new" color="primary" (click)="updateBusiness()">Update</button>
+              {{ account.lastUpdated.toDate() | date : "short" }}
+              <button
+                mat-flat-button
+                *ngIf="account.new"
+                color="primary"
+                (click)="updateBusiness()"
+              >
+                Update
+              </button>
             </td>
           </tr>
         </tbody>
@@ -248,60 +255,72 @@
     <ng-container *ngSwitchCase="'view'">
       <h3>View Modes</h3>
       <div class="row smartButtons">
-        <button [disabled]="true" [ngClass]="{'selected':dataProvider.smartMode}" (click)="smartModeToggle(true)">
-          <img src="assets/images/brain.svg" alt="">
+        <button
+          [disabled]="true"
+          [ngClass]="{ selected: dataProvider.smartMode }"
+          (click)="smartModeToggle(true)"
+        >
+          <img src="assets/images/brain.svg" alt="" />
           Smart Mode*
         </button>
-        <button [ngClass]="{'selected':!dataProvider.smartMode}" (click)="smartModeToggle(false)">
-          <img src="assets/images/noBrain.svg" alt="">
+        <button
+          [ngClass]="{ selected: !dataProvider.smartMode }"
+          (click)="smartModeToggle(false)"
+        >
+          <img src="assets/images/noBrain.svg" alt="" />
           Simple Mode
         </button>
       </div>
       <div class="row smartButtons">
-        <button [ngClass]="{'selected':!dataProvider.touchMode}" (click)="touchModeToggle(false)">
-          <img src="assets/images/click.svg" alt="">
+        <button
+          [ngClass]="{ selected: !dataProvider.touchMode }"
+          (click)="touchModeToggle(false)"
+        >
+          <img src="assets/images/click.svg" alt="" />
           Click Mode
         </button>
-        <button [ngClass]="{'selected':dataProvider.touchMode}" (click)="touchModeToggle(true)">
-          <img src="assets/images/touch.svg" alt="">
+        <button
+          [ngClass]="{ selected: dataProvider.touchMode }"
+          (click)="touchModeToggle(true)"
+        >
+          <img src="assets/images/touch.svg" alt="" />
           Touch Mode
         </button>
       </div>
-      <p class="danger"><sup>*</sup> Smart mode is currently disabled for this account.</p>
+      <div>
+        <mat-slide-toggle
+          [(ngModel)]="dataProvider.showTableOnBillAction"
+          (change)="setLocalShowTable($event)"
+          >Show table on bill action</mat-slide-toggle
+        >
+      </div>
+      <p class="danger">
+        <sup>*</sup> Smart mode is currently disabled for this account.
+      </p>
     </ng-container>
     <ng-container *ngSwitchCase="'about'">
       <h3>About</h3>
       <table class="uk-table uk-table-divider" [cellSpacing]="0">
         <tr>
+          <td>Name</td>
+          <td>Viraj</td>
+        </tr>
+        <tr>
+          <td>Version</td>
           <td>
-            Name
-          </td>
-          <td>
-            Viraj
+            {{ version }}
           </td>
         </tr>
         <tr>
+          <td>Server Version</td>
           <td>
-            Version
-          </td>
-          <td>
-            {{version}}
+            {{ version }}
           </td>
         </tr>
         <tr>
+          <td>Account</td>
           <td>
-            Server Version
-          </td>
-          <td>
-            {{version}}
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Account
-          </td>
-          <td>
-            {{account}}
+            {{ account }}
           </td>
         </tr>
       </table>
@@ -309,11 +328,26 @@
     <ng-container *ngSwitchCase="'config'">
       <h3>Active Modes</h3>
       <div class="modes">
-        <mat-slide-toggle [(ngModel)]="modes[0]" (change)="updateMode()" [disabled]="twoModeDeactived && modes[0]">Dine In</mat-slide-toggle>
-        <mat-slide-toggle [(ngModel)]="modes[1]" (change)="updateMode()" [disabled]="twoModeDeactived && modes[1]">Takeaway</mat-slide-toggle>
-        <mat-slide-toggle [(ngModel)]="modes[2]" (change)="updateMode()" [disabled]="twoModeDeactived && modes[2]">Online</mat-slide-toggle>
+        <mat-slide-toggle
+          [(ngModel)]="modes[0]"
+          (change)="updateMode()"
+          [disabled]="twoModeDeactived && modes[0]"
+          >Dine In</mat-slide-toggle
+        >
+        <mat-slide-toggle
+          [(ngModel)]="modes[1]"
+          (change)="updateMode()"
+          [disabled]="twoModeDeactived && modes[1]"
+          >Takeaway</mat-slide-toggle
+        >
+        <mat-slide-toggle
+          [(ngModel)]="modes[2]"
+          (change)="updateMode()"
+          [disabled]="twoModeDeactived && modes[2]"
+          >Online</mat-slide-toggle
+        >
       </div>
-      <hr>
+      <hr />
       <h3>More Config</h3>
       <form class="form" [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
         <mat-form-field class="example-form-field" appearance="outline">
@@ -324,7 +358,10 @@
           <mat-label>Phone Number:</mat-label>
           <input matInput type="text" formControlName="phone" />
         </mat-form-field>
-        <mat-form-field class="example-form-field fullWidth" appearance="outline">
+        <mat-form-field
+          class="example-form-field fullWidth"
+          appearance="outline"
+        >
           <mat-label>Address:</mat-label>
           <input matInput type="text" formControlName="address" />
         </mat-form-field>
@@ -422,7 +459,9 @@
             </button>
           </div>
         </div> -->
-        <button color="primary" mat-raised-button (click)="addDiscount()">Add Discount</button>
+        <button color="primary" mat-raised-button (click)="addDiscount()">
+          Add Discount
+        </button>
         <div class="tableContainer">
           <table>
             <thead>
@@ -440,29 +479,33 @@
             </thead>
             <tbody>
               <tr *ngFor="let discount of discounts">
-                <td>{{discount.name}}</td>
-                <td>{{discount.value}}</td>
-                <td>{{discount.type}}</td>
-                <td>{{discount.minimumAmount}}</td>
-                <td>{{discount.minimumProducts}}</td>
-                <td>{{discount.maximumDiscount}}</td>
-                <td>{{discount.creationDate ? (discount.creationDate.toDate() | date) : 'N/A'}}</td>
+                <td>{{ discount.name }}</td>
+                <td>{{ discount.value }}</td>
+                <td>{{ discount.type }}</td>
+                <td>{{ discount.minimumAmount }}</td>
+                <td>{{ discount.minimumProducts }}</td>
+                <td>{{ discount.maximumDiscount }}</td>
+                <td>
+                  {{
+                    discount.creationDate
+                      ? (discount.creationDate.toDate() | date)
+                      : "N/A"
+                  }}
+                </td>
                 <td>
                   <li *ngFor="let item of getMappedMenu(discount.menus)">
-                    {{item.name}}
+                    {{ item.name }}
                   </li>
                 </td>
                 <td>
                   <li *ngFor="let item of discount.accessLevels">
-                    {{item}}
+                    {{ item }}
                   </li>
                 </td>
               </tr>
               <tr *ngIf="loadingDiscount">
                 <td colspan="8">
-                  <mat-spinner
-                    mode="indeterminate">
-                  </mat-spinner>
+                  <mat-spinner mode="indeterminate"> </mat-spinner>
                 </td>
               </tr>
             </tbody>

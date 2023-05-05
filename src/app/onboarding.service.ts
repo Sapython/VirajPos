@@ -135,6 +135,15 @@ export class OnboardingService {
                 await this.getOnlineTokens();
                 this.loadingSteps.next('All online tokens loaded');
               }
+              this.dataProvider.showTableOnBillAction = JSON.parse(localStorage.getItem('showTable') || 'false');
+              console.log("Loading table size");
+              let tempSize = localStorage.getItem('tableSize')
+              if (tempSize == 'large' || tempSize == 'medium' || tempSize == 'small'){
+                this.dataProvider.currentTableSize = tempSize;
+              } else {
+                this.dataProvider.currentTableSize = 'large';
+              }
+              console.log("Loaded table size");
               menuSubscription.unsubscribe();
               this.loadingSteps.next('Setup Completed');
               this.message = "Viraj is ready to use."
@@ -210,7 +219,19 @@ export class OnboardingService {
       formedTable.sort((a,b)=>{
         return a.tableNo - b.tableNo;
       })
+      // group table by their first split string like group 
+      // Table 1 and Table 2 together
+      // Token 1 and Token 5 together
+      // Room 1 and Room 3 together
+      // use name attribute to group like name.split(' ')[0]
+      let groupedTables = formedTable.reduce((r:any, a) => {
+        a.group = a.name.split(' ')[0];
+        r[a.name.split(' ')[0]] = [...r[a.name.split(' ')[0]] || [], a];
+        return r;
+      }, {});
+      console.log("groupedTables",groupedTables);
       this.dataProvider.tables = formedTable;
+      this.dataProvider.groupedTables = groupedTables;
     } else {
       if (this.dataProvider.tables.length == 0 && res.docs.length == 0){
         this.dataProvider.tables = [];

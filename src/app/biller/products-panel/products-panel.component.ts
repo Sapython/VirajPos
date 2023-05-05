@@ -38,7 +38,11 @@ export class ProductsPanelComponent implements OnInit{
     })
   }
 
-  selectProduct(product:any){
+  selectProduct(product:Product){
+    delete product.instruction
+    if(!this.dataProvider.currentBill){
+      this.dataProvider.tempProduct = product;
+    }
     if (!this.dataProvider.currentTable){
       this.dataProvider.openTableView.next(true)
       return;

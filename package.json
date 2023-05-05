@@ -33,6 +33,7 @@
     "chart.js": "^4.2.1",
     "electron-squirrel-startup": "^1.0.0",
     "fuse.js": "^6.6.2",
+    "html-pdf-node": "^1.0.8",
     "html-to-pdf": "^0.1.11",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",

@@ -34,6 +34,7 @@ export class SettingsComponent {
     cgst:new FormControl(this.dataProvider.currentBusiness?.cgst,[Validators.required]),
     sgst:new FormControl(this.dataProvider.currentBusiness?.sgst,[Validators.required]),
   })
+  billerPrinter:FormControl = new FormControl(this.dataProvider.currentBusiness?.billerPrinter,[Validators.required])
   loadingDiscount:boolean = false;
   viewSettings:FormGroup = new FormGroup({
     smartView: new FormControl(false),
@@ -68,6 +69,14 @@ export class SettingsComponent {
     return this.dataProvider.allMenus.filter((menu)=>menus.includes(menu.id!))
   }
 
+  updateBillPrinter(value:string){
+    this.databaseService.updateBusiness({billerPrinter:value,businessId:this.dataProvider.currentBusiness?.businessId!}).then(()=>{
+      this.alertify.presentToast("Printer updated successfully")
+    }).catch((err)=>{
+      this.alertify.presentToast("Error while updating printer")
+    })
+  }
+
   getDiscounts(){
     this.loadingDiscount = true;
     this.databaseService.getDiscounts().then((res:any)=>{
@@ -81,6 +90,10 @@ export class SettingsComponent {
     }).finally(()=>{
       this.loadingDiscount = false;
     })
+  }
+
+  setLocalShowTable(event:any){
+    localStorage.setItem('showTable',JSON.stringify(event.target.checked))
   }
   
   ngOnInit(): void {

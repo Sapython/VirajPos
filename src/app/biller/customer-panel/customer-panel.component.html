@@ -4,6 +4,8 @@
         <div>
             <input [disabled]="this.dataProvider.currentBill?.stage!='active'" type="text" formControlName="name" placeholder="Customer Info">
             <input [disabled]="this.dataProvider.currentBill?.stage!='active'" type="tel" formControlName="phone" placeholder="Phone Number">
+            <input [disabled]="this.dataProvider.currentBill?.stage!='active'" type="tel" formControlName="gst" placeholder="Gst">
+            <input matInput placeholder="Address" formControlName="address">
             <input *ngIf="this.dataProvider.currentBill?.mode=='online'" [disabled]="this.dataProvider.currentBill?.stage!='active'" type="text" formControlName="deliveryName" placeholder="Agent Name">
             <input *ngIf="this.dataProvider.currentBill?.mode=='online'" [disabled]="this.dataProvider.currentBill?.stage!='active'" type="tel" formControlName="deliveryPhone" placeholder="Agent Phone">
             <!-- <mat-form-field appearance="outline" >
@@ -19,7 +21,7 @@
             <mat-label>Customer Name</mat-label>
             <textarea matInput placeholder="Address" formControlName="address"></textarea>
         </mat-form-field> -->
-        <textarea matInput placeholder="Address" formControlName="address"></textarea>
+        <!-- <textarea matInput placeholder="Address" formControlName="address"></textarea> -->
     </form>
 </section>
 <section class="orders" *ngIf="dataProvider.smartMode" [ngClass]="{'pad':padding}">

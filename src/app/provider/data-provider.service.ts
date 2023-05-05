@@ -24,6 +24,15 @@ export class DataProvider {
       this.clientWidth = window.innerWidth;
       this.clientHeight = window.innerHeight;
     })
+    window.addEventListener('online', () => {
+      this.backOnline.next(true);
+      setTimeout(() => {
+        this.offline = false;
+      },1000)
+    })
+    window.addEventListener('offline', () => {
+      this.offline = true;
+    })
   }
 
   // smart vars
@@ -74,10 +83,13 @@ export class DataProvider {
   public activeModes:[boolean,boolean,boolean] = [false,false,false];
   public allMenus:Menu[] = []
   public currentMenu:ModeConfig|undefined;
+  public tempProduct:Product|undefined;
+  public currentTableSize:'large'|'medium'|'small' = 'large';
   public dineInMenu:Menu|undefined;
   public takeawayMenu:Menu|undefined;
   public onlineMenu:Menu|undefined;
   public tables:Table[] = [];
+  public groupedTables:{[key:string]:Table[]} = {};
   public tokens:Table[] = [];
   public onlineTokens:Table[] = [];
   
@@ -90,6 +102,7 @@ export class DataProvider {
   public currentTable:Table|undefined;
   public currentDevice:Device|undefined;
   public currentBill:Bill|undefined;
+  public showTableOnBillAction:boolean = false;
   public moreActions:boolean = false;
   public manageKot:boolean = false;
   public manageKotChanged:Subject<boolean> = new Subject<boolean>();
@@ -112,6 +125,9 @@ export class DataProvider {
   public productsLoaded:ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
   public billUpdated:Subject<void> = new Subject<void>();
   public settingsChanged:Subject<any> = new Subject<any>();
+
+  public offline:boolean = false;
+  public backOnline:Subject<boolean> = new Subject<boolean>();
 
   public get currentAccessLevel(){
     if(this.currentBusiness){

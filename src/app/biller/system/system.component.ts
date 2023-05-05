@@ -6,6 +6,8 @@ import { DataProvider } from 'src/app/provider/data-provider.service';
 import { HistoryComponent } from './history/history.component';
 import { slideInDownOnEnterAnimation, slideOutUpOnLeaveAnimation } from 'angular-animations';
 import { AuthService } from 'src/app/services/auth.service';
+import { ConfirmDialogComponent } from 'src/app/helpers/confirm-dialog/confirm-dialog.component';
+import { DialogComponent } from 'src/app/base-components/dialog/dialog.component';
 declare var jivo_api:any;
 @Component({
   selector: 'app-system',
@@ -28,7 +30,13 @@ export class SystemComponent {
   }
 
   logOut(){
-    this.authService.logout()
+    const confirmDialog = this.dialog.open(DialogComponent,{data:{title:'Logout',message:'Are you sure you want to logout?'}});
+    confirmDialog.closed.subscribe(result=>{
+      console.log(result);
+      if(result){
+        this.authService.logout();
+      }
+    })
   }
 
   openHistory(){

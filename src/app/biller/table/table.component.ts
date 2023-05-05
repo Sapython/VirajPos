@@ -8,6 +8,7 @@ import { Product, TableConstructor } from '../constructors';
 import { Kot } from '../Kot';
 import { Table } from '../Table';
 import { PrintingService } from 'src/app/services/printing.service';
+import { group } from 'console';
 
 @Component({
   selector: 'app-table',
@@ -78,6 +79,45 @@ export class TableComponent implements OnInit {
     this.dataProvider.currentBill = table.occupyTable();
     this.dataProvider.currentTable = table;
     this.dataProvider.billAssigned.next();
+    if(this.dataProvider.tempProduct && this.dataProvider.currentBill){
+      this.dataProvider.currentBill.addProduct(this.dataProvider.tempProduct);
+    }
+  }
+
+  addTable(groupName:string){
+    let index = this.dataProvider.tables.length + 1;
+    var tableName:string|null = '';
+    tableName = prompt('Enter table name',groupName);
+    if (!tableName) {
+      return;
+    }
+    if (tableName.split(' ')[0] == groupName){
+      if (tableName == groupName){
+        let entityNo = Number(this.dataProvider.groupedTables[groupName][this.dataProvider.groupedTables[groupName].length-1].name.split(' ')[1])
+        if (entityNo){
+          tableName = groupName + ' ' + (entityNo+1).toString();
+        }
+      }
+    } else {
+      groupName = tableName.split(' ')[0];
+    }
+    console.log('tableName ', tableName,groupName);
+    let table = new Table(
+      index.toString(),
+      index,
+      tableName,
+      '4',
+      'table',
+      this.dataProvider,
+      this.database,
+      this.printingService
+    );
+    this.dataProvider.tables.push(table);
+    if(!this.dataProvider.groupedTables[groupName]){
+      this.dataProvider.groupedTables[groupName] = [];
+    }
+    this.dataProvider.groupedTables[groupName].push(table);
+    console.log('this.dataProvider.tables ', this.dataProvider.tables);
   }
 
   addToken() {
@@ -226,6 +266,12 @@ export class TableComponent implements OnInit {
     }
     this.moveKotSelectedTable!.bill?.calculateBill();
     table.bill?.calculateBill();
+  }
+
+  switchTableSize(event:any){
+    console.log("event",event);
+    localStorage.setItem('tableSize',event.value);
+    this.dataProvider.currentTableSize = event.value;
   }
 
   switchMode(mode:any){

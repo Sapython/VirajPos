@@ -27,6 +27,7 @@ export interface BusinessRecord{
     modes:boolean[],
     fssai:string;
     gst:string;
+    billerPrinter:string;
     cgst:number;
     sgst:number;
     users:Member[];
