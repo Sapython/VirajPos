@@ -1,4 +1,4 @@
-<section *ngIf="product">
+<section *ngIf="product" [matMenuTriggerFor]="menu">
   <div class="border" (mouseenter)="showKotNo=true" (mouseleave)="showKotNo=false" [ngStyle]="{background:this.kotNoColors[kotNo % this.kotNoColors.length].color,padding:showKotNo ? '10px' : '0px'}">
     <p *ngIf="showKotNo" [ngStyle]="{'color':this.kotNoColors[kotNo % this.kotNoColors.length].contrast}">{{kotId}}</p>
   </div>
@@ -48,3 +48,14 @@
     </div>
   </div>
 </section>
+<mat-menu #menu="matMenu">
+  <p mat-menu-item>{{productName}}</p>
+  <button mat-menu-item (click)="lineDiscount()">
+    <mat-icon>percent</mat-icon>
+    <span>Line Discount</span>
+  </button>
+  <button mat-menu-item (click)="lineCancel()">
+    <mat-icon>cancel</mat-icon>
+    <span>Line Cancel</span>
+  </button>
+</mat-menu>

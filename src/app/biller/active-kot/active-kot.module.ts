@@ -7,14 +7,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseComponentsModule } from 'src/app/base-components/base-components.module';
 import { MergedProductsPipe } from './merged-products.pipe';
-
+import { MatMenuModule } from '@angular/material/menu';
+import { LineDiscountComponent } from './kot-item/line-discount/line-discount.component';
+import { LineCancelComponent } from './kot-item/line-cancel/line-cancel.component'; 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 @NgModule({
   declarations: [
     ActiveKotComponent,
     KotItemComponent,
-    MergedProductsPipe
+    MergedProductsPipe,
+    LineDiscountComponent,
+    LineCancelComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +29,11 @@ import { MergedProductsPipe } from './merged-products.pipe';
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
-    BaseComponentsModule
+    BaseComponentsModule,
+    MatMenuModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   exports:[
     ActiveKotComponent,

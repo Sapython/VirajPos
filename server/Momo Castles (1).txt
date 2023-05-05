@@ -1,0 +1,752 @@
+Classic Momos (4/8Pcs)
+Steamed
+
+Fried
+
+Pan Fried
+
+Veg Classic Momos
+
+60/100
+
+70/110
+
+80/120
+
+Chilli Paneer Momos
+
+80/130
+
+90/140
+
+100/150
+
+Pure Paneer Momos
+
+80/130
+
+90/140
+
+100/150
+
+Chicken Classic Momos
+
+80/130
+
+90/140
+
+100/150
+
+Cheese Corn Momos
+
+120/220
+
+130/230
+
+Tandoori Momos (4/8Pcs)
+Tandoori
+
+Achari
+
+Pudina
+
+Creamy
+Afghani
+
+Veg Classic Momos
+
+110/220
+
+120/220
+
+130/230
+
+150/250
+
+Chilli Paneer Momos
+
+130/230
+
+140/240
+
+150/250
+
+170/270
+
+Pure Paneer Momos
+
+130/230
+
+140/240
+
+150/250
+
+170/270
+
+Chicken Classic Momos
+
+130/230
+
+140/240
+
+170/270
+
+150/250
+
+Special Momos (4/8Pcs)
+Crunchy
+
+Gravy
+
+Veg Classic Momos
+
+90/150
+
+90/150
+
+Paneer Momos
+
+110/190
+
+110/190
+
+Cheese Corn Momos
+
+150/250
+
+Chicken Momos
+
+110/190
+
+110/190
+
+Momos Platter (12 Pcs)
+Assorted
+
+Tandoori
+
+Veg Momos platter
+
+200
+
+480
+
+Paneer Momos platter
+
+220
+
+500
+
+Chicken Momos platter
+
+220
+
+500
+
+Chinese Platter
+Noodles, Rice, Manchurian, Spring Roll, Momos
+
+250
+
+Starters Veg
+
+Chilli Potatoes
+
+Half
+
+Full
+
+0
+
+100
+
+Veg Spring Rolls
+
+100
+
+Honey Chilli Potato
+
+130
+
+Cigar Roll (3 Pcs)
+
+160
+
+Mushroom Chilli Papper
+
+120
+
+220
+
+Veg Manchurian Dry
+
+100
+
+180
+
+Vegetable Salt and Pepper
+
+110
+
+200
+
+Chilli Paneer Dry
+
+150
+
+250
+
+Paneer 65
+
+200
+
+380
+
+Starters Non-Veg
+Half
+Chicken Spring Roll
+
+Full
+150
+
+Chicken Manchurian Dry
+
+160
+
+260
+
+Chilli Chicken Dry
+
+180
+
+280
+
+Chicken Lolly Pop
+
+250
+
+440
+
+Drums of heaven
+
+280
+
+460
+
+Crispy Chicken Honey and Pepper
+
+200
+
+330
+
+Chicken Salt and Pepper
+
+130
+
+220
+
+Chicken Popcorn
+
+180
+
+320
+
+Chicken 65
+
+250
+
+460
+
+Sweet & Sour Chicken Balls
+
+180
+
+320
+
+Diced Chicken in Barbeque Style
+
+200
+
+360
+
+Main Course
+Half
+
+Full
+
+Veg Manchurian Gravy
+
+130
+
+220
+
+Chilly Paneer Gravy
+
+160
+
+280
+
+Vegetable in Hot Garlic Sauce
+
+150
+
+260
+
+Paneer Manchurian Gravy
+
+140
+
+280
+
+Paneer in Hot garlic Sauce
+
+160
+
+300
+
+Vegetable in Hongkong Style
+
+160
+
+280
+
+Chilli Chicken Gravy
+
+180
+
+320
+
+Chicken Manchurian Gravy
+
+160
+
+300
+
+Shredded Chicken in Hot Garlic Sauce
+
+180
+
+320
+
+Diced Chicken in lemon Garlic Sauce
+
+180
+
+320
+
+Sliced Chicken in Oyster Sauce
+
+190
+
+340
+
+Diced Chicken in Barbeque Sauce
+
+190
+
+340
+
+Chicken in Hong Kong Style
+
+190
+
+340
+
+Noodles
+Half
+
+Full
+
+Veg Castle Special Noodles
+
+160
+
+240
+
+Vegetable Hakka Noodles
+
+100
+
+180
+
+Veg Chilli Garlic Noodles
+
+120
+
+200
+
+Paneer Noodles
+
+130
+
+220
+
+Singaporean Noodles
+
+130
+
+220
+
+Egg Noodles
+
+130
+
+230
+
+Egg Chilli Garlic Noodle
+
+140
+
+240
+
+Chicken Noodles
+
+140
+
+240
+
+Chicken & Egg Noodles
+
+150
+
+250
+
+Chilli Garlic Chicken Noodles
+
+160
+
+260
+
+Thukpa
+Veg Thupka
+
+180
+
+Chicken Thupka
+
+230
+
+Rice
+
+Half
+
+Full
+
+Vegetable Fried Rice
+
+90
+
+150
+
+Veg Chilli Garlic Fried Rice
+
+100
+
+160
+
+Paneer Fried Rice
+
+110
+
+190
+
+Egg Fried Rice
+
+110
+
+190
+
+Egg Chilli garlic Fried Rice
+
+120
+
+200
+
+Chicken Fried Rice
+
+130
+
+210
+
+Chicken & Egg Fried Rice
+
+150
+
+230
+
+Chilli Garlic Chicken Fried Rice
+
+140
+
+220
+
+Soups
+Veg
+
+Chicken
+
+Clear Soup
+
+110
+
+140
+
+Sweet Corn Soup
+
+140
+
+180
+
+Manchow Soup
+
+150
+
+190
+
+Hot and Sour
+
+150
+
+190
+
+Lemon and Coriander
+
+150
+
+190
+
+Chopsuey
+Chinese Vegetable Chopsuey
+
+300
+
+American Vegetable Chopsuey
+
+350
+
+Chinese Chicken Chopsuey
+
+350
+
+American Chicken Chopsuey
+
+400
+
+Tandoor se
+Half
+
+Full
+
+Paneer Tikka
+
+180
+
+300
+
+Malai Paneer Tikka
+
+200
+
+320
+
+Pahadi Paneer Tikka
+
+210
+
+400
+
+Cheese Stuffed Paneer Tikka
+
+210
+
+400
+
+Tondoori Soya Chaap
+
+150
+
+250
+
+Malai Soya Chaap
+
+180
+
+280
+
+Chicken Tikka
+
+180
+
+300
+
+Afghani Chichen Tikka
+
+210
+
+380
+
+Malai Chicken Tikka
+
+200
+
+350
+
+Chicken Tangdi
+
+240
+
+400
+
+Chicken barbeque Wings
+
+200
+
+350
+
+Rolls
+Without Cheese
+
+With Cheese
+
+Veg Kathi Roll
+
+90
+
+120
+
+Paneer Roll
+
+100
+
+130
+
+Mushroom Roll
+
+100
+
+130
+
+Chicken Roll
+
+120
+
+150
+
+Egg Roll
+
+90
+
+120
+
+Combo
+Veg Manchurian + Rice/Noodles
+
+190
+
+Chilli Paneer + Rice/Noodles
+
+220
+
+Chilli Chicken + Rice/Noodles
+
+250
+
+Chef's Special
+
+2 pcs
+
+Banana Toffee with Icecream
+
+100
+
+Apple Toffee with Icecream
+
+110
+
+Pineapple Toffee with Ice-Cream
+
+130
+
+Milkshake
+
+Coolers
+Kaala Khatta Mojito
+
+100
+
+Mango Shake
+
+80
+
+Virgin Mojito
+
+80
+
+Oreo Shake
+
+80
+
+Green Apple Mojito
+
+80
+
+Kitkat Shake
+
+80
+
+Water Melon Mojito
+
+80
+
+Cold Coffee
+
+50
+
+Orange Rasna
+
+50
+
+Straw Berry Shake
+
+80
+
+Ice Tea
+
+80
+
+Banana Shake
+
+80
+
+Blue lagoon
+
+80
+
+Butterscotch Shake
+
+80
+
+Grenadine
+
+80
+
+Paan Shake
+
+100
+
+Castles Special
+
+120
+
+Soda Shikanji
+
+40
+
+Masala Coldrink
+
+35
+
+Add:. PVR Chauraha, Opp of Vrindavan Tower
+13, 13 S.P. Marg, Civil Lines, Prayagraj U.P.- 211001
+
+

@@ -32,6 +32,7 @@ import { SidebarModule } from './sidebar/sidebar.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddDiscountComponent } from './settings/add-discount/add-discount.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ReactivateKotComponent } from './reactivate-kot/reactivate-kot.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     LockedComponent,
     SettingsComponent,
     CustomerPanelComponent,
-    AddDiscountComponent
+    AddDiscountComponent,
+    ReactivateKotComponent
   ],
   imports: [
     CommonModule,

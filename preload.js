@@ -1,4 +1,4 @@
-// const { contextBridge } = require('electron');
+const { contextBridge } = require('electron');
 
 // New code implmentation
 
@@ -44,6 +44,24 @@ class customEncoder extends EscPosEncoder {
     });
     return this.table(table, data)
   }
+  itemTable(items){
+    let table = [
+      { width: 26, marginRight: 2, align: 'left' },
+      { width: 5, marginRight: 2, align: 'center' },
+      { width: 5, marginRight: 2, align: 'center' },
+    ]
+    let data = []
+    data.push([
+      (encoder) => encoder.bold().text('Item').bold(),
+      (encoder) => encoder.bold().align('center').text('Ins').bold(),
+      (encoder) => encoder.bold().align('center').text('Qty').bold(),
+      "Amount"
+    ])
+    items.forEach(product => {
+      data.push([product.name,product.instruction ? product.instruction : '',product.quantity.toString()])
+    });
+    return this.table(table, data)
+  }
   lineIf(text,align = "left",prefix=null){
     if (text){
       return this.align(align).line((prefix ? prefix : '')+text)
@@ -51,13 +69,15 @@ class customEncoder extends EscPosEncoder {
       return this
     }
   }
-  end(id){
+  reviewQr(id){
     return this.newline()
-    .newline()
     .align('center')
     .qrcode('https://fbms-shreeva-demo.web.app/'+id)
     .align('left')
     .newline()
+  }
+  end(id){
+    return this.newline()
     .newline()
     .newline()
     .newline()
@@ -73,7 +93,6 @@ class customEncoder extends EscPosEncoder {
     })
     return this
   }
-
   discounts(disocunts){
     // discounts is of type {name: string, value: number, type: string, rate: number}[]
     this.align('center').h2('Discounts','left')
@@ -88,7 +107,6 @@ class customEncoder extends EscPosEncoder {
       ],discountsColumns
     ).newline()
   }
-
   taxes(taxes){
     // taxes is of type {name: string, value: number, rate: number}[]
     this.align('center').h2('Taxes','left')
@@ -102,6 +120,28 @@ class customEncoder extends EscPosEncoder {
         { width: 10, align: 'right' }
       ],taxesColumns
     ).newline()
+  }
+  kotHead(kotData){
+    // modes are 'firstChargeable'|'cancelledKot'|'editedKot'|'runningNonChargeable'|'runningChargeable'|'firstNonChargeable'|'reprintKot'|'online'
+    if (kotData.mode == 'firstChargeable'){
+      return this.h1('KOT').h2('First Chargeable')
+    } else if (kotData.mode == 'cancelledKot'){
+      return this.h1('KOT').h2('Cancelled')
+    } else if (kotData.mode == 'editedKot'){
+      return this.h1('KOT').h2('Edited')
+    } else if (kotData.mode == 'runningNonChargeable'){
+      return this.h1('KOT').h2('Running Non Chargeable')
+    } else if (kotData.mode == 'runningChargeable'){
+      return this.h1('KOT').h2('Running Chargeable')
+    } else if (kotData.mode == 'firstNonChargeable'){
+      return this.h1('KOT').h2('First Non Chargeable')
+    } else if (kotData.mode == 'reprintKot'){
+      return this.h1('KOT').h2('Reprint')
+    } else if (kotData.mode == 'online'){
+      return this.h1('KOT').h2('Online')
+    } else {
+      return this.h1('KOT')
+    }
   }
 }
 console.log(printer.getPrinters());
@@ -334,6 +374,7 @@ function printBill(billdata){
   .hr()
   .h2(billdata.note)
   .terms(billdata.notes)
+  .reviewQr(billdata.id)
   .end();
   var promiseResolve, promiseReject;
   var promise = new Promise(function(resolve, reject){
@@ -350,13 +391,34 @@ function printBill(billdata){
 }
 
 function printKot(kotData){
-  let encoder = new customEncoder({width:75});
+  let encoder = new customEncoder({width:48});
   let result = encoder
   .initPrint()
-  .h1()
+  .kotHead(kotData)
+  .hr()
+  .table(
+    [
+      {
+        width:20,
+        marginRight:2,
+        align:'left'
+      },
+      {
+        width:20,
+        align:'right'
+      },
+    ],[
+      ['Date: '+kotData.date,'Time: '+kotData.time],
+      ['Token: '+kotData.tokenNo,'Table No: '+kotData.table],
+    ]
+  )
+  .hr()
+  .itemTable(kotData.products)
+  .hr()
+  .end()
 }
 printBill(billdata)
-// contextBridge.exposeInMainWorld('printing', {
-//   printBill: () => printBill,
-//   printKot: () => printKot,
-// })
+contextBridge.exposeInMainWorld('printing', {
+  printBill: () => printBill,
+  printKot: () => printKot,
+})

@@ -50,7 +50,8 @@ export class PrintingService {
       })
     }
     console.log("printing data",data,printerConfig);
-    return window.pywebview.api.print(data['mode'],data,printerConfig);
+    // return window.pywebview.api.print(data['mode'],data,printerConfig);
+    return window.printing.printKot(data)
   }
 
   deleteKot(tableNo:string,orderNo:string,products:Product[],id:string){

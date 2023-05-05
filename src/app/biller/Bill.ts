@@ -42,10 +42,12 @@ export class Bill implements BillConstructor {
   createdDate: Timestamp;
   stage: 'active' | 'finalized' | 'settled' | 'cancelled';
   customerInfo: CustomerInfo;
+  reactivateKotReasons: string[] = []
   device: Device;
   mode: 'dineIn' | 'takeaway' | 'online';
   menu:Menu;
   kots: Kot[] = [];
+  cancelledProducts:{kot:string,product:Product}[] = [];
   table: Table;
   printer:PrintConstructor = new Print()
   billing: Billing;
@@ -230,7 +232,13 @@ export class Bill implements BillConstructor {
 
   addProduct(product: Product) {
     if (this.stage == 'finalized' && this.mode == 'takeaway'){
-      this.stage = 'active';
+      let reactiveReason = prompt('Please enter reason for adding product');
+      if (reactiveReason){
+        this.reactivateKotReasons.push(reactiveReason);
+        this.stage = 'active';
+      } else {
+        return;
+      }
     }
     if(this.stage !== 'active'){
       alert('This bill is already finalized.');
@@ -365,7 +373,14 @@ export class Bill implements BillConstructor {
       return (
         acc +
         cur.products.reduce((acc, cur) => {
-          return acc + cur.price * cur.quantity;
+          if(cur.lineDiscount){
+            if(cur.lineDiscount.type === 'percentage'){
+              return acc + ((cur.price * cur.quantity) - (((cur.price * cur.quantity)/100) * (cur.lineDiscount.value)));
+            } else if (cur.lineDiscount.type === 'amount') {
+              return acc + (cur.price * cur.quantity) - cur.lineDiscount.value;
+            }
+          }
+          return acc + (cur.price * cur.quantity);
         }, 0)
       );
     }, 0);
@@ -484,6 +499,24 @@ export class Bill implements BillConstructor {
     if(this.dataProvider.showTableOnBillAction){
       this.dataProvider.openTableView.next(true);
     }
+  }
+
+  lineCancelled(item:Product,event:any,kot:Kot){
+    console.log("line cancelled",item,event);
+    if (event.type=='unmade'){
+      let newProductList = kot.products.filter((product) => product.id !== item.id);
+      let tempKotEditer = {
+        kot:kot,
+        kotIndex:this.kots.findIndex((kot) => kot.id === kot.id),
+        newKot:newProductList,
+        previousKot:kot.products
+      }
+      this.printingService.printEditedKot(kot,tempKotEditer.previousKot,this.table.name,this.orderNo || '')
+    }
+    this.cancelledProducts.push({product:item,kot:kot.id});
+    // remove product from kot
+    kot.products = kot.products.filter((product) => product.id !== item.id);
+    this.calculateBill();
   }
 
   addDiscount(discount: Discount) {
