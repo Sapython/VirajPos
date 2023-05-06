@@ -1,10 +1,10 @@
 const { app, BrowserWindow } = require("electron");
-// const {PosPrinter} = require("electron-pos-printer");
 const path = require("path");
-var printer = require("@thiagoelg/node-printer");
-// const path = require("path");
-
 let EscPosEncoder = require('esc-pos-encoder');
+const child_process = require('child_process');
+require('update-electron-app')({
+  repo:'swayambhu-innovations/Packages'
+})
 
 class customEncoder extends EscPosEncoder {
   initPrint(){
@@ -145,6 +145,191 @@ class customEncoder extends EscPosEncoder {
     }
   }
 }
+
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+  printBill(billdata);
+});
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+function run_script(command, args, callback) {
+  var child = child_process.spawn(command, args, {
+      encoding: 'utf8',
+      shell: true
+  });
+  // You can also use a variable to save the output for when the script closes later
+  child.on('error', (error) => {
+      
+  });
+
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', (data) => {
+      //Here is the output
+      data=data.toString();   
+      console.log(data);      
+  });
+
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (data) => {
+      // Return some data to the renderer process with the mainprocess-response ID
+      mainWindow.webContents.send('mainprocess-response', data);
+      //Here is the output from the command
+      console.log(data);  
+  });
+
+  child.on('close', (code) => {
+      
+  });
+  if (typeof callback === 'function')
+      callback();
+}
+
+function printData(data,printer){
+  run_script("ls",[printer,path.join(__dirname,'bill.txt')],function(){
+
+  })
+}
+
+function printBill(billdata){
+  let encoder = new customEncoder({width:48});
+  let result = encoder
+  .initPrint()
+  .h1(billdata.businessDetails.name)
+  .lineIf(billdata.businessDetails.address,'center',"Add: ",)
+  .lineIf(billdata.businessDetails.phone,'center',"Phone: ",)
+  .lineIf(billdata.businessDetails.fssai,'center',"FSSAI: ",)
+  .lineIf(billdata.businessDetails.gst,'center',"GST: ",)
+  .hr()
+  .h2("Customer details",'left')
+  .lineIf(billdata.customerDetail.name,'left','Name:')
+  .lineIf(billdata.customerDetail.phone,'left','Phone:')
+  .lineIf(billdata.customerDetail.address,'left','Add:')
+  .lineIf(billdata.customerDetail.gst,'left','Gst:')
+  .hr()
+  .table(
+    [
+      {
+        width:20,
+        marginRight:2,
+        align:'left'
+      },
+      {
+        width:20,
+        align:'right'
+      },
+    ],[
+      ['Date: '+billdata.date,'Time: '+billdata.time],
+      ['Token: '+billdata.tokenNo,'Bill: '+billdata.billNo],
+      ['Cashier: '+billdata.cashierName,'Mode: '+billdata.mode],
+    ]
+  )
+  .hr()
+  .productTable(billdata.products)
+  .hr()
+  .table(
+    [
+        { marginRight: 2, align: 'left' },
+        { align: 'right' }
+    ], 
+    [
+        [ 
+          'Total Qty:'+billdata.totalQuantity, 
+           (encoder) => encoder.bold().text("Sub: Rs."+billdata.subtotal).bold()  
+        ],
+    ]
+  )
+  .hr()
+  .discounts(billdata.discount)
+  .hr()
+  .taxes(billdata.tax)
+  .hr(true)
+  .table(
+    [
+        { marginRight: 2, align: 'left' },
+        { align: 'right' }
+    ], 
+    [
+        [ (enc)=> enc.bold(true).text("Grand Total: "), (encoder) => encoder.bold(true).height(2).width(2).size('normal').text("Rs."+billdata.grandTotal).bold(false).width(1).height(1) ],
+    ]
+  )
+  .hr()
+  .h2(billdata.note)
+  .terms(billdata.notes)
+  .reviewQr(billdata.id)
+  .end();
+  var promiseResolve, promiseReject;
+  var promise = new Promise(function(resolve, reject){
+    promiseResolve = resolve;
+    promiseReject = reject;
+  });
+  printer.printDirect({
+    data:result,
+    success:promiseResolve,
+    error:promiseReject,
+    printer:'POS-80C'
+  });
+  return promise;
+}
+
+function printKot(kotData){
+  let encoder = new customEncoder({width:48});
+  let result = encoder
+  .initPrint()
+  .kotHead(kotData)
+  .hr()
+  .table(
+    [
+      {
+        width:20,
+        marginRight:2,
+        align:'left'
+      },
+      {
+        width:20,
+        align:'right'
+      },
+    ],[
+      ['Date: '+kotData.date,'Time: '+kotData.time],
+      ['Token: '+kotData.tokenNo,'Table No: '+kotData.table],
+    ]
+  )
+  .hr()
+  .itemTable(kotData.products)
+  .hr()
+  .end()
+}
+
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+    },
+  });
+  console.log(path.join(__dirname, "./dist/viraj/index.html"))
+  win.loadFile("./dist/viraj/index.html");
+  win.webContents.on("did-fail-load", () => {
+    console.log("did-fail-load");
+    win.loadURL(
+        path.join('file://',__dirname, "./dist/viraj/index.html"),
+    );
+    // REDIRECT TO FIRST WEBPAGE AGAIN
+  });
+}
+printData('','')
 console.log(printer.getPrinters());
 let businessDetails = {
   name: 'Viraj',
@@ -310,152 +495,3 @@ kotData ={
       },
   ]
 }
-function printBill(billdata){
-  let encoder = new customEncoder({width:48});
-  let result = encoder
-  .initPrint()
-  .h1(billdata.businessDetails.name)
-  .lineIf(billdata.businessDetails.address,'center',"Add: ",)
-  .lineIf(billdata.businessDetails.phone,'center',"Phone: ",)
-  .lineIf(billdata.businessDetails.fssai,'center',"FSSAI: ",)
-  .lineIf(billdata.businessDetails.gst,'center',"GST: ",)
-  .hr()
-  .h2("Customer details",'left')
-  .lineIf(billdata.customerDetail.name,'left','Name:')
-  .lineIf(billdata.customerDetail.phone,'left','Phone:')
-  .lineIf(billdata.customerDetail.address,'left','Add:')
-  .lineIf(billdata.customerDetail.gst,'left','Gst:')
-  .hr()
-  .table(
-    [
-      {
-        width:20,
-        marginRight:2,
-        align:'left'
-      },
-      {
-        width:20,
-        align:'right'
-      },
-    ],[
-      ['Date: '+billdata.date,'Time: '+billdata.time],
-      ['Token: '+billdata.tokenNo,'Bill: '+billdata.billNo],
-      ['Cashier: '+billdata.cashierName,'Mode: '+billdata.mode],
-    ]
-  )
-  .hr()
-  .productTable(billdata.products)
-  .hr()
-  .table(
-    [
-        { marginRight: 2, align: 'left' },
-        { align: 'right' }
-    ], 
-    [
-        [ 
-          'Total Qty:'+billdata.totalQuantity, 
-           (encoder) => encoder.bold().text("Sub: Rs."+billdata.subtotal).bold()  
-        ],
-    ]
-  )
-  .hr()
-  .discounts(billdata.discount)
-  .hr()
-  .taxes(billdata.tax)
-  .hr(true)
-  .table(
-    [
-        { marginRight: 2, align: 'left' },
-        { align: 'right' }
-    ], 
-    [
-        [ (enc)=> enc.bold(true).text("Grand Total: "), (encoder) => encoder.bold(true).height(2).width(2).size('normal').text("Rs."+billdata.grandTotal).bold(false).width(1).height(1) ],
-    ]
-  )
-  .hr()
-  .h2(billdata.note)
-  .terms(billdata.notes)
-  .reviewQr(billdata.id)
-  .end();
-  var promiseResolve, promiseReject;
-  var promise = new Promise(function(resolve, reject){
-    promiseResolve = resolve;
-    promiseReject = reject;
-  });
-  printer.printDirect({
-    data:result,
-    success:promiseResolve,
-    error:promiseReject,
-    printer:'POS-80C'
-  });
-  return promise;
-}
-
-function printKot(kotData){
-  let encoder = new customEncoder({width:48});
-  let result = encoder
-  .initPrint()
-  .kotHead(kotData)
-  .hr()
-  .table(
-    [
-      {
-        width:20,
-        marginRight:2,
-        align:'left'
-      },
-      {
-        width:20,
-        align:'right'
-      },
-    ],[
-      ['Date: '+kotData.date,'Time: '+kotData.time],
-      ['Token: '+kotData.tokenNo,'Table No: '+kotData.table],
-    ]
-  )
-  .hr()
-  .itemTable(kotData.products)
-  .hr()
-  .end()
-}
-
-require('update-electron-app')({
-    repo:'swayambhu-innovations/Packages'
-})
-
-function createWindow() {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
-    },
-  });
-  console.log(path.join(__dirname, "./dist/viraj/index.html"))
-  win.loadFile("./dist/viraj/index.html");
-  win.webContents.on("did-fail-load", () => {
-    console.log("did-fail-load");
-    win.loadURL(
-        path.join('file://',__dirname, "./dist/viraj/index.html"),
-    );
-    // REDIRECT TO FIRST WEBPAGE AGAIN
-  });
-}
-
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
-  printBill(billdata);
-});
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
