@@ -87,7 +87,7 @@ export class EditMenuComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try{
-      this.printers = await this.printingService.getPrinters()
+      this.printers = await this.printingService.getPrinters() || []
       if (this.printers.length == 0){
         this.printers.push("Basic Printer")
       }

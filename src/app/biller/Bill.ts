@@ -480,6 +480,7 @@ export class Bill implements BillConstructor {
             this.printKot(activeKot,'runningNonChargeable'); 
           } else {
             // running chargeable kot
+            console.log("running chargeable");
             this.printKot(activeKot,'runningChargeable');
           }
         } else {
@@ -491,6 +492,7 @@ export class Bill implements BillConstructor {
             this.printKot(activeKot,'firstChargeable');
           }
         }
+        console.log("Must have printed");
         this.dataProvider.kotViewVisible = true;
       } else {
         alert('No active kot found');
@@ -673,6 +675,8 @@ export class Bill implements BillConstructor {
     //   }
     // })
     this.printingService.printKot(this.table.tableNo.toString(),this.orderNo || '',kot.products,kot.id,mode)
+    console.log("Send to service");
+    
     // let data ={
     //   'id':kot.id,
     //   'businessDetails': this.dataProvider.currentBusiness,

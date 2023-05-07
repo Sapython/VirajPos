@@ -21,7 +21,7 @@ declare var pywebview: any;
 declare var jivo_api: any;
 declare var jivo_config: any;
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
-import { homedir } from 'os';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

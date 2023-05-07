@@ -36,7 +36,7 @@ function run_script(command, args, event, callback) {
     event.sender.send("printDataComplete", { stage: "stdout", data });
   });
 
-  child.on("close", (code) => {
+  child.on("close", (code) =>  {
     //Here you can get the exit code of the script
     console.log(`child process exited with code ${code}`);
     event.sender.send("printDataComplete", { stage: "closed", code });

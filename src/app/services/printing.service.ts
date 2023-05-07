@@ -8,14 +8,17 @@ import {
 } from '../biller/constructors';
 import { Bill } from '../biller/Bill';
 import { Discount } from '../biller/settings/settings.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { DialogComponent } from '../base-components/dialog/dialog.component';
 declare var window: any;
 declare var printing: any;
 declare var EscPosEncoder: any;
+var debugMode = true;
 @Injectable({
   providedIn: 'root',
 })
 export class PrintingService {
-  constructor(private dataprovider: DataProvider) {
+  constructor(private dataprovider: DataProvider,private dialog:Dialog) {
     setTimeout(() => {
       this.test();
     }, 5000);
@@ -188,16 +191,16 @@ export class PrintingService {
         },
       ],
     };
-    let data =this.nodePrintBill(billdata)
+    let data = this.getBillCode(billdata)
     console.log(data)
-    printing.printData(data,'POS-80C');
+    // printing.printData(data,'POS-80C');
     console.log("Send new data");
-    
   }
 
   getPrinters() {
-    if (!window.pywebview?.api) return;
-    return window.pywebview.api.getPrinters();
+    if (!debugMode && !printing) return;
+    return Promise.resolve(['POS-80C']);
+    // return window.pywebview.api.getPrinters();
   }
 
   printKot(
@@ -215,7 +218,7 @@ export class PrintingService {
       | 'reprintKot'
       | 'online'
   ) {
-    if (!window.pywebview?.api) return;
+    if (!debugMode && !printing) return;
     let businessDetails = {
       name: this.dataprovider.currentBusiness?.hotelName,
       address: this.dataprovider.currentBusiness?.address,
@@ -250,12 +253,36 @@ export class PrintingService {
       }),
     };
     console.log('printing data', data, printerConfig);
-    // return window.pywebview.api.print(data['mode'],data,printerConfig);
-    return window.printing.printKot(data);
+    if(this.dataprovider.currentBusiness?.billerPrinter){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
+      return
+    }
+    // group products by printer
+    let groupedProducts: any = {};
+    printerConfig.forEach((config: any) => {
+      if (groupedProducts[config.printer]) {
+        let foundProd = data.products.find((product: any) => product.id === config.product);
+        if (foundProd){
+          groupedProducts[config.printer].push(foundProd);
+        }
+      } else {
+        let foundProd = data.products.find((product: any) => product.id === config.product)
+        if (foundProd){
+          groupedProducts[config.printer] = [foundProd];
+        }
+      }
+    });
+    console.log('grouped products', groupedProducts);
+    Object.keys(groupedProducts).forEach((printer: any) => {
+      console.log('printing', printer, groupedProducts[printer]);
+      data.products = groupedProducts[printer];
+      let result = this.getKotCode(data);
+      printing.printData(result, printer);
+    });
   }
 
   deleteKot(tableNo: string, orderNo: string, products: Product[], id: string) {
-    if (!window.pywebview?.api) return;
+    if (!debugMode && !printing) return;
     let businessDetails = {
       name: this.dataprovider.currentBusiness?.hotelName,
       address: this.dataprovider.currentBusiness?.address,
@@ -290,12 +317,36 @@ export class PrintingService {
         };
       }),
     };
+    if(this.dataprovider.currentBusiness?.billerPrinter){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
+      return
+    }
+    let groupedProducts: any = {};
+    printerConfig.forEach((config: any) => {
+      if (groupedProducts[config.printer]) {
+        let foundProd = data.products.find((product: any) => product.id === config.product);
+        if (foundProd){
+          groupedProducts[config.printer].push(foundProd);
+        }
+      } else {
+        let foundProd = data.products.find((product: any) => product.id === config.product)
+        if (foundProd){
+          groupedProducts[config.printer] = [foundProd];
+        }
+      }
+    });
     console.log('printing data', data, printerConfig);
-    return window.pywebview.api.print(data['mode'], data, printerConfig);
+    Object.keys(groupedProducts).forEach((printer: any) => {
+      console.log('printing', printer, groupedProducts[printer]);
+      data.products = groupedProducts[printer];
+      let result = this.getKotCode(data);
+      printing.printData(result, printer);
+    });
+    // return window.pywebview.api.print(data['mode'], data, printerConfig);
   }
 
   printBill(bill: Bill) {
-    if (!window.pywebview?.api) return;
+    if (!debugMode && !printing) return;
     let businessDetails = {
       name: this.dataprovider.currentBusiness?.hotelName,
       address: this.dataprovider.currentBusiness?.address,
@@ -355,15 +406,16 @@ export class PrintingService {
       businessDetails: businessDetails,
     };
     console.log('printing data', billdata, printerConfig);
-    return window.pywebview.api.print(
-      billdata['mode'],
-      billdata,
-      printerConfig
-    );
+    let data = this.getBillCode(billdata);
+    if(this.dataprovider.currentBusiness?.billerPrinter){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
+      return
+    }
+    return printing.printData(data,this.dataprovider.currentBusiness?.billerPrinter);
   }
 
   reprintBill(bill: BillConstructor) {
-    if (!window.pywebview?.api) return;
+    if (!debugMode && !printing) return;
     let businessDetails = {
       name: this.dataprovider.currentBusiness?.hotelName,
       address: this.dataprovider.currentBusiness?.address,
@@ -437,11 +489,12 @@ export class PrintingService {
       businessDetails: businessDetails,
     };
     console.log('printing data', billdata, printerConfig);
-    return window.pywebview.api.print('reprintBill', billdata, printerConfig);
+    
+    // return window.pywebview.api.print('reprintBill', billdata, printerConfig);
   }
 
   reprintKot(kot: KotConstructor, table: string, billNo: string) {
-    if (!window.pywebview?.api) return;
+    if (!debugMode && !printing) return;
     let businessDetails = {
       name: this.dataprovider.currentBusiness?.hotelName,
       address: this.dataprovider.currentBusiness?.address,
@@ -479,7 +532,31 @@ export class PrintingService {
       businessDetails: businessDetails,
     };
     console.log('printing data', kotdata, printerConfig);
-    return window.pywebview.api.print('reprintKot', kotdata, printerConfig);
+    if(this.dataprovider.currentBusiness?.billerPrinter){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
+      return
+    }
+    let groupedProducts: any = {};
+    printerConfig.forEach((config: any) => {
+      if (groupedProducts[config.printer]) {
+        let foundProd = kotdata.products.find((product: any) => product.id === config.product);
+        if (foundProd){
+          groupedProducts[config.printer].push(foundProd);
+        }
+      } else {
+        let foundProd = kotdata.products.find((product: any) => product.id === config.product)
+        if (foundProd){
+          groupedProducts[config.printer] = [foundProd];
+        }
+      }
+    });
+    console.log('printing data', kotdata, printerConfig);
+    Object.keys(groupedProducts).forEach((printer: any) => {
+      console.log('printing', printer, groupedProducts[printer]);
+      kotdata.products = groupedProducts[printer];
+      let result = this.getKotCode(kotdata);
+      printing.printData(result, printer);
+    });
   }
 
   printEditedKot(
@@ -540,11 +617,36 @@ export class PrintingService {
       businessDetails: businessDetails,
     };
     console.log('printing data', kotdata, printerConfig);
-    if (!window.pywebview?.api) return;
-    return window.pywebview.api.print('editedKot', kotdata, printerConfig);
+    if (!debugMode && !printing) return;
+    if(this.dataprovider.currentBusiness?.billerPrinter){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
+      return
+    }
+    let groupedProducts: any = {};
+    printerConfig.forEach((config: any) => {
+      if (groupedProducts[config.printer]) {
+        let foundProd = kotdata.products.find((product: any) => product.id === config.product);
+        if (foundProd){
+          groupedProducts[config.printer].push(foundProd);
+        }
+      } else {
+        let foundProd = kotdata.products.find((product: any) => product.id === config.product)
+        if (foundProd){
+          groupedProducts[config.printer] = [foundProd];
+        }
+      }
+    });
+    console.log('printing data', kotdata, printerConfig);
+    Object.keys(groupedProducts).forEach((printer: any) => {
+      console.log('printing', printer, groupedProducts[printer]);
+      kotdata.products = groupedProducts[printer];
+      let result = this.getKotCode(kotdata);
+      printing.printData(result, printer);
+    });
+    // return window.pywebview.api.print('editedKot', kotdata, printerConfig);
   }
 
-  nodePrintBill(billdata: any) {
+  getBillCode(billdata: any) {
     let encoder = new customEncoder({ width: 48 });
     let result = encoder
       .initPrint()
@@ -625,7 +727,7 @@ export class PrintingService {
     return result;
   }
 
-  nodePrintKot(kotData: any) {
+  getKotCode(kotData: any) {
     let encoder = new customEncoder({ width: 48 });
     let result = encoder
       .initPrint()
@@ -684,7 +786,7 @@ class customEncoder extends EscPosEncoder {
       .align('left');
   }
   hr(double = false) {
-    return this.rule({ style: double ? 'double' : 'single' });
+    return this.rule({ style: double ? 'double' : 'single',width:47 });
   }
   productTable(products: any[]) {
     // products contains name, price, quantity, total
