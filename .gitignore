@@ -2,6 +2,8 @@
 
 # Compiled output
 /out
+/pkg-config
+/pkg-config-0.28
 /dist
 /tmp
 /out-tsc
