@@ -190,7 +190,9 @@ export class PrintingService {
     };
     let data =this.nodePrintBill(billdata)
     console.log(data)
-    printing.printData(data,'ESC-POS80');
+    printing.printData(data,'POS-80C');
+    console.log("Send new data");
+    
   }
 
   getPrinters() {

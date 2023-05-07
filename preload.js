@@ -17,6 +17,7 @@ ipcRenderer.on("printDataComplete", (event, data) => {
 });
 function printData(data, printer) {
   ipcRenderer.send("printData", { data, printer });
+  console.log("Sent data");
   var promiseResolve, promiseReject;
   var promise = new Promise(function (resolve, reject) {
     promiseResolve = resolve;
@@ -29,5 +30,5 @@ function printData(data, printer) {
   return promise;
 }
 contextBridge.exposeInMainWorld("printing", {
-  printData: () => printData,
+  printData,
 });
