@@ -14,11 +14,14 @@ import { Subject } from 'rxjs';
 import { UserCredential } from '@angular/fire/auth';
 import { BusinessRecord, UserBusiness } from '../structures/user.structure';
 import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
+import { DialogComponent } from '../base-components/dialog/dialog.component';
+import { zoomInOnEnterAnimation, zoomOutOnLeaveAnimation } from 'angular-animations';
 
 @Component({
   selector: 'app-loading',
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
+  animations:[zoomInOnEnterAnimation(),zoomOutOnLeaveAnimation()]
 })
 export class LoadingComponent {
   loginForm: FormGroup = new FormGroup({
@@ -346,6 +349,7 @@ export class LoadingComponent {
         category.products = category.products.filter((product)=> product.selected)
       })
       this.loginStage.next('Adding menu')
+      console.log("this.addNewMenuForm.value, this.rootCategories,id",this.addNewMenuForm.value, this.rootCategories,id);
       let menuRes = await this.databaseService.addNewMenu(this.addNewMenuForm.value, this.rootCategories,id)
       // generate and add 10 tables
       this.loginStage.next('Adding tables')
@@ -386,12 +390,12 @@ export class LoadingComponent {
             id: menuRes.menuRes.id,
             name: this.addNewMenuForm.value.name,
           } : null,
-          onlineMenu: this.dataProvider.activeModes[0] ? {
+          onlineMenu: this.dataProvider.activeModes[1] ? {
             description: this.addNewMenuForm.value.description,
             id: menuRes.menuRes.id,
             name: this.addNewMenuForm.value.name,
           } : null,
-          takeawayMenu: this.dataProvider.activeModes[0] ? {
+          takeawayMenu: this.dataProvider.activeModes[2] ? {
             description: this.addNewMenuForm.value.description,
             id: menuRes.menuRes.id,
             name: this.addNewMenuForm.value.name,
@@ -410,6 +414,15 @@ export class LoadingComponent {
         },id)
       }))
       console.log('accountRef', accountRef);
+      // onboard completed
+      this.loginStage.next('Onboarding completed')
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'Your onboarding is complete.',description:"You can now login to your account and start using the application.",buttonText:'Login'}})
+      dialog.closed.subscribe(()=>{
+        let url = window.location.href.split('/')
+        url.pop()
+        url.push('index.html')
+        window.location.href = url.join('/') 
+      })
     } catch (error) {
       console.log('error', error);
       this.loginStage.next('Error Occured')
@@ -421,10 +434,17 @@ export class LoadingComponent {
   }
 
   setDefaultAccount(business:UserBusiness){
-    localStorage.setItem('businessId',business.businessId);
-    let url = window.location.href.split('/')
-    url.pop()
-    url.push('index.html')
-    window.location.href = url.join('/') 
+    let dialog = this.dialog.open(DialogComponent,{data:{title:'Set '+business.name+' as default account?',description:'This will be your default account and you will be logged in to this account by default. Account id #'+business.businessId,buttonText:'Set as default'}})
+    dialog.closed.subscribe((res)=>{
+      if(res){
+        localStorage.setItem('businessId',business.businessId);
+        let url = window.location.href.split('/')
+        url.pop()
+        url.push('index.html')
+        window.location.href = url.join('/') 
+      }else {
+        this.alertify.presentToast('Default account not set','error')
+      }
+    })
   }
 }

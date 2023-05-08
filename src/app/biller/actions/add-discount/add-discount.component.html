@@ -38,7 +38,7 @@
     </mat-form-field>
     <div class="actions">
       <button mat-stroked-button color="primary" (click)="cancel()" type="button">Cancel</button>
-      <button mat-raised-button color="primary" type="submit">Add Discount</button>
+      <button mat-raised-button color="primary" [disabled]="!discountForm.valid" type="submit">Add Discount</button>
     </div>
   </form>
 </section>

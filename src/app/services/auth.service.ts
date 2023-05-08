@@ -47,7 +47,7 @@ export class AuthService {
       }
     );
     onAuthStateChanged(this.auth, (user) => {
-      this.dataProvider.isAuthStateAvaliable = true;
+      this.dataProvider.isAuthStateAvaliable = false;
       // console.log('this.localUserId', this.localUserId);
       if (user) {
         if (user.uid == this.localUserId && this.localUserData) {
@@ -60,6 +60,7 @@ export class AuthService {
             message: 'User found from local storage',
             user:this.localUserData
           })
+          this.dataProvider.isAuthStateAvaliable = true;
         } else {
           this.getUser(user.uid).then((userData) => {
             // this.dataProvider.currentUser = user.data() as UserRecord;
@@ -75,6 +76,7 @@ export class AuthService {
               })
               this.dataProvider.currentUser = userData.data() as UserRecord;
               this.addCurrentUserOnLocal(userData.data() as UserRecord);
+              this.dataProvider.isAuthStateAvaliable = true;
             } else {
               this.alertify.presentToast('User not found');
               this.dataProvider.userSubject.next({
@@ -83,6 +85,7 @@ export class AuthService {
                 code:'noUserRecord',
                 message: 'User does not exists on server',
               })
+              this.dataProvider.isAuthStateAvaliable = true;
               // this.signUpUser(user);
               // signOut(this.auth);
               // signUp the user
@@ -102,6 +105,7 @@ export class AuthService {
         //   }
         // })
       } else {
+        this.dataProvider.isAuthStateAvaliable = true;
         this.dataProvider.loggedIn = false;
         this.dataProvider.currentUser = undefined;
         this.dataProvider.userSubject.next({

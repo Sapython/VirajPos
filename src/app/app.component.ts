@@ -27,7 +27,6 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   animations: [
-    slider,
     fadeInDownOnEnterAnimation(),
     fadeOutUpOnLeaveAnimation(),
   ],

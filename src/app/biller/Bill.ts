@@ -103,7 +103,7 @@ export class Bill implements BillConstructor {
     // this.updated.pipe(debounceTime(100)).subscribe(() => {
 
     // })
-    this.updated.pipe(debounceTime(2000)).subscribe(async (data) => {
+    this.updated.pipe(debounceTime(10000)).subscribe(async (data) => {
       if (!data) {
         let data = this.toObject();
         // console.log('updating bill', data);

@@ -528,7 +528,6 @@ export class DatabaseService {
     if (!businessId){
       businessId = this.dataProvider.businessId
     }
-    alert(businessId)
     try {
       let menuRes = await addDoc(
         collection(this.firestore, 'business/'+businessId+'/menus'),

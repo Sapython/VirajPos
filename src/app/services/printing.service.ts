@@ -788,6 +788,10 @@ class customEncoder extends EscPosEncoder {
   hr(double = false) {
     return this.rule({ style: double ? 'double' : 'single',width:47 });
   }
+  strike(chars:string){
+    // return text with strikethrough
+    return this.text('X---').text(chars).text('---X');
+  }
   productTable(products: any[]) {
     // products contains name, price, quantity, total
     let table = [
@@ -819,19 +823,28 @@ class customEncoder extends EscPosEncoder {
       { width: 5, marginRight: 2, align: 'center' },
       { width: 5, marginRight: 2, align: 'center' },
     ];
-    let data = [];
+    let data:any = [];
     data.push([
       (encoder: any) => encoder.bold().text('Item').bold(),
       (encoder: any) => encoder.bold().align('center').text('Ins').bold(),
       (encoder: any) => encoder.bold().align('center').text('Qty').bold(),
-      'Amount',
     ]);
     items.forEach((product) => {
-      data.push([
-        product.name,
-        product.instruction ? product.instruction : '',
-        product.quantity.toString(),
-      ]);
+      if (product.edited){
+        // strike through products
+        data.push([
+          (encoder: any) => encoder.strike(product.name),
+          product.instruction ? product.instruction : '',
+          product.quantity.toString(),
+        ]);
+      } else {
+        // simple products
+        data.push([
+          product.name,
+          product.instruction ? product.instruction : '',
+          product.quantity.toString(),
+        ]);
+      }
     });
     return this.table(table, data);
   }

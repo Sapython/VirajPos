@@ -1,6 +1,6 @@
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Discount } from '../../settings/settings.component';
@@ -20,8 +20,8 @@ export class AddDiscountComponent {
     percent:new FormControl(0),
     selectDiscount:new FormControl(''),
     amount:new FormControl(0),
-    password:new FormControl(0),
-    reason:new FormControl(0),
+    password:new FormControl('',Validators.required),
+    reason:new FormControl('',Validators.required),
   });
   discounts:Discount[] = []
   constructor(private dialogRef:MatDialogRef<AddDiscountComponent>,public dataProvider:DataProvider,private dialog:Dialog) {

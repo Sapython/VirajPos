@@ -34,7 +34,11 @@ export class TableComponent implements OnInit {
     private printingService:PrintingService
   ) {}
   ngOnInit(): void {
-    console.log('this.dataProvider.tables ', this.dataProvider.tables);
+
+    console.log('this.dataProvider.tables ', this.dataProvider.tables,this.dataProvider.currentMenu?.type,this.dataProvider.billingMode);
+    if(this.dataProvider.currentMenu){
+      this.dataProvider.billingMode = this.dataProvider.currentMenu.type || 'dineIn';
+    }
     this.tables = this.dataProvider.tables;
     if (this.interval) {
       clearInterval(this.interval);

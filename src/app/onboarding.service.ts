@@ -11,6 +11,8 @@ import { TableConstructor } from './biller/constructors';
 import { Table } from './biller/Table';
 import { Discount } from './biller/settings/settings.component';
 import { PrintingService } from './services/printing.service';
+import { DialogComponent } from './base-components/dialog/dialog.component';
+import { AuthService } from './services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +23,10 @@ export class OnboardingService {
   stage:'noUser'|'userExists'|'multipleBusiness'|'businessError'|'onboardingStep1'|'onboardingStep2'|'onboardingStep3'|'virajReady'|'virajGettingReady'|'errorOccured' = 'noUser';
   loadingSteps:Subject<string> = new Subject<string>();
 
-  constructor(private dataProvider:DataProvider,private firestore:Firestore,private alertify:AlertsAndNotificationsService,private databaseService:DatabaseService,private dialog:Dialog,private printingService:PrintingService) {
+  constructor(private dataProvider:DataProvider,private firestore:Firestore,private alertify:AlertsAndNotificationsService,private databaseService:DatabaseService,private dialog:Dialog,private printingService:PrintingService,private authService:AuthService) {
     this.loadingSteps.next('Checking User');
-    this.loadingSteps.subscribe((step)=>{
-      console.log(step);
-    })
     this.dataProvider.userSubject.subscribe((data)=>{
+      this.stage = 'virajGettingReady';
       if(data.status){
         this.loadingSteps.next('User Found');
         if (data.user.business.length > 1) {
@@ -36,9 +36,15 @@ export class OnboardingService {
             this.loadBusiness(localRead);
           }
           this.stage = 'multipleBusiness';
-        } else {
+        } else if (data.user.business.length == 1) {
           this.loadingSteps.next('User Found with a business');
           this.loadBusiness(data.user.business[0].businessId)
+        } else {
+          this.loadingSteps.next('User Found with no business');
+          const dialog = this.dialog.open(DialogComponent,{data:{title:'No Business Found',description:'No business found for this user. Please onboard on viraj to continue. For now we will log you out.'}})
+          dialog.closed.subscribe(()=>{
+            this.authService.logout();
+          })
         }
       } else {
         this.message = data.message;
