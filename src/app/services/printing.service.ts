@@ -489,7 +489,13 @@ export class PrintingService {
       businessDetails: businessDetails,
     };
     console.log('printing data', billdata, printerConfig);
-    
+    console.log('printing data', billdata, printerConfig);
+    let data = this.getBillCode(billdata);
+    if(this.dataprovider.currentBusiness?.billerPrinter){
+      const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
+      return
+    }
+    return printing.printData(data,this.dataprovider.currentBusiness?.billerPrinter);
     // return window.pywebview.api.print('reprintBill', billdata, printerConfig);
   }
 
