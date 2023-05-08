@@ -56,7 +56,8 @@ main{
             box-shadow: var(--Viraj-shadow-light);
         }
         app-products-panel{
-            height: 100%;
+            // height: 100%;
+            overflow-y: scroll;
             position: relative;
             top:0px;
             border: 2px solid #ccc;

@@ -1,9 +1,10 @@
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 // import fuse
 import Fuse from 'fuse.js';
 import { debounceTime } from 'rxjs';
+import { Product } from 'src/app/biller/constructors';
 import { DataProvider } from 'src/app/provider/data-provider.service';
 import { AlertsAndNotificationsService } from 'src/app/services/alerts-and-notification/alerts-and-notifications.service';
 import { DatabaseService } from 'src/app/services/database.service';
@@ -12,14 +13,21 @@ import { DatabaseService } from 'src/app/services/database.service';
   templateUrl: './add-new-category.component.html',
   styleUrls: ['./add-new-category.component.scss']
 })
-export class AddNewCategoryComponent {
+export class AddNewCategoryComponent implements OnInit {
   maxPrice: number = 100;
-  products:any[] = []
+  products:Product[] = []
   searchResults:any[] = []
   newCategoryForm:FormGroup = new FormGroup({
     name: new FormControl('',Validators.required),
     search: new FormControl(''),
   })
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    this.products.forEach(item => {
+      item.selected = false;
+    })
+  }
   constructor(private dialogRef:DialogRef,@Inject(DIALOG_DATA) private dialogData:any,private dataProvider:DataProvider,private databaseService:DatabaseService,private alertify:AlertsAndNotificationsService){
     this.products = dialogData.products || [];
     this.newCategoryForm.valueChanges.pipe(debounceTime(600)).subscribe((value)=>{
@@ -47,7 +55,7 @@ export class AddNewCategoryComponent {
       // let averagePrice = selectedItems.reduce((acc, item) => acc + item.price, 0) / selectedItems.length;
       let category:{name:string,products:string[]} = {
         name: this.newCategoryForm.value.name,
-        products:selectedItems
+        products:selectedItems.map((item) => item.id)
       }
       this.dialogRef.close(category);
     } else {
@@ -63,6 +71,7 @@ export class AddNewCategoryComponent {
         // })
         this.dataProvider.loading = true;
         let res = await this.databaseService.addViewCategory(category);
+        this.dialogRef.close(category);
         this.alertify.presentToast('Category Added');
       } catch (error) {
         this.alertify.presentToast('Something went wrong');

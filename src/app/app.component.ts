@@ -48,9 +48,6 @@ export class AppComponent implements OnInit {
     private printingService: PrintingService)
   {
     console.log("pywebview",window,this.printingService.getPrinters());
-    // setInterval(()=>{
-    //   this.printingService.printBill()
-    // },10000)
     window.addEventListener('load', (data) => {
       console.log(document.querySelector("jdiv[class*='main_']"));
       let chatFinderInterval = setInterval(() => {

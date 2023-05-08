@@ -277,12 +277,12 @@ export class PrintingService {
       console.log('printing', printer, groupedProducts[printer]);
       data.products = groupedProducts[printer];
       let result = this.getKotCode(data);
+      if (!debugMode && !printing) return;
       printing.printData(result, printer);
     });
   }
 
   deleteKot(tableNo: string, orderNo: string, products: Product[], id: string) {
-    if (!debugMode && !printing) return;
     let businessDetails = {
       name: this.dataprovider.currentBusiness?.hotelName,
       address: this.dataprovider.currentBusiness?.address,
@@ -340,6 +340,7 @@ export class PrintingService {
       console.log('printing', printer, groupedProducts[printer]);
       data.products = groupedProducts[printer];
       let result = this.getKotCode(data);
+      if (!debugMode && !printing) return;
       printing.printData(result, printer);
     });
     // return window.pywebview.api.print(data['mode'], data, printerConfig);
@@ -411,6 +412,7 @@ export class PrintingService {
       const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
       return
     }
+    if (!debugMode && !printing) return;
     return printing.printData(data,this.dataprovider.currentBusiness?.billerPrinter);
   }
 
@@ -495,6 +497,7 @@ export class PrintingService {
       const dialog = this.dialog.open(DialogComponent,{data:{title:'No printer found for printing bill.',description:'Please select a printer in settings panel.',buttons:['Ok'],primary:[0]}})
       return
     }
+    if (!debugMode && !printing) return;
     return printing.printData(data,this.dataprovider.currentBusiness?.billerPrinter);
     // return window.pywebview.api.print('reprintBill', billdata, printerConfig);
   }
@@ -561,6 +564,7 @@ export class PrintingService {
       console.log('printing', printer, groupedProducts[printer]);
       kotdata.products = groupedProducts[printer];
       let result = this.getKotCode(kotdata);
+      if (!debugMode && !printing) return;
       printing.printData(result, printer);
     });
   }
@@ -647,6 +651,7 @@ export class PrintingService {
       console.log('printing', printer, groupedProducts[printer]);
       kotdata.products = groupedProducts[printer];
       let result = this.getKotCode(kotdata);
+      if (!debugMode && !printing) return;
       printing.printData(result, printer);
     });
     // return window.pywebview.api.print('editedKot', kotdata, printerConfig);

@@ -24,45 +24,9 @@ import { SelectCategoryComponent } from './select-category/select-category.compo
 export class EditMenuComponent implements OnInit {
   public recommended:Category[] = []
   printers:string[] = [];
-  // allProducts:Category = {
-  //   name: "All Products",
-  //   id: "all",
-  //   products: [],
-  //   averagePrice: 0,
-  //   enabled:true
-  // }
-  // mode:'allProducts'|'single' = 'allProducts';
-  // categoryUpdated:boolean = false;
-  // public categories:Category[] = []
-  // selectedCategory:Category|undefined;
-  // maxPrice = 1000;
-  // productVisibilityChanged:boolean = false;
-  // rootCategories:Category[] = []
-  // viewCategories:Category[] = []
-  // recommendedCategories:Category[] = []
-  // fuseInstance:Fuse<Product> = new Fuse([],{keys:['name']});
-  // searchSubject:Subject<string> = new Subject<string>();
-  // filteredProducts:Product[] = [];
-  // dineInSelectedMenu:Menu|undefined;
-  // dineInSelectedMenuUpdated:boolean = false;
-  // takeawaySelectedMenu:Menu|undefined;
-  // takeawaySelectedMenuUpdated:boolean = false;
-  // onlineSelectedMenu:Menu|undefined;
-  // onlineSelectedMenuUpdated:boolean = false;
-  // menus:Menu[] = [];
-
-  // modeConfigs:ModeConfig[] = []
 
   currentType:'recommended'|'root'|'view'|'all' = 'all';
   constructor(private dialog:Dialog,public dataProvider:DataProvider,private databaseService:DatabaseService,private alertify:AlertsAndNotificationsService,private dialogRef:DialogRef,private printingService:PrintingService){
-    // this.searchSubject.pipe(debounceTime(500)).subscribe((searchString)=>{
-    //   if (searchString){
-    //     let res = this.fuseInstance.search(searchString);
-    //     this.filteredProducts = res.map((result)=>result.item)
-    //   } else {
-    //     this.filteredProducts = [];
-    //   }
-    // })
     this.dialogRef.closed.subscribe(()=>{
       this.dataProvider.loading = true;
       Promise.all(this.dataProvider.menus.map((menu)=>{
@@ -96,9 +60,6 @@ export class EditMenuComponent implements OnInit {
     }
   }
 
-  // addNewCategory(){
-  //   const dialog = this.dialog.open(AddNewCategoryComponent, {data:{products:this.allProducts.products}})
-  // }
 
   addNewMenu(){
     const dialog = this.dialog.open(AddMenuComponent)
@@ -106,9 +67,7 @@ export class EditMenuComponent implements OnInit {
       console.log("data",data);
       this.getMenus();
       if(data){
-        // this.databaseService.addNewMenu(data.menu,data.products).then((data:any)=>{
-
-        // })
+        // this.dataProvider.menus.push(data);
       }
     })
   }

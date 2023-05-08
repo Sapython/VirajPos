@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 // let EscPosEncoder = require('esc-pos-encoder');
-const child_process = require("child_process");
 require("update-electron-app")({
   repo: "swayambhu-innovations/Packages",
 });
