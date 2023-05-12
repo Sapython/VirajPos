@@ -34,3 +34,10 @@ embed{
     align-items: center;
     justify-content: center;
 }
+// media query for 1366px
+@media screen and (max-width:1366px){
+    .offlineBar{
+        height: 20px;
+        font-size: var(--Viraj-font-medium);
+    }
+}

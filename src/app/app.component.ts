@@ -21,7 +21,7 @@ declare var pywebview: any;
 declare var jivo_api: any;
 declare var jivo_config: any;
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
-
+import {customEncoder} from './customEncoder';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -47,30 +47,31 @@ export class AppComponent implements OnInit {
     private dataService: GetDataService,
     private printingService: PrintingService)
   {
-    console.log("pywebview",window,this.printingService.getPrinters());
-    window.addEventListener('load', (data) => {
-      console.log(document.querySelector("jdiv[class*='main_']"));
-      let chatFinderInterval = setInterval(() => {
-        let element = document.getElementById('jcont');
-        if (element) {
-          let response = jivo_api.setCustomData([
-            {
-              title: 'User',
-              content: this.dataProvider.currentUser?.userId,
-              user: {
-                name: this.dataProvider.currentUser?.name,
-                email: this.dataProvider.currentUser?.email,
-                image: this.dataProvider.currentUser?.image,
-                business: this.dataProvider.currentUser?.business,
-                device: this.dataProvider.currentDevice,
-              },
-            },
-          ]);
-          console.log('chat response', response);
-          clearInterval(chatFinderInterval);
-        }
-      }, 500);
-    });
+    console.log("pywebview",customEncoder);
+    // console.log("pywebview",window,this.printingService.getPrinters());
+    // window.addEventListener('load', (data) => {
+    //   console.log(document.querySelector("jdiv[class*='main_']"));
+    //   let chatFinderInterval = setInterval(() => {
+    //     let element = document.getElementById('jcont');
+    //     if (element) {
+    //       let response = jivo_api.setCustomData([
+    //         {
+    //           title: 'User',
+    //           content: this.dataProvider.currentUser?.userId,
+    //           user: {
+    //             name: this.dataProvider.currentUser?.name,
+    //             email: this.dataProvider.currentUser?.email,
+    //             image: this.dataProvider.currentUser?.image,
+    //             business: this.dataProvider.currentUser?.business,
+    //             device: this.dataProvider.currentDevice,
+    //           },
+    //         },
+    //       ]);
+    //       console.log('chat response', response);
+    //       clearInterval(chatFinderInterval);
+    //     }
+    //   }, 500);
+    // });
   }
 
   checkPrinting() {

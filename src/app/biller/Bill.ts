@@ -13,7 +13,6 @@ import {
 import { debounceTime, Subject } from 'rxjs';
 import { DataProvider } from '../provider/data-provider.service';
 import { DatabaseService, Menu } from '../services/database.service';
-import { Print, PrintConstructor } from './Print';
 import { Kot } from './Kot';
 import { splittedBill } from './actions/split-bill/split-bill.component';
 import { Discount } from './settings/settings.component';
@@ -49,7 +48,6 @@ export class Bill implements BillConstructor {
   kots: Kot[] = [];
   cancelledProducts:{kot:string,product:Product}[] = [];
   table: Table;
-  printer:PrintConstructor = new Print()
   billing: Billing;
   instruction: string;
   editKotMode: null | {

@@ -451,6 +451,10 @@ export class ModeConfig {
     }
   }
 
+  reorderView(){
+    
+  }
+
   updateChanged(){
     this.dataProvider.menus.forEach((menu:ModeConfig) => {
       console.log("menu",menu.selectedMenu);

@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const child_process = require('child_process');
+
 // let EscPosEncoder = require('esc-pos-encoder');
 require("update-electron-app")({
   repo: "swayambhu-innovations/Packages",
@@ -68,7 +70,6 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
     },
   });
   console.log(path.join(__dirname, "./dist/viraj/index.html"));

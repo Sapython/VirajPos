@@ -1,13 +1,13 @@
 import { environment } from "src/environments/environment";
 import { Bill } from "./Bill";
 
-export interface PrintConstructor{
+interface PrintConstructor{
     printBill(bill:Bill):Promise<Response>;
     printKot(bill:Bill):Promise<Response>;
     printEditedKot(bill:Bill):Promise<Response>;
     printCancelledKot(bill:Bill):Promise<Response>;
 }
-export class Print implements PrintConstructor {
+class Print implements PrintConstructor {
     getOptions(data:any){
         return {
             method: 'POST',

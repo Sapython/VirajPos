@@ -36,11 +36,10 @@
               [category]="category"
             ></app-category-card>
             <span
-              >View Categories<viraj-button
-                type="icon"
-                (vclick)="mode.addViewCategory()"
-                ><i class="ri-add-box-fill"></i></viraj-button
-            ></span>
+              >View Categories
+              <viraj-button type="icon" (vclick)="mode.addViewCategory()" ><i class="ri-add-box-fill"></i></viraj-button>
+              <viraj-button type="icon" (vclick)="mode.reorderView()" ><i class="ri-add-box-fill"></i></viraj-button>
+            </span>
             <app-category-card [full]="true"
               *ngFor="let category of mode.viewCategories"
               (click)="

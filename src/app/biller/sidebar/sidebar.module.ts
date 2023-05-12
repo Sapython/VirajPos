@@ -53,7 +53,9 @@ import { UpgradeComponent } from './info-panel/upgrade/upgrade.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { AddMenuComponent } from './edit-menu/add-menu/add-menu.component';
 import { SelectCategoryComponent } from './edit-menu/select-category/select-category.component'; 
-import {MatRadioModule} from '@angular/material/radio'; 
+import {MatRadioModule} from '@angular/material/radio';
+import { ReorderViewComponent } from './edit-menu/reorder-view/reorder-view.component'; 
+import {DragDropModule} from '@angular/cdk/drag-drop'; 
 
 @NgModule({
   declarations: [
@@ -87,6 +89,7 @@ import {MatRadioModule} from '@angular/material/radio';
     UpgradeComponent,
     AddMenuComponent,
     SelectCategoryComponent,
+    ReorderViewComponent,
   ],
   imports: [
     CommonModule,
@@ -113,7 +116,8 @@ import {MatRadioModule} from '@angular/material/radio';
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
-    MatRadioModule
+    MatRadioModule,
+    DragDropModule
   ],
   exports:[SidebarComponent,AddDishComponent,AddNewCategoryComponent,SelectRecipeComponent]
 })
