@@ -13,7 +13,7 @@ platformBrowserDynamic().bootstrapModule(AppModule)
 window.addEventListener('*',(data)=>{
     console.log(data);
   })
-// done: step 1 => pos encoder load 
+// todo: step 1 => pos encoder load 
 // todo: step 2 => print and file command
 // todo: step 3 => ipcCommunication
 // todo: step 4 => login
