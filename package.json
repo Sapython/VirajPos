@@ -1,5 +1,8 @@
 {
-  "name": "viraj",
+  "name": "VirajPos",
+  "description": "Standard of F&B Industry",
+  "homepage": "https://virajworld.in/",
+  "author":"Shreeva",
   "version": "0.0.4",
   "scripts": {
     "ng": "ng",
@@ -18,6 +21,9 @@
     "make": "electron-forge make"
   },
   "build": {
+    "appId":"com.shreeva.virajpos",
+    "productName": "Viraj POS",
+    "copyright": "Copyright © year ${author}",
     "win": {
       "target": [
         {
