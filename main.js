@@ -4,9 +4,9 @@ const fs = require("fs");
 const child_process = require('child_process');
 
 // let EscPosEncoder = require('esc-pos-encoder');
-require("update-electron-app")({
-  repo: "swayambhu-innovations/Packages",
-});
+// require("update-electron-app")({
+//   repo: "swayambhu-innovations/Packages",
+// });
 let win;
 
 function run_script(command, args, event, callback) {
