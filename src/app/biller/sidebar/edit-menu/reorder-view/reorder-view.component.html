@@ -1,0 +1,12 @@
+<section>
+  <h2>Shift Order</h2>
+  <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let item of items" cdkDrag>
+      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+      {{ item }}
+    </div>
+  </div>
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(items)">Save</button>
+  </div>
+</section>
